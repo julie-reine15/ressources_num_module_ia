@@ -6,7 +6,7 @@
 <title>Dans la peau d'un databroker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
   /* ── Palette ── */
   :root {
@@ -346,7 +346,6 @@
 
   CE FICHIER :
     → Activité interactive "Dans la peau d'un databroker"
-    → Intégré au nugget 4 de la thématique 2 de la formation sur l'intelligence artificielle pour le personnel administratif et enseignant de l'Inalco
     → Intégrer via : <iframe src="URL_DU_FICHIER"
         width="100%" height="780" frameborder="0"
         title="Activité : Dans la peau d'un databroker"
@@ -363,7 +362,7 @@
 
   <!-- HEADER PERMANENT -->
   <div class="header" role="banner">
-    <!-- <span class="header-icon" aria-hidden="true">🗄️</span> -->
+    <span class="header-icon" aria-hidden="true"><i class="ti ti-database"></i></span>
     <div>
       <div class="header-title">Dans la peau d'un databroker</div>
       <div class="header-sub">Construisez et revendez le profil d'un individu</div>
@@ -377,7 +376,7 @@
       <p class="intro-title">Votre mission</p>
       <p class="intro-body">
         Vous dirigez <strong>DataPro Solutions</strong>, une entreprise spécialisée dans la collecte 
-        et la revente de données personnelles. Votre objectif : construire le profil le plus complet 
+        et la revente de données personnelles.<br>Votre objectif : construire le profil le plus complet 
         possible d'un individu cible en croisant différentes sources de données, puis le vendre 
         au meilleur prix.
       </p>
@@ -391,7 +390,7 @@
         </div>
       </div>
       <button class="btn btn-primary" onclick="goTo('screen-sources')">
-        Commencer la collecte →
+        Commencer la collecte <i class="ti ti-arrow-right" aria-hidden="true"></i>
       </button>
     </div>
 
@@ -412,7 +411,7 @@
 
       <div class="profile-box" aria-live="polite" aria-label="Profil en cours de construction">
         <div class="profile-box-title">
-          👤 Profil en construction
+          <i class="ti ti-user-circle" aria-hidden="true"></i> Profil en construction
         </div>
         <div class="legend">
           <span class="legend-item">
@@ -430,7 +429,7 @@
       </div>
 
       <button class="btn btn-primary" id="btn-to-buyers" onclick="goTo('screen-buyers')" disabled aria-disabled="true">
-        Choisir mes acheteurs →
+        Choisir mes acheteurs <i class="ti ti-arrow-right" aria-hidden="true"></i>
       </button>
     </div>
 
@@ -450,7 +449,7 @@
       <div class="buyers-grid" id="buyers-grid" role="group" aria-label="Acheteurs disponibles"></div>
 
       <button class="btn btn-primary" id="btn-to-bilan" onclick="goTo('screen-bilan')" disabled aria-disabled="true">
-        Voir le bilan →
+        Voir le bilan <i class="ti ti-arrow-right" aria-hidden="true"></i>
       </button>
     </div>
 
@@ -484,14 +483,14 @@
 
       <div class="alert-block" role="region" aria-label="Ce que cette simulation révèle">
         <div class="alert-title">
-          ⚠️
+          <i class="ti ti-alert-triangle" aria-hidden="true"></i>
           Ce que cette simulation révèle
         </div>
         <div id="alert-items"></div>
       </div>
 
       <button class="btn btn-ghost" onclick="restart()">
-        ↺ Recommencer
+        <i class="ti ti-refresh" aria-hidden="true"></i> Recommencer
       </button>
     </div>
 
@@ -504,7 +503,7 @@
 /* ── Data ── */
 const SOURCES = [
   {
-    id:'electoral', icon:'📋',
+    id:'electoral', icon:'ti-list',
     name:'Listes électorales',
     desc:'Registres publics officiels',
     tags:['Nom complet','Adresse postale','Date de naissance','Commune de vote'],
@@ -512,7 +511,7 @@ const SOURCES = [
     rgpd:'Données publiques : légal, mais facilement détournable.'
   },
   {
-    id:'social', icon:'📱',
+    id:'social', icon:'ti-brand-instagram',
     name:'Réseaux sociaux',
     desc:'Analyse de profils publics',
     tags:['Employeur','Centres d\'intérêt','Réseau professionnel','Opinions exprimées'],
@@ -521,7 +520,7 @@ const SOURCES = [
     rgpd:'Collecte de masse sans consentement individuel.'
   },
   {
-    id:'fidelite', icon:'🎁',
+    id:'fidelite', icon:'ti-gift',
     name:'Programme de fidélité',
     desc:'Historique d\'achats revendu',
     tags:['Habitudes alimentaires','Fréquence d\'achat','Marques préférées','Mode de paiement'],
@@ -529,7 +528,7 @@ const SOURCES = [
     rgpd:'Les CGU autorisent la revente, mais qui les lit ?'
   },
   {
-    id:'sante', icon:'🩺',
+    id:'sante', icon:'ti-stethoscope',
     name:'Données de santé',
     desc:'Applis bien-être & pharmacies',
     tags:['Activité physique','Médicaments achetés'],
@@ -538,31 +537,31 @@ const SOURCES = [
     rgpd:'Données sensibles (RGPD art. 9) : traitement interdit sans consentement explicite.'
   },
   {
-    id:'navigation', icon:'🌐',
+    id:'navigation', icon:'ti-world',
     name:'Historique de navigation',
     desc:'Cookies tiers et traceurs',
     tags:['Sites consultés','Recherches effectuées','Appareil utilisé'],
     value:15,
-    rgpd:'Les cookies tiers sont en cours d\'élimination progressive, les pratiques évoluent.'
+    rgpd:'Les cookies tiers sont en cours d\'élimination progressive : les pratiques évoluent.'
   },
   {
-    id:'geo', icon:'📍',
+    id:'geo', icon:'ti-map-pin',
     name:'Données de localisation',
     desc:'Applications mobiles',
     tags:['Lieu de travail','Lieux fréquentés'],
     inferred:['Travaille dans un établissement de santé','Fréquente un cabinet médical'],
     value:25,
-    rgpd:'Collecte continue, souvent acceptée par inadvertance dans les CGU.'
+    rgpd:'Collecte continue souvent acceptée par inadvertance dans les CGU.'
   },
 ];
 
 const BUYERS = [
-  { id:'pub',       icon:'📣',     name:'Agence publicitaire',  price:35 },
-  { id:'pharma',    icon:'💊',     name:'Industrie pharma',     price:60 },
-  { id:'assurance', icon:'🛡️',    name:'Assureur',             price:45 },
-  { id:'banque',    icon:'🏦',     name:'Banque / crédit',      price:40 },
-  { id:'politique', icon:'🏛️',    name:'Parti politique',      price:20 },
-  { id:'broker2',   icon:'🗄️',    name:'Autre databroker',     price:55 },
+  { id:'pub',       icon:'ti-speakerphone',     name:'Agence publicitaire',  price:35 },
+  { id:'pharma',    icon:'ti-pill',              name:'Industrie pharma',     price:60 },
+  { id:'assurance', icon:'ti-shield',            name:'Assureur',             price:45 },
+  { id:'banque',    icon:'ti-building-bank',     name:'Banque / crédit',      price:40 },
+  { id:'politique', icon:'ti-flag',              name:'Parti politique',      price:20 },
+  { id:'broker2',   icon:'ti-database',          name:'Autre databroker',     price:55 },
 ];
 
 /* ── State ── */
@@ -582,12 +581,12 @@ let sourceValue = 0;
     div.setAttribute('tabindex', '0');
     div.setAttribute('aria-label', s.name + ' — ' + s.desc + ' — ajoute ' + s.value + ' € de valeur');
     div.innerHTML = `
-      <span class="check-mark" aria-hidden="true">✓</span>
-      <div class="source-icon">${s.icon}</div>
+      <span class="check-mark" aria-hidden="true"><i class="ti ti-check"></i></span>
+      <div class="source-icon"><i class="ti ${s.icon}" aria-hidden="true"></i></div>
       <div class="source-name">${s.name}</div>
       <div class="source-desc">${s.desc}</div>
       <div class="source-value">+ ${s.value} € de valeur</div>
-      ${s.rgpd ? `<div class="source-rgpd">⚠ ${s.rgpd}</div>` : ''}
+      ${s.rgpd ? `<div class="source-rgpd"><i class="ti ti-alert-circle" style="font-size:11px" aria-hidden="true"></i> ${s.rgpd}</div>` : ''}
     `;
     div.onclick = () => toggleSource(s.id);
     div.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleSource(s.id); } };
@@ -691,8 +690,8 @@ function renderBuyers() {
     div.setAttribute('tabindex', '0');
     div.setAttribute('aria-label', b.name + ' — ' + b.price + ' € par profil');
     div.innerHTML = `
-      <span class="buyer-check" aria-hidden="true">✓</span>
-      <div class="buyer-icon">${b.icon}</div>
+      <span class="buyer-check" aria-hidden="true"><i class="ti ti-check"></i></span>
+      <div class="buyer-icon"><i class="ti ${b.icon}" aria-hidden="true"></i></div>
       <div class="buyer-name">${b.name}</div>
       <div class="buyer-price">${b.price} € / profil</div>
     `;
