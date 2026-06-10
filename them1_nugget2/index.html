@@ -78,9 +78,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .detail-panel{min-height:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:1.5rem;transition:border-color .3s ease}
 .detail-panel.active{border-color:var(--border-strong)}
 .panel-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:420px;gap:1rem;color:var(--text-muted);text-align:center;padding:2rem}
+.panel-placeholder[hidden]{display:none}
 .placeholder-icon{font-size:2.5rem;color:var(--purple-light);opacity:.3}
 .panel-placeholder p{font-size:.85rem;line-height:1.7}
 .panel-content{animation:panelIn .28s cubic-bezier(.34,1.2,.64,1)}
+.panel-content[hidden]{display:none}
 @keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.panel-content{animation:none}.level,.detail-panel,.autonomy-fill{transition:none!important}}
 
