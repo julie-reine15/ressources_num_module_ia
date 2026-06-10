@@ -1,93 +1,291 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niveaux d'IA | Visualisation Interactive</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="script.js" defer></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Niveaux d'expertise de l'IA — Pyramide interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+:root{
+  --purple:#7726b1;--purple-dark:#5a1a87;--purple-light:#9b3fd4;
+  --yellow:#dced59;--yellow-dark:#c2d630;--yellow-text:#3a4000;
+  --l1:#7726b1;--l2:#8f30b8;--l3:#a940b8;--l4:#c05ea0;--l5:#cba031;--l6:#dced59;
+  --bg:#0e0a17;--bg2:#16102a;
+  --surface:rgba(255,255,255,0.04);--surface-hover:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.10);--border-strong:rgba(255,255,255,0.22);
+  --text-primary:#f0eaf8;--text-secondary:rgba(240,234,248,0.65);--text-muted:rgba(240,234,248,0.38);
+  --font:'Montserrat',sans-serif;--radius:8px;--radius-lg:14px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page-wrapper{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 3rem}
+.page-header{text-align:center;margin-bottom:2.5rem}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow);margin-bottom:.5rem;opacity:.85}
+.page-header h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--yellow) 0%,#b85de8 60%,var(--purple-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15;margin-bottom:.6rem}
+.page-header .subtitle{font-size:.9rem;color:var(--text-secondary)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;margin-bottom:2.5rem}
+@media(max-width:780px){.layout{grid-template-columns:1fr}}
+
+/* PYRAMID SCENE */
+.pyramid-scene{display:flex;justify-content:center;align-items:flex-start;gap:1rem;padding:1rem 0;width:100%}
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0}
+
+/* LEVELS */
+.level{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:none;border-radius:6px;overflow:hidden;
+  transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .22s ease,box-shadow .22s ease;
+  transform-origin:center bottom;outline:none;
+  /* CRITIQUE : width explicite pour éviter l'effondrement dans un iframe */
+  box-sizing:border-box;
+}
+.level[data-level="1"]{width:100%;height:60px;background:linear-gradient(90deg,#5a1a87 0%,var(--l1) 50%,#5a1a87 100%);clip-path:polygon(3% 0%,97% 0%,100% 100%,0% 100%)}
+.level[data-level="2"]{width:88%;height:58px;background:linear-gradient(90deg,#6c1e99 0%,var(--l2) 50%,#6c1e99 100%);clip-path:polygon(3.5% 0%,96.5% 0%,100% 100%,0% 100%)}
+.level[data-level="3"]{width:75%;height:56px;background:linear-gradient(90deg,#7d29a0 0%,var(--l3) 50%,#7d29a0 100%);clip-path:polygon(4% 0%,96% 0%,100% 100%,0% 100%)}
+.level[data-level="4"]{width:62%;height:54px;background:linear-gradient(90deg,#9c3a88 0%,var(--l4) 50%,#9c3a88 100%);clip-path:polygon(4.5% 0%,95.5% 0%,100% 100%,0% 100%)}
+.level[data-level="5"]{width:48%;height:52px;background:linear-gradient(90deg,#b08010 0%,var(--l5) 50%,#b08010 100%);clip-path:polygon(5% 0%,95% 0%,100% 100%,0% 100%)}
+.level[data-level="6"]{width:34%;height:50px;background:linear-gradient(90deg,#aabb10 0%,var(--l6) 50%,#aabb10 100%);clip-path:polygon(8% 0%,92% 0%,100% 100%,0% 100%);border-radius:6px 6px 4px 4px}
+
+.level:hover,.level:focus-visible{transform:translateY(-4px) scaleX(1.025);filter:brightness(1.18) saturate(1.15);z-index:10}
+.level:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;box-shadow:0 0 0 6px rgba(220,237,89,0.25)}
+.level[aria-pressed="true"]{transform:translateY(-6px) scaleX(1.03);filter:brightness(1.25) saturate(1.2);z-index:11;box-shadow:0 8px 32px rgba(220,237,89,0.2),0 2px 8px rgba(0,0,0,0.5)}
+
+.level-shine{position:absolute;top:0;left:0;width:100%;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.14) 0%,transparent 100%);pointer-events:none}
+.level-inner{display:flex;align-items:center;gap:8px;padding:0 1rem;pointer-events:none;user-select:none}
+.level-icon{font-size:1.1rem;flex-shrink:0}
+.level-name{font-size:.82rem;font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.level-type{font-size:.68rem;font-weight:500;opacity:.75;letter-spacing:.03em;white-space:nowrap}
+.level[data-level="6"] .level-name,.level[data-level="6"] .level-type,
+.level[data-level="5"] .level-name,.level[data-level="5"] .level-type{color:#2a2a00}
+.level[data-level="1"] .level-name,.level[data-level="2"] .level-name,
+.level[data-level="3"] .level-name,.level[data-level="4"] .level-name,
+.level[data-level="1"] .level-type,.level[data-level="2"] .level-type,
+.level[data-level="3"] .level-type,.level[data-level="4"] .level-type{color:#f5eeff}
+
+/* AXIS */
+.autonomy-axis{display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:calc(6*60px + 5*4px);flex-shrink:0}
+.axis-line{width:2px;flex:1;background:linear-gradient(180deg,var(--yellow) 0%,var(--purple) 100%);border-radius:2px;margin:6px 0}
+.axis-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.axis-label.axis-top{color:var(--yellow)}.axis-label.axis-bottom{color:var(--purple-light)}
+
+/* DETAIL PANEL */
+.detail-panel{min-height:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:1.5rem;transition:border-color .3s ease}
+.detail-panel.active{border-color:var(--border-strong)}
+.panel-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:420px;gap:1rem;color:var(--text-muted);text-align:center;padding:2rem}
+.placeholder-icon{font-size:2.5rem;color:var(--purple-light);opacity:.3}
+.panel-placeholder p{font-size:.85rem;line-height:1.7}
+.panel-content{animation:panelIn .28s cubic-bezier(.34,1.2,.64,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.panel-content{animation:none}.level,.detail-panel,.autonomy-fill{transition:none!important}}
+
+.panel-header{padding:1.25rem 1.4rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.panel-level-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:.7rem;font-weight:800;flex-shrink:0}
+.panel-icon-big{font-size:1.5rem;flex-shrink:0}
+.panel-title-group{flex:1;min-width:0}
+.panel-level-name{font-size:1.05rem;font-weight:700;line-height:1.2;color:var(--text-primary)}
+.panel-level-type{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
+.panel-status-badge{font-size:.62rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+
+.autonomy-bar-wrap{padding:.85rem 1.4rem 0;display:flex;align-items:center;gap:.75rem}
+.autonomy-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);flex-shrink:0;width:70px}
+.autonomy-track{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.autonomy-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.34,1.2,.64,1);width:0}
+.autonomy-value{font-size:.7rem;font-weight:700;flex-shrink:0;width:48px;text-align:right}
+
+.panel-body{padding:1rem 1.4rem 1.4rem;display:flex;flex-direction:column;gap:1rem}
+.panel-definition{font-size:.82rem;color:var(--text-secondary);line-height:1.7;padding:.75rem 1rem;background:rgba(255,255,255,0.04);border-radius:var(--radius);border-left:3px solid}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.info-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius);padding:.65rem .75rem}
+.info-card-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.3rem}
+.info-card-value{font-size:.76rem;font-weight:500;color:var(--text-primary);line-height:1.5}
+.info-card-value.highlight{font-weight:700}
+.examples-title{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.45rem}
+.examples-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.example-chip{font-size:.7rem;font-weight:500;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:var(--text-secondary);white-space:nowrap}
+.ethics-row{display:flex;gap:.5rem;align-items:flex-start;padding:.6rem .75rem;background:rgba(255,200,60,0.07);border:1px solid rgba(255,200,60,0.18);border-radius:var(--radius)}
+.ethics-icon{font-size:.9rem;flex-shrink:0;margin-top:1px}
+.ethics-text{font-size:.72rem;color:var(--text-secondary);line-height:1.55}
+
+/* TIMELINE */
+.timeline-section{margin-top:1rem;padding-top:2rem;border-top:1px solid var(--border)}
+.section-title{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.5rem}
+.timeline{display:flex;align-items:flex-start;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.timeline-item{display:flex;flex-direction:column;align-items:center;gap:.5rem;flex:1;min-width:110px;cursor:pointer;padding:.4rem .5rem;border-radius:var(--radius);transition:background .2s;tabindex:0}
+.timeline-item:hover,.timeline-item.tl-active{background:var(--surface-hover)}
+.tl-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);background:var(--bg);transition:transform .2s,background .2s;flex-shrink:0}
+.timeline-item:hover .tl-dot,.timeline-item.tl-active .tl-dot{transform:scale(1.3)}
+.tl-content{text-align:center;display:flex;flex-direction:column;gap:2px}
+.tl-content strong{font-size:.72rem;font-weight:700;color:var(--text-primary)}
+.tl-content span{font-size:.68rem;font-weight:600;color:var(--text-secondary)}
+.tl-content em{font-size:.62rem;font-style:normal;color:var(--text-muted)}
+.timeline-connector{width:2px;height:14px;background:var(--border);margin-top:6px;flex-shrink:0;border-radius:1px}
+.timeline-item[data-level="1"] .tl-dot{border-color:var(--l1)}.timeline-item[data-level="1"].tl-active .tl-dot{background:var(--l1)}
+.timeline-item[data-level="2"] .tl-dot{border-color:var(--l2)}.timeline-item[data-level="2"].tl-active .tl-dot{background:var(--l2)}
+.timeline-item[data-level="3"] .tl-dot{border-color:var(--l3)}.timeline-item[data-level="3"].tl-active .tl-dot{background:var(--l3)}
+.timeline-item[data-level="4"] .tl-dot{border-color:var(--l4)}.timeline-item[data-level="4"].tl-active .tl-dot{background:var(--l4)}
+.timeline-item[data-level="5"] .tl-dot{border-color:var(--l5)}.timeline-item[data-level="5"].tl-active .tl-dot{background:var(--l5)}
+.timeline-item[data-level="6"] .tl-dot{border-color:var(--l6)}.timeline-item[data-level="6"].tl-active .tl-dot{background:var(--l6)}
+.keyboard-hint{text-align:center;font-size:.65rem;color:var(--text-muted);margin-top:1.5rem;letter-spacing:.05em}
+
+@media(max-width:600px){.level-type{display:none}.info-grid{grid-template-columns:1fr}.panel-header{flex-wrap:wrap;gap:.5rem}.page-wrapper{padding:1.5rem 1rem 2rem}}
+</style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- En-tête avec gradient -->
-        <header class="header">
-            <h1><i class="fas fa-robot"></i> Cartographie des IA</h1>
-            <p class="subtitle">Explorez les niveaux d'expertise et d'autonomie des intelligences artificielles</p>
-        </header>
+<div class="page-wrapper" role="main">
+  <h2 class="sr-only">Pyramide interactive des niveaux d'expertise de l'IA : de l'IA étroite à la superintelligence</h2>
 
-        <div class="main-content">
-            <!-- Panneau latéral modernisé -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h2><i class="fas fa-sliders-h"></i> Filtres</h2>
-                </div>
-                <div class="filter-group">
-                    <div class="filter-item">
-                        <label>
-                            <input type="checkbox" name="dimension" value="expertise" checked>
-                            <span class="toggle"></span>
-                            <span class="label-text">Expertise</span>
-                        </label>
-                    </div>
-                    <div class="filter-item">
-                        <label>
-                            <input type="checkbox" name="dimension" value="autonomie" checked>
-                            <span class="toggle"></span>
-                            <span class="label-text">Autonomie</span>
-                        </label>
-                    </div>
-                    <div class="filter-item">
-                        <label>
-                            <input type="checkbox" name="dimension" value="etat" checked>
-                            <span class="toggle"></span>
-                            <span class="label-text">État (2024)</span>
-                        </label>
-                    </div>
-                </div>
-                <button id="reset-filters" class="btn-reset">
-                    <i class="fas fa-redo"></i> Réinitialiser
-                </button>
-            </aside>
+  <header class="page-header">
+    <p class="eyebrow">Niveaux d'expertise</p>
+    <h1>De l'outil à l'inconnu</h1>
+    <p class="subtitle">Cliquez sur un niveau pour explorer ses caractéristiques</p>
+  </header>
 
-            <!-- Zone de visualisation -->
-            <main class="graph-container">
-                <div class="graph-header">
-                    <h2>Niveaux d'Expertise vs Autonomie</h2>
-                    <div class="graph-legend"></div>
-                </div>
-                <div id="graph" role="region" aria-label="Graphique interactif des niveaux d'IA" tabindex="0"></div>
-            </main>
-        </div>
-
-        <!-- Tooltip (remplace la modale) -->
-        <div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true">
-            <div class="tooltip-header">
-                <h3 id="tooltip-title"></h3>
-                <span id="tooltip-subtitle"></span>
-            </div>
-            <div class="tooltip-content">
-                <p id="tooltip-description"></p>
-                <div class="tooltip-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Exemples:</span>
-                        <span class="detail-value" id="tooltip-examples"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Limitations:</span>
-                        <span class="detail-value" id="tooltip-limitations"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Enjeux:</span>
-                        <span class="detail-value" id="tooltip-enjeux"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="layout">
+    <div class="pyramid-scene">
+      <div class="pyramid" id="pyramid">
+        <button class="level" id="level-6" data-level="6" aria-label="Niveau 6 : ASI — Superintelligence" aria-pressed="false">
+          <div class="level-inner"><span class="level-icon" aria-hidden="true">🌌</span><span class="level-name">ASI</span><span class="level-type">Superintelligence</span></div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+        <button class="level" id="level-5" data-level="5" aria-label="Niveau 5 : AGI — Intelligence Générale" aria-pressed="false">
+          <div class="level-inner"><span class="level-icon" aria-hidden="true">🧠</span><span class="level-name">AGI</span><span class="level-type">Intelligence Générale</span></div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+        <button class="level" id="level-4" data-level="4" aria-label="Niveau 4 : IA Agentique — Autonome" aria-pressed="false">
+          <div class="level-inner"><span class="level-icon" aria-hidden="true">🤖</span><span class="level-name">IA Agentique</span><span class="level-type">Autonome</span></div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+        <button class="level" id="level-3" data-level="3" aria-label="Niveau 3 : IA Adaptative — Apprentissage" aria-pressed="false">
+          <div class="level-inner"><span class="level-icon" aria-hidden="true">⚙️</span><span class="level-name">IA Adaptative</span><span class="level-type">Apprentissage</span></div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+        <button class="level" id="level-2" data-level="2" aria-label="Niveau 2 : IA Multi-tâches — Intégrative" aria-pressed="false">
+          <div class="level-inner"><span class="level-icon" aria-hidden="true">⚙️</span><span class="level-name">IA Multi-tâches</span><span class="level-type">Intégrative</span></div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+        <button class="level" id="level-1" data-level="1" aria-label="Niveau 1 : IA Étroite — Réactive" aria-pressed="false">
+          <div class="level-inner"><span class="level-icon" aria-hidden="true">⚙️</span><span class="level-name">IA Étroite (ANI)</span><span class="level-type">Réactive</span></div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+      </div>
+      <div class="autonomy-axis" aria-hidden="true">
+        <span class="axis-label axis-top">Autonomie totale</span>
+        <div class="axis-line"></div>
+        <span class="axis-label axis-bottom">Outil passif</span>
+      </div>
     </div>
+
+    <aside class="detail-panel" id="detail-panel" role="complementary" aria-label="Détails du niveau sélectionné" aria-live="polite">
+      <div id="panel-placeholder" class="panel-placeholder">
+        <div class="placeholder-icon">◈</div>
+        <p>Sélectionnez un niveau<br>pour explorer ses caractéristiques</p>
+      </div>
+      <div id="panel-content" class="panel-content" hidden></div>
+    </aside>
+  </div>
+
+  <section class="timeline-section" aria-labelledby="timeline-title">
+    <h2 id="timeline-title" class="section-title">Chronologie d'émergence</h2>
+    <div class="timeline" role="list">
+      <div class="timeline-item" data-level="1" role="listitem" tabindex="0" aria-label="IA Étroite — Années 1950"><div class="tl-dot"></div><div class="tl-content"><strong>Années 1950</strong><span>IA Étroite (ANI)</span><em>Maturité — Siri, Alexa</em></div></div>
+      <div class="timeline-connector" aria-hidden="true"></div>
+      <div class="timeline-item" data-level="2" role="listitem" tabindex="0" aria-label="IA Multi-tâches — Années 2000"><div class="tl-dot"></div><div class="tl-content"><strong>Années 2000</strong><span>IA Multi-tâches</span><em>Courante — Google Assistant</em></div></div>
+      <div class="timeline-connector" aria-hidden="true"></div>
+      <div class="timeline-item" data-level="3" role="listitem" tabindex="0" aria-label="IA Adaptative — Années 2010"><div class="tl-dot"></div><div class="tl-content"><strong>Années 2010</strong><span>IA Adaptative</span><em>Avancée — AlphaGo, robots</em></div></div>
+      <div class="timeline-connector" aria-hidden="true"></div>
+      <div class="timeline-item" data-level="4" role="listitem" tabindex="0" aria-label="IA Agentique — Années 2020"><div class="tl-dot"></div><div class="tl-content"><strong>Années 2020</strong><span>IA Agentique</span><em>Émergente — AutoGPT</em></div></div>
+      <div class="timeline-connector" aria-hidden="true"></div>
+      <div class="timeline-item" data-level="5" role="listitem" tabindex="0" aria-label="AGI — En recherche"><div class="tl-dot"></div><div class="tl-content"><strong>Recherche</strong><span>AGI</span><em>Pas de consensus</em></div></div>
+      <div class="timeline-connector" aria-hidden="true"></div>
+      <div class="timeline-item" data-level="6" role="listitem" tabindex="0" aria-label="ASI — Théorique"><div class="tl-dot"></div><div class="tl-content"><strong>Spéculatif</strong><span>ASI</span><em>Théorique</em></div></div>
+    </div>
+  </section>
+
+  <p class="keyboard-hint" aria-label="Utiliser les touches fléchées pour naviguer entre les niveaux.">↑ ↓ Naviguer entre les niveaux · Entrée pour sélectionner</p>
+</div>
+
+<script>
+const DATA={
+  1:{name:"IA Étroite (ANI)",type:"Réactive",icon:"⚙️",def:"Spécialisée dans une tâche unique, sans apprentissage continu. Elle exécute des règles prédéfinies de manière déterministe, sans conscience ni compréhension du contexte.",autoLabel:"Faible",autoVal:10,autoDesc:"Outil passif — nécessite une intervention humaine constante",cap:"Exécution de règles prédéfinies",lim:"Incapable de s'adapter à de nouvelles tâches",ex:["DeepBlue","Filtres anti-spam","Siri (basique)","Calculatrices"],eth:"Biais algorithmiques, dépendance aux données d'entraînement.",statut:"Déployée massivement",sColor:"#22c55e",sBg:"rgba(34,197,94,0.15)",per:"Années 1950",col:"#7726b1",txtCol:"#f5eeff"},
+  2:{name:"IA Multi-tâches",type:"Intégrative",icon:"⚙️",def:"Combine plusieurs IA étroites dans un même domaine. Elle intègre des services distincts pour offrir une expérience cohérente, mais reste confinée à des scénarios prédéfinis.",autoLabel:"Limitée",autoVal:24,autoDesc:"Scénarios prédéfinis — combinaison d'outils sans vraie généralisation",cap:"Intégration de services, automatisation simple",lim:"Pas de généralisation hors du domaine configuré",ex:["Google Assistant","Alexa + routines","Voitures autonomes niv. 2-3"],eth:"Vie privée (écoute permanente), risques de sécurité.",statut:"Courante",sColor:"#3b82f6",sBg:"rgba(59,130,246,0.15)",per:"Années 2000",col:"#8f30b8",txtCol:"#f5eeff"},
+  3:{name:"IA Adaptative",type:"Apprentissage",icon:"⚙️",def:"Apprend de nouvelles tâches dans un domaine restreint grâce au renforcement ou aux données. Elle optimise ses performances au fil du temps, mais reste spécialisée.",autoLabel:"Moyenne",autoVal:44,autoDesc:"Ajustements locaux — apprend mais dans un périmètre défini",cap:"Apprentissage par renforcement, optimisation continue",lim:"Spécialisée : AlphaGo ne joue qu'au go",ex:["AlphaGo","Robots industriels auto-prog.","Recommandations Netflix"],eth:"Boîte noire (opacité), coûts énergétiques élevés.",statut:"Avancée",sColor:"#8b5cf6",sBg:"rgba(139,92,246,0.15)",per:"Années 2010",col:"#a940b8",txtCol:"#f5eeff"},
+  4:{name:"IA Agentique",type:"Autonome",icon:"🤖",def:"Agit de manière proactive pour atteindre des objectifs complexes, avec initiative et mémoire à long terme. Elle planifie, interagit avec son environnement et s'adapte en temps réel.",autoLabel:"Élevée",autoVal:66,autoDesc:"Prise de décision autonome — agit seule dans un cadre défini",cap:"Planification, mémoire à long terme, interaction environnement",lim:"Risque de boucles infinies ou d'hallucinations",ex:["AutoGPT","Rabbit R1","Agents de trading","Devin AI","Robots Amazon"],eth:"Responsabilité (qui répond d'une erreur ?), alignement des objectifs.",statut:"Émergente",sColor:"#f59e0b",sBg:"rgba(245,158,11,0.15)",per:"Années 2020",col:"#c05ea0",txtCol:"#f5eeff"},
+  5:{name:"AGI",type:"Intelligence Générale",icon:"🧠",def:"Atteint le niveau humain dans tous les domaines cognitifs : raisonnement, créativité, compréhension émotionnelle. Hypothétique à ce jour, elle représente le seuil symbolique de l'IA « humaine ».",autoLabel:"Très élevée",autoVal:84,autoDesc:"Quasi-autonomie — raisonnement et transfert de connaissances généralisé",cap:"Raisonnement abstrait, transfert de connaissances, compréhension contextuelle",lim:"Aucune implémentation concrète validée",ex:["Hypothétique","DeepMind Gemini (recherche)","OpenAI Q* (rumeurs)"],eth:"Contrôle, risques existentiels, droits des machines.",statut:"Recherche",sColor:"#a78bfa",sBg:"rgba(167,139,250,0.15)",per:"Non définie",col:"#cba031",txtCol:"#2a2a00"},
+  6:{name:"ASI",type:"Superintelligence",icon:"🌌",def:"Dépasse l'intelligence humaine dans tous les domaines avec auto-amélioration récursive. Concept actuellement de l'ordre de la science-fiction, mais au centre des débats sur l'avenir à long terme de l'IA.",autoLabel:"Totale (théorique)",autoVal:100,autoDesc:"Auto-détermination — objectifs définis de manière autonome",cap:"Créativité illimitée, objectifs auto-définis, auto-amélioration",lim:"Spéculatif — risques de perte de contrôle total",ex:["Science-fiction","Skynet (fiction)","HAL 9000 (fiction)"],eth:"Alignement des valeurs, régulation mondiale, survie de l'humanité.",statut:"Théorique",sColor:"#dced59",sBg:"rgba(220,237,89,0.15)",per:"Indéterminée",col:"#dced59",txtCol:"#2a2a00"}
+};
+
+let active=null;
+const levelBtns=[...document.querySelectorAll('.level')];
+const tlItems=[...document.querySelectorAll('.timeline-item')];
+const placeholder=document.getElementById('panel-placeholder');
+const content=document.getElementById('panel-content');
+const panel=document.getElementById('detail-panel');
+
+function select(num,focus){
+  const d=DATA[num];if(!d)return;active=num;
+  levelBtns.forEach(b=>b.setAttribute('aria-pressed','false'));
+  document.getElementById('level-'+num).setAttribute('aria-pressed','true');
+  tlItems.forEach(i=>i.classList.toggle('tl-active',+i.dataset.level===num));
+  placeholder.hidden=true;content.hidden=false;panel.classList.add('active');
+  content.innerHTML=`
+    <div class="panel-header">
+      <span class="panel-level-badge" style="background:${d.col};color:${d.txtCol}">${num}</span>
+      <span class="panel-icon-big">${d.icon}</span>
+      <div class="panel-title-group">
+        <div class="panel-level-name">${d.name}</div>
+        <div class="panel-level-type" style="color:${d.col}">${d.type}</div>
+      </div>
+      <span class="panel-status-badge" style="background:${d.sBg};color:${d.sColor}">${d.statut}</span>
+    </div>
+    <div class="autonomy-bar-wrap" role="group" aria-label="Niveau d'autonomie">
+      <span class="autonomy-label">Autonomie</span>
+      <div class="autonomy-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${d.autoVal}" aria-label="Autonomie : ${d.autoLabel}">
+        <div class="autonomy-fill" id="afill" style="background:${d.col};width:0%"></div>
+      </div>
+      <span class="autonomy-value" style="color:${d.col}">${d.autoLabel}</span>
+    </div>
+    <div class="panel-body">
+      <div class="panel-definition" style="border-color:${d.col}" role="region" aria-label="Définition">${d.def}</div>
+      <div class="info-grid">
+        <div class="info-card"><div class="info-card-label">✦ Capacités clés</div><div class="info-card-value highlight" style="color:${d.col}">${d.cap}</div></div>
+        <div class="info-card"><div class="info-card-label">✕ Limites</div><div class="info-card-value">${d.lim}</div></div>
+        <div class="info-card"><div class="info-card-label">◷ Période</div><div class="info-card-value">${d.per}</div></div>
+        <div class="info-card"><div class="info-card-label">◈ Autonomie</div><div class="info-card-value">${d.autoDesc}</div></div>
+      </div>
+      <div><div class="examples-title">Exemples concrets</div>
+      <div class="examples-chips" role="list" aria-label="Exemples">${d.ex.map(e=>`<span class="example-chip" role="listitem">${e}</span>`).join('')}</div></div>
+      <div class="ethics-row" role="note" aria-label="Enjeux"><span class="ethics-icon" aria-hidden="true">⚠</span><span class="ethics-text"><strong>Enjeux :</strong> ${d.eth}</span></div>
+    </div>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const f=document.getElementById('afill');if(f)f.style.width=d.autoVal+'%';
+  }));
+  if(focus){content.setAttribute('tabindex','-1');content.focus();}
+}
+
+levelBtns.forEach(b=>{
+  b.addEventListener('click',()=>select(+b.dataset.level,false));
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(+b.dataset.level,true);}});
+});
+tlItems.forEach(i=>{
+  i.addEventListener('click',()=>select(+i.dataset.level,false));
+  i.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();i.click();}});
+});
+document.addEventListener('keydown',e=>{
+  if(!['ArrowUp','ArrowDown'].includes(e.key))return;
+  const focused=document.activeElement;
+  if(!focused?.closest('.pyramid')&&!focused?.closest('.detail-panel')&&active===null)return;
+  e.preventDefault();
+  const cur=active||1;
+  const next=e.key==='ArrowUp'?Math.min(6,cur+1):Math.max(1,cur-1);
+  select(next,false);
+  document.getElementById('level-'+next)?.focus();
+});
+</script>
 </body>
 </html>
