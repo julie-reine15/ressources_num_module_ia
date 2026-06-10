@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niveaux d'Expertise et d'Autonomie des IA</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- En-tête avec titre et description accessible -->
+    <header role="banner">
+        <h1>Cartographie des Niveaux d'IA</h1>
+        <p id="description">Explorez les différents niveaux d'expertise et d'autonomie des intelligences artificielles. Utilisez le panneau latéral pour filtrer les dimensions et cliquez sur les points pour plus de détails.</p>
+    </header>
+
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Panneau latéral de filtrage -->
+        <aside role="complementary" aria-label="Filtres de visualisation">
+            <h2>Filtres</h2>
+            <fieldset>
+                <legend>Dimensions à afficher</legend>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="dimension" value="expertise" checked> Expertise</label>
+                    <label><input type="checkbox" name="dimension" value="autonomie" checked> Autonomie</label>
+                    <label><input type="checkbox" name="dimension" value="etat" checked> État en 2024</label>
+                </div>
+            </fieldset>
+            <button id="reset-filters" aria-label="Réinitialiser les filtres">Réinitialiser</button>
+        </aside>
+
+        <!-- Zone de visualisation -->
+        <main role="main" aria-labelledby="graph-title">
+            <h2 id="graph-title">Graphique Interactif des Niveaux d'IA</h2>
+            <div id="graph-container" role="region" aria-label="Graphique des niveaux d'IA" tabindex="0">
+                <!-- Le graphique D3.js sera inséré ici -->
+            </div>
+        </main>
+
+        <!-- Modale pour les détails (accessible) -->
+        <dialog id="details-modal" aria-labelledby="modal-title" aria-describedby="modal-description">
+            <h2 id="modal-title">Détails du niveau d'IA</h2>
+            <div id="modal-content">
+                <p id="modal-description">Chargement...</p>
+                <dl id="modal-details"></dl>
+            </div>
+            <button id="close-modal" aria-label="Fermer">×</button>
+        </dialog>
+    </div>
+
+    <!-- Pied de page avec mentions légales -->
+    <footer role="contentinfo">
+        <p>Visualisation conforme au <a href="https://accessibilite.numerique.gouv.fr/">RGAA 4.1</a>. Navigation clavier : utilisez Tab, Entrée et les flèches.</p>
+    </footer>
+</body>
+</html>

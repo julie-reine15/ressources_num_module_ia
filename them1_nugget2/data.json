@@ -1,0 +1,101 @@
+{
+  "levels": [
+    {
+      "id": "ani",
+      "name": "IA Étroite (ANI)",
+      "expertise": 1,
+      "autonomie": 1,
+      "etat": 0,
+      "description": "Spécialisée dans une tâche unique, sans apprentissage continu.",
+      "examples": ["DeepBlue", "Filtres anti-spam", "Siri (version basique)"],
+      "limitations": ["Incapable de s'adapter à de nouvelles tâches", "Pas de généralisation"],
+      "enjeux": ["Biais algorithmiques", "Dépendance aux données"],
+      "color": "#7726b1"
+    },
+    {
+      "id": "multi-task",
+      "name": "IA Multi-tâches",
+      "expertise": 2,
+      "autonomie": 2,
+      "etat": 1,
+      "description": "Combine plusieurs ANI dans un domaine (ex : assistant vocal + calendrier).",
+      "examples": ["Google Assistant", "Alexa avec routines", "Voitures autonomes (niveau 2-3)"],
+      "limitations": ["Pas de généralisation hors du domaine", "Dépendante des scénarios prédéfinis"],
+      "enjeux": ["Vie privée (écoute permanente)", "Sécurité"],
+      "color": "#9a77b1"
+    },
+    {
+      "id": "adaptive",
+      "name": "IA Adaptative",
+      "expertise": 3,
+      "autonomie": 3,
+      "etat": 2,
+      "description": "Apprend de nouvelles tâches dans un domaine restreint (par renforcement ou données).",
+      "examples": ["AlphaGo", "Robots industriels auto-programmables", "Recommandations Netflix"],
+      "limitations": ["Spécialisée (ex : AlphaGo ne joue qu'au go)", "Coûts énergétiques élevés"],
+      "enjeux": ["Boîte noire (difficile à expliquer)", "Impact environnemental"],
+      "color": "#bc57d4"
+    },
+    {
+      "id": "agentic",
+      "name": "IA Agentique",
+      "expertise": 4,
+      "autonomie": 4,
+      "etat": 3,
+      "description": "Agit de manière proactive pour atteindre des objectifs complexes, avec initiative et mémoire.",
+      "examples": ["AutoGPT", "Rabbit R1", "Agents de trading", "Devin AI"],
+      "limitations": ["Risque de boucles infinies", "Hallucinations (fausses informations)"],
+      "enjeux": ["Responsabilité juridique", "Alignement des objectifs"],
+      "color": "#dced59"
+    },
+    {
+      "id": "agi",
+      "name": "AGI",
+      "expertise": 5,
+      "autonomie": 5,
+      "etat": 4,
+      "description": "Niveau humain dans tous les domaines cognitifs (raisonnement, créativité, émotion).",
+      "examples": ["Hypothétique (projets comme DeepMind’s Gemini)", "OpenAI Q*"],
+      "limitations": ["Aucune implémentation concrète", "Débats sur la faisabilité"],
+      "enjeux": ["Contrôle et sécurité", "Risques existentiels"],
+      "color": "#a8c654"
+    },
+    {
+      "id": "asi",
+      "name": "ASI",
+      "expertise": 6,
+      "autonomie": 6,
+      "etat": 5,
+      "description": "Dépasse l'intelligence humaine dans tous les domaines, avec auto-amélioration récursive.",
+      "examples": ["Science-fiction (ex : Skynet, HAL 9000)"],
+      "limitations": ["Spéculatif", "Risques de perte de contrôle"],
+      "enjeux": ["Alignement des valeurs", "Régulation mondiale"],
+      "color": "#7726b1"
+    }
+  ],
+  "dimensions": {
+    "expertise": {
+      "label": "Niveau d'Expertise",
+      "min": 0,
+      "max": 6
+    },
+    "autonomie": {
+      "label": "Niveau d'Autonomie",
+      "min": 0,
+      "max": 6
+    },
+    "etat": {
+      "label": "État en 2024",
+      "min": 0,
+      "max": 5,
+      "labels": [
+        "Déployée massivement",
+        "Courante",
+        "Avancée",
+        "Émergente",
+        "Recherche",
+        "Théorique"
+      ]
+    }
+  }
+}
