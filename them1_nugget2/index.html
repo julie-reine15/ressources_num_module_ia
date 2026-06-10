@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Niveaux d'expertise de l'IA — Pyramide interactive</title>
+<title>Niveaux d'expertise de l'IA • Pyramide interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -13,7 +13,7 @@
 :root{
   --purple:#7726b1;--purple-dark:#5a1a87;--purple-light:#9b3fd4;
   --yellow:#dced59;--yellow-dark:#c2d630;--yellow-text:#3a4000;
-  --l1:#7726b1;--l2:#8f30b8;--l3:#a940b8;--l4:#c05ea0;--l5:#cba031;--l6:#dced59;
+  --l1:#7726b1;--l2:#8f30b8;--l3:#a940b8;--l3-5:#b740b0;--l4:#c05ea0;--l5:#cba031;--l6:#dced59;
   --bg:#0e0a17;--bg2:#16102a;
   --surface:rgba(255,255,255,0.04);--surface-hover:rgba(255,255,255,0.08);
   --border:rgba(255,255,255,0.10);--border-strong:rgba(255,255,255,0.22);
@@ -46,11 +46,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
   box-sizing:border-box;
 }
 .level[data-level="1"]{width:100%;height:60px;background:linear-gradient(90deg,#5a1a87 0%,var(--l1) 50%,#5a1a87 100%);clip-path:polygon(3% 0%,97% 0%,100% 100%,0% 100%)}
-.level[data-level="2"]{width:88%;height:58px;background:linear-gradient(90deg,#6c1e99 0%,var(--l2) 50%,#6c1e99 100%);clip-path:polygon(3.5% 0%,96.5% 0%,100% 100%,0% 100%)}
-.level[data-level="3"]{width:75%;height:56px;background:linear-gradient(90deg,#7d29a0 0%,var(--l3) 50%,#7d29a0 100%);clip-path:polygon(4% 0%,96% 0%,100% 100%,0% 100%)}
-.level[data-level="4"]{width:62%;height:54px;background:linear-gradient(90deg,#9c3a88 0%,var(--l4) 50%,#9c3a88 100%);clip-path:polygon(4.5% 0%,95.5% 0%,100% 100%,0% 100%)}
-.level[data-level="5"]{width:48%;height:52px;background:linear-gradient(90deg,#b08010 0%,var(--l5) 50%,#b08010 100%);clip-path:polygon(5% 0%,95% 0%,100% 100%,0% 100%)}
-.level[data-level="6"]{width:34%;height:50px;background:linear-gradient(90deg,#aabb10 0%,var(--l6) 50%,#aabb10 100%);clip-path:polygon(8% 0%,92% 0%,100% 100%,0% 100%);border-radius:6px 6px 4px 4px}
+.level[data-level="2"]{width:90%;height:58px;background:linear-gradient(90deg,#6c1e99 0%,var(--l2) 50%,#6c1e99 100%);clip-path:polygon(3.5% 0%,96.5% 0%,100% 100%,0% 100%)}
+.level[data-level="3"]{width:80%;height:56px;background:linear-gradient(90deg,#7d29a0 0%,var(--l3) 50%,#7d29a0 100%);clip-path:polygon(4% 0%,96% 0%,100% 100%,0% 100%)}
+.level[data-level="3.5"]{width:70%;height:55px;background:linear-gradient(90deg,#a83aac 0%,var(--l3-5) 50%,#a83aac 100%);clip-path:polygon(4.2% 0%,95.8% 0%,100% 100%,0% 100%)}
+.level[data-level="4"]{width:60%;height:54px;background:linear-gradient(90deg,#9c3a88 0%,var(--l4) 50%,#9c3a88 100%);clip-path:polygon(4.5% 0%,95.5% 0%,100% 100%,0% 100%)}
+.level[data-level="5"]{width:50%;height:52px;background:linear-gradient(90deg,#b08010 0%,var(--l5) 50%,#b08010 100%);clip-path:polygon(5% 0%,95% 0%,100% 100%,0% 100%)}
+.level[data-level="6"]{width:40%;height:50px;background:linear-gradient(90deg,#aabb10 0%,var(--l6) 50%,#aabb10 100%);clip-path:polygon(8% 0%,92% 0%,100% 100%,0% 100%);border-radius:6px 6px 4px 4px}
 
 .level:hover,.level:focus-visible{transform:translateY(-4px) scaleX(1.025);filter:brightness(1.18) saturate(1.15);z-index:10}
 .level:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;box-shadow:0 0 0 6px rgba(220,237,89,0.25)}
@@ -59,17 +60,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .level-shine{position:absolute;top:0;left:0;width:100%;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.14) 0%,transparent 100%);pointer-events:none}
 .level-inner{display:flex;align-items:center;gap:8px;padding:0 1rem;pointer-events:none;user-select:none}
 .level-icon{font-size:1.1rem;flex-shrink:0}
-.level-name{font-size:.82rem;font-weight:700;letter-spacing:.01em;white-space:nowrap}
-.level-type{font-size:.68rem;font-weight:500;opacity:.75;letter-spacing:.03em;white-space:nowrap}
+.level-name{font-family:var(--font); font-size:.82rem;font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.level-type{font-family:var(--font); font-size:.68rem;font-weight:500;opacity:.75;letter-spacing:.03em;white-space:nowrap}
 .level[data-level="6"] .level-name,.level[data-level="6"] .level-type,
 .level[data-level="5"] .level-name,.level[data-level="5"] .level-type{color:#2a2a00}
 .level[data-level="1"] .level-name,.level[data-level="2"] .level-name,
-.level[data-level="3"] .level-name,.level[data-level="4"] .level-name,
+.level[data-level="3"] .level-name,.level[data-level="3.5"] .level-name,.level[data-level="4"] .level-name,
 .level[data-level="1"] .level-type,.level[data-level="2"] .level-type,
-.level[data-level="3"] .level-type,.level[data-level="4"] .level-type{color:#f5eeff}
+.level[data-level="3"] .level-type,.level[data-level="3.5"] .level-type,.level[data-level="4"] .level-type{color:#f5eeff}
 
 /* AXIS */
-.autonomy-axis{display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:calc(6*60px + 5*4px);flex-shrink:0}
+.autonomy-axis{display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:calc(7*60px + 6*4px);flex-shrink:0}
 .axis-line{width:2px;flex:1;background:linear-gradient(180deg,var(--yellow) 0%,var(--purple) 100%);border-radius:2px;margin:6px 0}
 .axis-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
 .axis-label.axis-top{color:var(--yellow)}.axis-label.axis-bottom{color:var(--purple-light)}
@@ -130,6 +131,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .timeline-item[data-level="1"] .tl-dot{border-color:var(--l1)}.timeline-item[data-level="1"].tl-active .tl-dot{background:var(--l1)}
 .timeline-item[data-level="2"] .tl-dot{border-color:var(--l2)}.timeline-item[data-level="2"].tl-active .tl-dot{background:var(--l2)}
 .timeline-item[data-level="3"] .tl-dot{border-color:var(--l3)}.timeline-item[data-level="3"].tl-active .tl-dot{background:var(--l3)}
+.timeline-item[data-level="3.5"] .tl-dot{border-color:var(--l3-5)}.timeline-item[data-level="3.5"].tl-active .tl-dot{background:var(--l3-5)}
 .timeline-item[data-level="4"] .tl-dot{border-color:var(--l4)}.timeline-item[data-level="4"].tl-active .tl-dot{background:var(--l4)}
 .timeline-item[data-level="5"] .tl-dot{border-color:var(--l5)}.timeline-item[data-level="5"].tl-active .tl-dot{background:var(--l5)}
 .timeline-item[data-level="6"] .tl-dot{border-color:var(--l6)}.timeline-item[data-level="6"].tl-active .tl-dot{background:var(--l6)}
@@ -152,27 +154,51 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
     <div class="pyramid-scene">
       <div class="pyramid" id="pyramid">
         <button class="level" id="level-6" data-level="6" aria-label="Niveau 6 : ASI — Superintelligence" aria-pressed="false">
-          <div class="level-inner"><span class="level-icon" aria-hidden="true">🌌</span><span class="level-name">ASI</span><span class="level-type">Superintelligence</span></div>
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">🌌</span> -->
+            <span class="level-name">ASI</span><span class="level-type">Superintelligence</span></div>
           <div class="level-shine" aria-hidden="true"></div>
         </button>
         <button class="level" id="level-5" data-level="5" aria-label="Niveau 5 : AGI — Intelligence Générale" aria-pressed="false">
-          <div class="level-inner"><span class="level-icon" aria-hidden="true">🧠</span><span class="level-name">AGI</span><span class="level-type">Intelligence Générale</span></div>
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">🧠</span> -->
+            <span class="level-name">AGI</span><span class="level-type">Intelligence Générale</span>
+          </div>
           <div class="level-shine" aria-hidden="true"></div>
         </button>
         <button class="level" id="level-4" data-level="4" aria-label="Niveau 4 : IA Agentique — Autonome" aria-pressed="false">
-          <div class="level-inner"><span class="level-icon" aria-hidden="true">🤖</span><span class="level-name">IA Agentique</span><span class="level-type">Autonome</span></div>
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">🤖</span> -->
+            <span class="level-name">IA Agentique</span><span class="level-type">Autonome</span>
+          </div>
+          <div class="level-shine" aria-hidden="true"></div>
+        </button>
+        <button class="level" id="level-3.5" data-level="3.5" aria-label="Niveau 3.5 : LLMs — Générative" aria-pressed="false">
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">💬</span> -->
+            <span class="level-name">LLMs</span><span class="level-type">Générative</span>
+          </div>
           <div class="level-shine" aria-hidden="true"></div>
         </button>
         <button class="level" id="level-3" data-level="3" aria-label="Niveau 3 : IA Adaptative — Apprentissage" aria-pressed="false">
-          <div class="level-inner"><span class="level-icon" aria-hidden="true">⚙️</span><span class="level-name">IA Adaptative</span><span class="level-type">Apprentissage</span></div>
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
+            <span class="level-name">IA Adaptative</span><span class="level-type">Apprentissage</span>
+          </div>
           <div class="level-shine" aria-hidden="true"></div>
         </button>
         <button class="level" id="level-2" data-level="2" aria-label="Niveau 2 : IA Multi-tâches — Intégrative" aria-pressed="false">
-          <div class="level-inner"><span class="level-icon" aria-hidden="true">⚙️</span><span class="level-name">IA Multi-tâches</span><span class="level-type">Intégrative</span></div>
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
+            <span class="level-name">IA Multi-tâches</span><span class="level-type">Intégrative</span>
+          </div>
           <div class="level-shine" aria-hidden="true"></div>
         </button>
         <button class="level" id="level-1" data-level="1" aria-label="Niveau 1 : IA Étroite — Réactive" aria-pressed="false">
-          <div class="level-inner"><span class="level-icon" aria-hidden="true">⚙️</span><span class="level-name">IA Étroite (ANI)</span><span class="level-type">Réactive</span></div>
+          <div class="level-inner">
+            <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
+            <span class="level-name">IA Étroite (ANI)</span><span class="level-type">Réactive</span>
+          </div>
           <div class="level-shine" aria-hidden="true"></div>
         </button>
       </div>
@@ -201,6 +227,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
       <div class="timeline-connector" aria-hidden="true"></div>
       <div class="timeline-item" data-level="3" role="listitem" tabindex="0" aria-label="IA Adaptative — Années 2010"><div class="tl-dot"></div><div class="tl-content"><strong>Années 2010</strong><span>IA Adaptative</span><em>Avancée — AlphaGo, robots</em></div></div>
       <div class="timeline-connector" aria-hidden="true"></div>
+      <div class="timeline-item" data-level="3.5" role="listitem" tabindex="0" aria-label="LLMs — Années 2020+"><div class="tl-dot"></div><div class="tl-content"><strong>Années 2020+</strong><span>LLMs</span><em>Déployée massivement — ChatGPT</em></div></div>
+      <div class="timeline-connector" aria-hidden="true"></div>
       <div class="timeline-item" data-level="4" role="listitem" tabindex="0" aria-label="IA Agentique — Années 2020"><div class="tl-dot"></div><div class="tl-content"><strong>Années 2020</strong><span>IA Agentique</span><em>Émergente — AutoGPT</em></div></div>
       <div class="timeline-connector" aria-hidden="true"></div>
       <div class="timeline-item" data-level="5" role="listitem" tabindex="0" aria-label="AGI — En recherche"><div class="tl-dot"></div><div class="tl-content"><strong>Recherche</strong><span>AGI</span><em>Pas de consensus</em></div></div>
@@ -214,11 +242,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 
 <script>
 const DATA={
-  1:{name:"IA Étroite (ANI)",type:"Réactive",icon:"⚙️",def:"Spécialisée dans une tâche unique, sans apprentissage continu. Elle exécute des règles prédéfinies de manière déterministe, sans conscience ni compréhension du contexte.",autoLabel:"Faible",autoVal:10,autoDesc:"Outil passif — nécessite une intervention humaine constante",cap:"Exécution de règles prédéfinies",lim:"Incapable de s'adapter à de nouvelles tâches",ex:["DeepBlue","Filtres anti-spam","Siri (basique)","Calculatrices"],eth:"Biais algorithmiques, dépendance aux données d'entraînement.",statut:"Déployée massivement",sColor:"#22c55e",sBg:"rgba(34,197,94,0.15)",per:"Années 1950",col:"#7726b1",txtCol:"#f5eeff"},
-  2:{name:"IA Multi-tâches",type:"Intégrative",icon:"⚙️",def:"Combine plusieurs IA étroites dans un même domaine. Elle intègre des services distincts pour offrir une expérience cohérente, mais reste confinée à des scénarios prédéfinis.",autoLabel:"Limitée",autoVal:24,autoDesc:"Scénarios prédéfinis — combinaison d'outils sans vraie généralisation",cap:"Intégration de services, automatisation simple",lim:"Pas de généralisation hors du domaine configuré",ex:["Google Assistant","Alexa + routines","Voitures autonomes niv. 2-3"],eth:"Vie privée (écoute permanente), risques de sécurité.",statut:"Courante",sColor:"#3b82f6",sBg:"rgba(59,130,246,0.15)",per:"Années 2000",col:"#8f30b8",txtCol:"#f5eeff"},
-  3:{name:"IA Adaptative",type:"Apprentissage",icon:"⚙️",def:"Apprend de nouvelles tâches dans un domaine restreint grâce au renforcement ou aux données. Elle optimise ses performances au fil du temps, mais reste spécialisée.",autoLabel:"Moyenne",autoVal:44,autoDesc:"Ajustements locaux — apprend mais dans un périmètre défini",cap:"Apprentissage par renforcement, optimisation continue",lim:"Spécialisée : AlphaGo ne joue qu'au go",ex:["AlphaGo","Robots industriels auto-prog.","Recommandations Netflix"],eth:"Boîte noire (opacité), coûts énergétiques élevés.",statut:"Avancée",sColor:"#8b5cf6",sBg:"rgba(139,92,246,0.15)",per:"Années 2010",col:"#a940b8",txtCol:"#f5eeff"},
-  4:{name:"IA Agentique",type:"Autonome",icon:"🤖",def:"Agit de manière proactive pour atteindre des objectifs complexes, avec initiative et mémoire à long terme. Elle planifie, interagit avec son environnement et s'adapte en temps réel.",autoLabel:"Élevée",autoVal:66,autoDesc:"Prise de décision autonome — agit seule dans un cadre défini",cap:"Planification, mémoire à long terme, interaction environnement",lim:"Risque de boucles infinies ou d'hallucinations",ex:["AutoGPT","Rabbit R1","Agents de trading","Devin AI","Robots Amazon"],eth:"Responsabilité (qui répond d'une erreur ?), alignement des objectifs.",statut:"Émergente",sColor:"#f59e0b",sBg:"rgba(245,158,11,0.15)",per:"Années 2020",col:"#c05ea0",txtCol:"#f5eeff"},
-  5:{name:"AGI",type:"Intelligence Générale",icon:"🧠",def:"Atteint le niveau humain dans tous les domaines cognitifs : raisonnement, créativité, compréhension émotionnelle. Hypothétique à ce jour, elle représente le seuil symbolique de l'IA « humaine ».",autoLabel:"Très élevée",autoVal:84,autoDesc:"Quasi-autonomie — raisonnement et transfert de connaissances généralisé",cap:"Raisonnement abstrait, transfert de connaissances, compréhension contextuelle",lim:"Aucune implémentation concrète validée",ex:["Hypothétique","DeepMind Gemini (recherche)","OpenAI Q* (rumeurs)"],eth:"Contrôle, risques existentiels, droits des machines.",statut:"Recherche",sColor:"#a78bfa",sBg:"rgba(167,139,250,0.15)",per:"Non définie",col:"#cba031",txtCol:"#2a2a00"},
+  1:{name:"IA Étroite (ANI)",type:"Réactive",icon:"⚙️",def:"Spécialisée dans une tâche unique, sans apprentissage continu. Elle exécute des règles prédéfinies de manière déterministe, sans conscience ni compréhension du contexte.",autoLabel:"Faible",autoVal:10,autoDesc:"Outil passif : nécessite une intervention humaine constante",cap:"Exécution de règles prédéfinies",lim:"Incapable de s'adapter à de nouvelles tâches",ex:["DeepBlue","Filtres anti-spam","Siri (basique)","Calculatrices"],eth:"Biais algorithmiques, dépendance aux données d'entraînement.",statut:"Déployée massivement",sColor:"#22c55e",sBg:"rgba(34,197,94,0.15)",per:"Années 1950",col:"#7726b1",txtCol:"#f5eeff"},
+  2:{name:"IA Multi-tâches",type:"Intégrative",icon:"⚙️",def:"Combine plusieurs IA étroites dans un même domaine. Elle intègre des services distincts pour offrir une expérience cohérente, mais reste confinée à des scénarios prédéfinis.",autoLabel:"Limitée",autoVal:24,autoDesc:"Scénarios prédéfinis, combinaison d'outils sans vraie généralisation",cap:"Intégration de services, automatisation simple",lim:"Pas de généralisation hors du domaine configuré",ex:["Google Assistant","Alexa + routines","Voitures autonomes niv. 2-3"],eth:"Vie privée (écoute permanente), risques de sécurité.",statut:"Courante",sColor:"#3b82f6",sBg:"rgba(59,130,246,0.15)",per:"Années 2000",col:"#8f30b8",txtCol:"#f5eeff"},
+  3:{name:"IA Adaptative",type:"Apprentissage",icon:"⚙️",def:"Apprend de nouvelles tâches dans un domaine restreint grâce au renforcement ou aux données. Elle optimise ses performances au fil du temps, mais reste spécialisée.",autoLabel:"Moyenne",autoVal:44,autoDesc:"Ajustements locaux : apprend mais dans un périmètre défini",cap:"Apprentissage par renforcement, optimisation continue",lim:"Spécialisée : AlphaGo ne joue qu'au go",ex:["AlphaGo","Robots industriels auto-prog.","Recommandations Netflix"],eth:"Boîte noire (opacité), coûts énergétiques élevés.",statut:"Avancée",sColor:"#8b5cf6",sBg:"rgba(139,92,246,0.15)",per:"Années 2010",col:"#a940b8",txtCol:"#f5eeff"},
+  3.5:{name:"LLMs",type:"Générative",icon:"💬",def:"Génère du contenu (texte, code, images) dans divers domaines sans mémoire persistante, en s'appuyant sur des patterns appris. Répond de manière contextuelle mais sans initiative propre.",autoLabel:"Moyenne-Élevée",autoVal:54,autoDesc:"Génération contextuelle : répond de manière versatile mais sans initiative",cap:"Génération multimodale, adaptation à des tâches variées, simulation de raisonnement",lim:"Hallucinations, absence de mémoire, dépendance aux données d'entraînement, boîte noire",ex:["ChatGPT","Claude","MidJourney (image)", "Le Chat", "Gemini", "Banana Pro (vidéo)"],eth:"Désinformation, biais, impacts écologiques et sociétaux, plagiat, régulation.",statut:"Déployée massivement",sColor:"#ec4899",sBg:"rgba(236,72,153,0.15)",per:"Années 2020+",col:"#b740b0",txtCol:"#f5eeff"},
+  4:{name:"IA Agentique",type:"Autonome",icon:"🤖",def:"Agit de manière proactive pour atteindre des objectifs complexes, avec initiative et mémoire à long terme. Elle planifie, interagit avec son environnement et s'adapte en temps réel.",autoLabel:"Élevée",autoVal:66,autoDesc:"Prise de décision autonome : agit seule dans un cadre défini",cap:"Planification, mémoire à long terme, interaction environnement",lim:"Risque de boucles infinies ou d'hallucinations",ex:["AutoGPT","Rabbit R1","Agents de trading","Devin AI","Robots Amazon"],eth:"Responsabilité (qui répond d'une erreur ?), alignement des objectifs.",statut:"Émergente",sColor:"#f59e0b",sBg:"rgba(245,158,11,0.15)",per:"Années 2020",col:"#c05ea0",txtCol:"#f5eeff"},
+  5:{name:"AGI",type:"Intelligence Générale",icon:"🧠",def:"Atteint le niveau humain dans tous les domaines cognitifs : raisonnement, créativité, compréhension émotionnelle. Hypothétique à ce jour, elle représente le seuil symbolique de l'IA « humaine ».",autoLabel:"Très élevée",autoVal:84,autoDesc:"Quasi-autonomie : raisonnement et transfert de connaissances généralisé",cap:"Raisonnement abstrait, transfert de connaissances, compréhension contextuelle",lim:"Aucune implémentation concrète validée",ex:["Hypothétique","DeepMind Gemini (recherche)","OpenAI Q* (rumeurs)"],eth:"Contrôle, risques existentiels, droits des machines.",statut:"Recherche",sColor:"#a78bfa",sBg:"rgba(167,139,250,0.15)",per:"Non définie",col:"#cba031",txtCol:"#2a2a00"},
   6:{name:"ASI",type:"Superintelligence",icon:"🌌",def:"Dépasse l'intelligence humaine dans tous les domaines avec auto-amélioration récursive. Concept actuellement de l'ordre de la science-fiction, mais au centre des débats sur l'avenir à long terme de l'IA.",autoLabel:"Totale (théorique)",autoVal:100,autoDesc:"Auto-détermination — objectifs définis de manière autonome",cap:"Créativité illimitée, objectifs auto-définis, auto-amélioration",lim:"Spéculatif — risques de perte de contrôle total",ex:["Science-fiction","Skynet (fiction)","HAL 9000 (fiction)"],eth:"Alignement des valeurs, régulation mondiale, survie de l'humanité.",statut:"Théorique",sColor:"#dced59",sBg:"rgba(220,237,89,0.15)",per:"Indéterminée",col:"#dced59",txtCol:"#2a2a00"}
 };
 
@@ -283,8 +312,10 @@ document.addEventListener('keydown',e=>{
   const focused=document.activeElement;
   if(!focused?.closest('.pyramid')&&!focused?.closest('.detail-panel')&&active===null)return;
   e.preventDefault();
-  const cur=active||1;
-  const next=e.key==='ArrowUp'?Math.min(6,cur+1):Math.max(1,cur-1);
+  const LEVELS=[1,2,3,3.5,4,5,6];
+  const curIdx=LEVELS.indexOf(active||1);
+  const nextIdx=e.key==='ArrowUp'?Math.min(LEVELS.length-1,curIdx+1):Math.max(0,curIdx-1);
+  const next=LEVELS[nextIdx];
   select(next,false);
   document.getElementById('level-'+next)?.focus();
 });
