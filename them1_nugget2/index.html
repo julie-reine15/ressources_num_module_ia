@@ -3,56 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niveaux d'Expertise et d'Autonomie des IA</title>
+    <title>Niveaux d'IA | Visualisation Interactive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
-    <!-- En-tête avec titre et description accessible -->
-    <header role="banner">
-        <h1>Cartographie des Niveaux d'IA</h1>
-        <p id="description">Explorez les différents niveaux d'expertise et d'autonomie des intelligences artificielles. Utilisez le panneau latéral pour filtrer les dimensions et cliquez sur les points pour plus de détails.</p>
-    </header>
+    <div class="app-container">
+        <!-- En-tête avec gradient -->
+        <header class="header">
+            <h1><i class="fas fa-robot"></i> Cartographie des IA</h1>
+            <p class="subtitle">Explorez les niveaux d'expertise et d'autonomie des intelligences artificielles</p>
+        </header>
 
-    <!-- Conteneur principal -->
-    <div class="container">
-        <!-- Panneau latéral de filtrage -->
-        <aside role="complementary" aria-label="Filtres de visualisation">
-            <h2>Filtres</h2>
-            <fieldset>
-                <legend>Dimensions à afficher</legend>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="dimension" value="expertise" checked> Expertise</label>
-                    <label><input type="checkbox" name="dimension" value="autonomie" checked> Autonomie</label>
-                    <label><input type="checkbox" name="dimension" value="etat" checked> État en 2024</label>
+        <div class="main-content">
+            <!-- Panneau latéral modernisé -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2><i class="fas fa-sliders-h"></i> Filtres</h2>
                 </div>
-            </fieldset>
-            <button id="reset-filters" aria-label="Réinitialiser les filtres">Réinitialiser</button>
-        </aside>
+                <div class="filter-group">
+                    <div class="filter-item">
+                        <label>
+                            <input type="checkbox" name="dimension" value="expertise" checked>
+                            <span class="toggle"></span>
+                            <span class="label-text">Expertise</span>
+                        </label>
+                    </div>
+                    <div class="filter-item">
+                        <label>
+                            <input type="checkbox" name="dimension" value="autonomie" checked>
+                            <span class="toggle"></span>
+                            <span class="label-text">Autonomie</span>
+                        </label>
+                    </div>
+                    <div class="filter-item">
+                        <label>
+                            <input type="checkbox" name="dimension" value="etat" checked>
+                            <span class="toggle"></span>
+                            <span class="label-text">État (2024)</span>
+                        </label>
+                    </div>
+                </div>
+                <button id="reset-filters" class="btn-reset">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </button>
+            </aside>
 
-        <!-- Zone de visualisation -->
-        <main role="main" aria-labelledby="graph-title">
-            <h2 id="graph-title">Graphique Interactif des Niveaux d'IA</h2>
-            <div id="graph-container" role="region" aria-label="Graphique des niveaux d'IA" tabindex="0">
-                <!-- Le graphique D3.js sera inséré ici -->
-            </div>
-        </main>
+            <!-- Zone de visualisation -->
+            <main class="graph-container">
+                <div class="graph-header">
+                    <h2>Niveaux d'Expertise vs Autonomie</h2>
+                    <div class="graph-legend"></div>
+                </div>
+                <div id="graph" role="region" aria-label="Graphique interactif des niveaux d'IA" tabindex="0"></div>
+            </main>
+        </div>
 
-        <!-- Modale pour les détails (accessible) -->
-        <dialog id="details-modal" aria-labelledby="modal-title" aria-describedby="modal-description">
-            <h2 id="modal-title">Détails du niveau d'IA</h2>
-            <div id="modal-content">
-                <p id="modal-description">Chargement...</p>
-                <dl id="modal-details"></dl>
+        <!-- Tooltip (remplace la modale) -->
+        <div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true">
+            <div class="tooltip-header">
+                <h3 id="tooltip-title"></h3>
+                <span id="tooltip-subtitle"></span>
             </div>
-            <button id="close-modal" aria-label="Fermer">×</button>
-        </dialog>
+            <div class="tooltip-content">
+                <p id="tooltip-description"></p>
+                <div class="tooltip-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Exemples:</span>
+                        <span class="detail-value" id="tooltip-examples"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Limitations:</span>
+                        <span class="detail-value" id="tooltip-limitations"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Enjeux:</span>
+                        <span class="detail-value" id="tooltip-enjeux"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Pied de page avec mentions légales -->
-    <footer role="contentinfo">
-        <p>Visualisation conforme au <a href="https://accessibilite.numerique.gouv.fr/">RGAA 4.1</a>. Navigation clavier : utilisez Tab, Entrée et les flèches.</p>
-    </footer>
 </body>
 </html>
