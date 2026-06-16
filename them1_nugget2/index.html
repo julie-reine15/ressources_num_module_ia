@@ -1,229 +1,820 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Niveaux d'expertise de l'IA • Pyramide interactive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-:root{
-  --purple:#7726b1;--purple-dark:#5a1a87;--purple-light:#9b3fd4;
-  --yellow:#d4a51d;--yellow-dark:#8b6f13;--yellow-text:#1a1a1a;
-  --l1:#7726b1;--l2:#8f30b8;--l3:#a940b8;--l3-5:#b740b0;--l4:#c05ea0;--l5:#d4a51d;--l6:#d4a51d;
-  --bg:#ffffff;--bg2:#f8f8f8;
-  --surface:rgba(0,0,0,0.02);--surface-hover:rgba(0,0,0,0.05);
-  --border:rgba(0,0,0,0.15);--border-strong:rgba(0,0,0,0.25);
-  --text-primary:#1a1a1a;--text-secondary:rgba(26,26,26,0.75);--text-muted:rgba(26,26,26,0.55);
-  --font:'Montserrat',sans-serif;--radius:8px;--radius-lg:14px;
-}
-html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
-.page-wrapper{max-width:1400px;margin:0 auto;padding:1rem 1.5rem 1rem}
-.page-header{text-align:center;margin-bottom:1rem}
-.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#8f30b8;margin-bottom:.5rem;opacity:1}
-.page-header h1{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#5a1a87 0%,#8f30b8 60%,#c05ea0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15;margin-bottom:.3rem}
-.page-header .subtitle{font-size:.75rem;color:var(--text-secondary)}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Niveaux d'expertise de l'IA • Pyramide interactive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      :root {
+        --purple: #7726b1;
+        --purple-dark: #5a1a87;
+        --purple-light: #9b3fd4;
+        --yellow: #d4a51d;
+        --yellow-dark: #8b6f13;
+        --yellow-text: #1a1a1a;
+        --l1: #7726b1;
+        --l2: #8f30b8;
+        --l3: #a940b8;
+        --l3-5: #b740b0;
+        --l4: #c05ea0;
+        --l5: #d4a51d;
+        --l6: #d4a51d;
+        --bg: #ffffff;
+        --bg2: #f8f8f8;
+        --surface: rgba(0, 0, 0, 0.02);
+        --surface-hover: rgba(0, 0, 0, 0.05);
+        --border: rgba(0, 0, 0, 0.15);
+        --border-strong: rgba(0, 0, 0, 0.25);
+        --text-primary: #1a1a1a;
+        --text-secondary: rgba(26, 26, 26, 0.75);
+        --text-muted: rgba(26, 26, 26, 0.55);
+        --font: "Montserrat", sans-serif;
+        --radius: 8px;
+        --radius-lg: 14px;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .page-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem 1rem;
+      }
+      .page-header {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .eyebrow {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #8f30b8;
+        margin-bottom: 0.5rem;
+        opacity: 1;
+      }
+      .page-header h1 {
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(
+          135deg,
+          #5a1a87 0%,
+          #8f30b8 60%,
+          #c05ea0 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.15;
+        margin-bottom: 0.3rem;
+      }
+      .page-header .subtitle {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
 
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:2fr 1fr;gap:1.8rem;align-items:start;margin-bottom:1rem}
-@media(max-width:780px){.layout{grid-template-columns:1fr}}
+      /* LAYOUT */
+      .layout {
+        display: grid;
+        grid-template-columns: 1.5fr 1.5fr;
+        gap: 1.8rem;
+        align-items: start;
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 780px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
 
-/* PYRAMID SCENE */
-.pyramid-scene{display:flex;justify-content:center;align-items:flex-start;gap:1.5rem;padding:1rem 0;width:100%}
-.pyramid{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0}
+      /* PYRAMID SCENE */
+      .pyramid-scene {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        width: 100%;
+      }
+      .pyramid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        flex: 1;
+        min-width: 0;
+      }
 
-/* LEVELS */
-.level{
-  position:relative;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;border:none;border-radius:6px;overflow:hidden;
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .22s ease,box-shadow .22s ease;
-  transform-origin:center bottom;outline:none;
-  /* CRITIQUE : width explicite pour éviter l'effondrement dans un iframe */
-  box-sizing:border-box;
-}
-.level[data-level="1"]{width:100%;height:55px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(3% 0%,97% 0%,100% 100%,0% 100%)}
-.level[data-level="2"]{width:90%;height:53px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(3.5% 0%,96.5% 0%,100% 100%,0% 100%)}
-.level[data-level="3"]{width:80%;height:51px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(4% 0%,96% 0%,100% 100%,0% 100%)}
-.level[data-level="3.5"]{width:70%;height:49px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(4.2% 0%,95.8% 0%,100% 100%,0% 100%)}
-.level[data-level="4"]{width:60%;height:47px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(4.5% 0%,95.5% 0%,100% 100%,0% 100%)}
-.level[data-level="5"]{width:50%;height:45px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(5% 0%,95% 0%,100% 100%,0% 100%)}
-.level[data-level="6"]{width:40%;height:43px;background:linear-gradient(90deg,#5a1a87 0%,var(--l2) 50%,#5a1a87 100%);clip-path:polygon(8% 0%,92% 0%,100% 100%,0% 100%);border-radius:6px 6px 4px 4px}
+      /* LEVELS */
+      .level {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: none;
+        border-radius: 6px;
+        overflow: hidden;
+        transition:
+          transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+          filter 0.22s ease,
+          box-shadow 0.22s ease;
+        transform-origin: center bottom;
+        outline: none;
+        /* CRITIQUE : width explicite pour éviter l'effondrement dans un iframe */
+        box-sizing: border-box;
+      }
 
-.level:hover,.level:focus-visible{transform:translateY(-4px) scaleX(1.025);filter:brightness(1.18) saturate(1.15);z-index:10}
-.level:focus-visible{outline:3px solid #7726b1;outline-offset:3px;box-shadow:0 0 0 6px rgba(119,38,177,0.15)}
-.level[aria-pressed="true"]{transform:translateY(-6px) scaleX(1.03);filter:brightness(0.9) saturate(1.2);z-index:11;box-shadow:0 8px 32px rgba(119,38,177,0.15),0 2px 8px rgba(0,0,0,0.2)}
+      .level[data-level="1"] {
+        width: 100%;
+        height: 150px;
+        background: linear-gradient(
+          90deg,
+          #5a1a87 0%,
+          var(--l2) 50%,
+          #5a1a87 100%
+        );
+        clip-path: polygon(14% 32%, 86% 32%, 96% 100%, 4% 100%);
+        margin: -45px auto 0;
+      }
 
-.level-shine{position:absolute;top:0;left:0;width:100%;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.3) 0%,transparent 100%);pointer-events:none}
-.level-inner{display:flex;align-items:center;gap:8px;padding:0 1rem;pointer-events:none;user-select:none}
-.level-icon{font-size:1.1rem;flex-shrink:0}
-.level-name{font-family:var(--font); font-size:1rem;font-weight:700;letter-spacing:.01em;white-space:nowrap}
-.level-type{font-family:var(--font); font-size:.85rem;font-weight:500;opacity:.75;letter-spacing:.03em;white-space:nowrap}
-.level[data-level="6"] .level-name,.level[data-level="6"] .level-type,
-.level[data-level="5"] .level-name,.level[data-level="5"] .level-type{color:#ffffff}
-.level[data-level="1"] .level-name,.level[data-level="2"] .level-name,
-.level[data-level="3"] .level-name,.level[data-level="3.5"] .level-name,.level[data-level="4"] .level-name,
-.level[data-level="1"] .level-type,.level[data-level="2"] .level-type,
-.level[data-level="3"] .level-type,.level[data-level="3.5"] .level-type,.level[data-level="4"] .level-type{color:#ffffff}
+      .level[data-level="2"] {
+        width: 85%;
+        height: 150px;
+        background: linear-gradient(
+          90deg,
+          #5a1a87 0%,
+          var(--l2) 50%,
+          #5a1a87 100%
+        );
+        clip-path: polygon(20% 37%, 80% 37%, 90% 94%, 10% 94%);
+        margin: -45.5px auto 0;
+      }
 
-/* AXIS */
-.autonomy-axis{display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:calc(7*55px + 6*3px);flex-shrink:0}
-.axis-line{width:2px;flex:1;background:linear-gradient(180deg,var(--yellow) 0%,var(--purple) 100%);border-radius:2px;margin:6px 0}
-.axis-label{font-size:0.9rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
-.axis-label.axis-top{color:var(--purple-dark)}.axis-label.axis-bottom{color:var(--purple-dark)}
+      .level[data-level="3"] {
+        width: 120%;
+        height: 150px;
+        background: linear-gradient(
+          90deg,
+          #5a1a87 0%,
+          var(--l2) 50%,
+          #5a1a87 100%
+        );
+        clip-path: polygon(50% 0%, 30% 100%, 70% 100%);
+      }
 
-/* DETAIL PANEL */
-.detail-panel{min-height:300px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:sticky;top:0.5rem;transition:border-color .3s ease}
-.detail-panel.active{border-color:var(--border-strong)}
-.panel-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:0.75rem;color:var(--text-muted);text-align:center;padding:1rem}
-.panel-placeholder[hidden]{display:none}
-.placeholder-icon{font-size:2.5rem;color:#c05ea0;opacity:.4}
-.panel-placeholder p{font-size:.85rem;line-height:1.7}
-.panel-content{animation:panelIn .28s cubic-bezier(.34,1.2,.64,1)}
-.panel-content[hidden]{display:none}
-@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@media(prefers-reduced-motion:reduce){.panel-content{animation:none}.level,.detail-panel,.autonomy-fill{transition:none!important}}
+      .level:hover,
+      .level:focus-visible {
+        transform: translateY(-4px) scaleX(1.025);
+        filter: brightness(1.18) saturate(1.15);
+        z-index: 10;
+      }
+      .level:focus-visible {
+        outline: 3px solid #7726b1;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 6px rgba(119, 38, 177, 0.15);
+      }
+      .level[aria-pressed="true"] {
+        transform: translateY(-6px) scaleX(1.03);
+        filter: brightness(0.9) saturate(1.2);
+        z-index: 11;
+        box-shadow:
+          0 8px 32px rgba(119, 38, 177, 0.15),
+          0 2px 8px rgba(0, 0, 0, 0.2);
+      }
 
-.panel-header{padding:0.75rem 1rem 0.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.panel-level-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:.7rem;font-weight:800;flex-shrink:0}
-.panel-icon-big{font-size:1.5rem;flex-shrink:0}
-.panel-title-group{flex:1;min-width:0}
-.panel-level-name{font-size:1.05rem;font-weight:700;line-height:1.2;color:var(--text-primary)}
-.panel-level-type{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-top:2px}
-.panel-status-badge{font-size:.62rem;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+      .level-shine {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40%;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.3) 0%,
+          transparent 100%
+        );
+        pointer-events: none;
+      }
+      .level-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+        user-select: none;
+        width: min(100%, calc(100% - 1rem));
+        max-width: 90%;
+        text-align: center;
+        padding: 0 0.5rem;
+      }
+      .level[data-level="1"] .level-inner {
+        top: 60%;
+      }
+      .level[data-level="2"] .level-inner {
+        top: 65%;
+      }
+      .level[data-level="3"] .level-inner {
+        top: 60%; /* Exemple : décalez vers le bas */
+      }
+      .level-icon {
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+      .level-name {
+        font-family: var(--font);
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+      }
+      .level-type {
+        font-family: var(--font);
+        font-size: 0.85rem;
+        font-weight: 500;
+        opacity: 0.75;
+        letter-spacing: 0.03em;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-width: 70%;
+        line-height: 1.2;
+      }
+      .level[data-level="6"] .level-name,
+      .level[data-level="6"] .level-type,
+      .level[data-level="5"] .level-name,
+      .level[data-level="5"] .level-type {
+        color: #ffffff;
+      }
+      .level[data-level="1"] .level-name,
+      .level[data-level="2"] .level-name,
+      .level[data-level="3"] .level-name,
+      .level[data-level="3.5"] .level-name,
+      .level[data-level="4"] .level-name,
+      .level[data-level="1"] .level-type,
+      .level[data-level="2"] .level-type,
+      .level[data-level="3"] .level-type,
+      .level[data-level="3.5"] .level-type,
+      .level[data-level="4"] .level-type {
+        color: #ffffff;
+      }
 
-.autonomy-bar-wrap{padding:0.5rem 1rem 0;display:flex;align-items:center;gap:.5rem}
-.autonomy-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);flex-shrink:0;width:70px}
-.autonomy-track{flex:1;height:6px;background:rgba(0,0,0,0.1);border-radius:3px;overflow:hidden}
-.autonomy-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.34,1.2,.64,1);width:0}
-.autonomy-value{font-size:.7rem;font-weight:700;flex-shrink:0;width:48px;text-align:right}
+      /* AXIS */
+      .autonomy-axis {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        height: calc(7 * 55px + 6 * 3px);
+        flex-shrink: 0;
+      }
+      .axis-line {
+        width: 2px;
+        flex: 1;
+        background: linear-gradient(
+          180deg,
+          var(--yellow) 0%,
+          var(--purple) 100%
+        );
+        border-radius: 2px;
+        margin: 6px 0;
+      }
+      .axis-label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-align: center;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        white-space: nowrap;
+      }
+      .axis-label.axis-top {
+        color: var(--purple-dark);
+      }
+      .axis-label.axis-bottom {
+        color: var(--purple-dark);
+      }
 
-.panel-body{padding:0.75rem 1rem 1rem;display:flex;flex-direction:column;gap:0.6rem}
-.panel-definition{font-size:.76rem;font-weight:500;color:var(--text-primary);line-height:1.5}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-.info-card{background:rgba(0,0,0,0.02);border:1px solid rgba(0,0,0,0.1);border-radius:var(--radius);padding:.65rem .75rem}
-.info-card-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);margin-bottom:.3rem}
-.info-card-value{font-size:.76rem;font-weight:500;color:var(--text-primary);line-height:1.5}
-.info-card-value.highlight{font-weight:700}
-.examples-title{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);margin-bottom:.45rem}
-.examples-chips{display:flex;flex-wrap:wrap;gap:.4rem}
-.example-chip{font-size:.7rem;font-weight:500;padding:4px 10px;border-radius:20px;background:rgba(0,0,0,0.05);border:1px solid rgba(0,0,0,0.15);color:var(--text-secondary);white-space:nowrap}
-.ethics-row{display:flex;gap:.5rem;align-items:flex-start;padding:.6rem .75rem;background:rgba(212,165,29,0.08);border:1px solid rgba(212,165,29,0.25);border-radius:var(--radius)}
-.ethics-icon{font-size:.9rem;flex-shrink:0;margin-top:1px}
-.ethics-text{font-size:.72rem;color:var(--text-secondary);line-height:1.55}
+      /* DETAIL PANEL */
+      .detail-panel {
+        min-height: 300px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        position: sticky;
+        top: 0.5rem;
+        transition: border-color 0.3s ease;
+      }
+      .detail-panel.active {
+        border-color: var(--border-strong);
+      }
+      .panel-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+        gap: 0.75rem;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 1rem;
+      }
+      .panel-placeholder[hidden] {
+        display: none;
+      }
+      .placeholder-icon {
+        font-size: 2.5rem;
+        color: #c05ea0;
+        opacity: 0.4;
+      }
+      .panel-placeholder p {
+        font-size: 0.85rem;
+        line-height: 1.7;
+      }
+      .panel-content {
+        animation: panelIn 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+      .panel-content[hidden] {
+        display: none;
+      }
+      @keyframes panelIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .panel-content {
+          animation: none;
+        }
+        .level,
+        .detail-panel,
+        .autonomy-fill {
+          transition: none !important;
+        }
+      }
 
-/* TIMELINE */
-.timeline-section{margin-top:0.5rem;padding-top:1rem;border-top:1px solid var(--border)}
-.section-title{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem}
-.timeline{display:flex;align-items:flex-start;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-.timeline-item{display:flex;flex-direction:column;align-items:center;gap:.5rem;flex:1;min-width:110px;cursor:pointer;padding:.4rem .5rem;border-radius:var(--radius);transition:background .2s;tabindex:0}
-.timeline-item:hover,.timeline-item.tl-active{background:var(--surface-hover)}
-.tl-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border-strong);background:#ffffff;transition:transform .2s,background .2s;flex-shrink:0}
-.timeline-item:hover .tl-dot,.timeline-item.tl-active .tl-dot{transform:scale(1.3)}
-.tl-content{text-align:center;display:flex;flex-direction:column;gap:2px}
-.tl-content strong{font-size:.72rem;font-weight:700;color:var(--text-primary)}
-.tl-content span{font-size:.68rem;font-weight:600;color:var(--text-secondary)}
-.tl-content em{font-size:.62rem;font-style:normal;color:var(--text-muted)}
-.timeline-connector{width:2px;height:14px;background:var(--border);margin-top:6px;flex-shrink:0;border-radius:1px}
-.timeline-item[data-level="1"] .tl-dot{border-color:var(--l1)}.timeline-item[data-level="1"].tl-active .tl-dot{background:var(--l1)}
-.timeline-item[data-level="2"] .tl-dot{border-color:var(--l2)}.timeline-item[data-level="2"].tl-active .tl-dot{background:var(--l2)}
-.timeline-item[data-level="3"] .tl-dot{border-color:var(--l3)}.timeline-item[data-level="3"].tl-active .tl-dot{background:var(--l3)}
-.timeline-item[data-level="3.5"] .tl-dot{border-color:var(--l3-5)}.timeline-item[data-level="3.5"].tl-active .tl-dot{background:var(--l3-5)}
-.timeline-item[data-level="4"] .tl-dot{border-color:var(--l4)}.timeline-item[data-level="4"].tl-active .tl-dot{background:var(--l4)}
-.timeline-item[data-level="5"] .tl-dot{border-color:var(--l5)}.timeline-item[data-level="5"].tl-active .tl-dot{background:var(--l5)}
-.timeline-item[data-level="6"] .tl-dot{border-color:var(--l6)}.timeline-item[data-level="6"].tl-active .tl-dot{background:var(--l6)}
-.keyboard-hint{text-align:center;font-size:.6rem;color:var(--text-muted);margin-top:0.5rem;letter-spacing:.05em}
+      .panel-header {
+        padding: 0.75rem 1rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .panel-level-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-size: 0.7rem;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+      .panel-icon-big {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .panel-title-group {
+        flex: 1;
+        min-width: 0;
+      }
+      .panel-level-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--text-primary);
+      }
+      .panel-level-type {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-top: 2px;
+      }
+      .panel-status-badge {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+      }
 
-@media(max-width:600px){.level-type{display:none}.info-grid{grid-template-columns:1fr}.panel-header{flex-wrap:wrap;gap:.5rem}.page-wrapper{padding:1.5rem 1rem 2rem}}
-</style>
-</head>
-<body>
-<div class="page-wrapper" role="main">
-  <h2 class="sr-only">Pyramide interactive des niveaux d'expertise de l'IA : de l'IA étroite à la superintelligence</h2>
+      .autonomy-bar-wrap {
+        padding: 0.5rem 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .autonomy-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        width: 70px;
+      }
+      .autonomy-track {
+        flex: 1;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .autonomy-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+        width: 0;
+      }
+      .autonomy-value {
+        font-size: 0.7rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        width: 48px;
+        text-align: right;
+      }
 
-  <header class="page-header">
-    <p class="eyebrow">Niveaux d'expertise</p>
-    <h1>De l'outil à l'inconnu</h1>
-    <p class="subtitle">Cliquez sur un niveau pour explorer ses caractéristiques</p>
-  </header>
+      .panel-body {
+        padding: 0.75rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .panel-definition {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        line-height: 1.5;
+      }
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+      }
+      .info-card {
+        background: rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: var(--radius);
+        padding: 0.65rem 0.75rem;
+      }
+      .info-card-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        margin-bottom: 0.3rem;
+      }
+      .info-card-value {
+        font-size: 0.76rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        line-height: 1.5;
+      }
+      .info-card-value.highlight {
+        font-weight: 700;
+      }
+      .examples-title {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        margin-bottom: 0.45rem;
+      }
+      .examples-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .example-chip {
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+      .ethics-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+        padding: 0.6rem 0.75rem;
+        background: rgba(212, 165, 29, 0.08);
+        border: 1px solid rgba(212, 165, 29, 0.25);
+        border-radius: var(--radius);
+      }
+      .ethics-icon {
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .ethics-text {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        line-height: 1.55;
+      }
 
-  <div class="layout">
-    <div class="pyramid-scene">
-      <div class="pyramid" id="pyramid">
-        <button class="level" id="level-6" data-level="6" aria-label="Niveau 6 : ASI — Superintelligence" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">🌌</span> -->
-            <span class="level-name">ASI</span><span class="level-type">(<i class="fas fa-star">Artificial superintelligence</i>)</span></div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
-        <button class="level" id="level-5" data-level="5" aria-label="Niveau 5 : AGI — Intelligence Générale" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">🧠</span> -->
-            <span class="level-name">AGI</span><span class="level-type">(<i class="fas fa-brain">Artificial General Intelligence</i>)</span>
+      /* TIMELINE */
+      .timeline-section {
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+      }
+      .section-title {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+      }
+      .timeline {
+        display: flex;
+        align-items: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+      .timeline-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 110px;
+        cursor: pointer;
+        padding: 0.4rem 0.5rem;
+        border-radius: var(--radius);
+        transition: background 0.2s;
+        tabindex: 0;
+      }
+      .timeline-item:hover,
+      .timeline-item.tl-active {
+        background: var(--surface-hover);
+      }
+      .tl-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid var(--border-strong);
+        background: #ffffff;
+        transition:
+          transform 0.2s,
+          background 0.2s;
+        flex-shrink: 0;
+      }
+      .timeline-item:hover .tl-dot,
+      .timeline-item.tl-active .tl-dot {
+        transform: scale(1.3);
+      }
+      .tl-content {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .tl-content strong {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .tl-content span {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+      .tl-content em {
+        font-size: 0.62rem;
+        font-style: normal;
+        color: var(--text-muted);
+      }
+      .timeline-connector {
+        width: 2px;
+        height: 14px;
+        background: var(--border);
+        margin-top: 6px;
+        flex-shrink: 0;
+        border-radius: 1px;
+      }
+      .timeline-item[data-level="1"] .tl-dot {
+        border-color: var(--l1);
+      }
+      .timeline-item[data-level="1"].tl-active .tl-dot {
+        background: var(--l1);
+      }
+      .timeline-item[data-level="2"] .tl-dot {
+        border-color: var(--l2);
+      }
+      .timeline-item[data-level="2"].tl-active .tl-dot {
+        background: var(--l2);
+      }
+      .timeline-item[data-level="3"] .tl-dot {
+        border-color: var(--l3);
+      }
+      .timeline-item[data-level="3"].tl-active .tl-dot {
+        background: var(--l3);
+      }
+      .timeline-item[data-level="3.5"] .tl-dot {
+        border-color: var(--l3-5);
+      }
+      .timeline-item[data-level="3.5"].tl-active .tl-dot {
+        background: var(--l3-5);
+      }
+      .timeline-item[data-level="4"] .tl-dot {
+        border-color: var(--l4);
+      }
+      .timeline-item[data-level="4"].tl-active .tl-dot {
+        background: var(--l4);
+      }
+      .timeline-item[data-level="5"] .tl-dot {
+        border-color: var(--l5);
+      }
+      .timeline-item[data-level="5"].tl-active .tl-dot {
+        background: var(--l5);
+      }
+      .timeline-item[data-level="6"] .tl-dot {
+        border-color: var(--l6);
+      }
+      .timeline-item[data-level="6"].tl-active .tl-dot {
+        background: var(--l6);
+      }
+      .keyboard-hint {
+        text-align: center;
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+        letter-spacing: 0.05em;
+      }
+
+      @media (max-width: 600px) {
+        .level-type {
+          display: none;
+        }
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+        .panel-header {
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+        .page-wrapper {
+          padding: 1.5rem 1rem 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper" role="main">
+      <h2 class="sr-only">
+        Pyramide interactive des niveaux d'expertise de l'IA : de l'IA étroite à
+        la superintelligence
+      </h2>
+
+      <header class="page-header">
+        <p class="eyebrow">Niveaux d'expertise</p>
+        <h1>De l'outil à l'inconnu</h1>
+        <p class="subtitle">
+          Cliquez sur un niveau pour explorer ses caractéristiques
+        </p>
+      </header>
+
+      <div class="layout">
+        <div class="pyramid-scene">
+          <div class="pyramid" id="pyramid">
+            <button
+              class="level"
+              id="level-3"
+              data-level="3"
+              aria-label="Niveau 3 : ASI (Artificial Superintelligence)"
+              aria-pressed="false"
+            >
+              <div class="level-inner">
+                <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
+                <span class="level-name">ASI</span>
+                <span class="level-type"
+                  ><i class="fas fa-brain"
+                    >Artificial Superintelligence</i
+                  ></span
+                >
+              </div>
+              <div class="level-shine" aria-hidden="true"></div>
+            </button>
+            <button
+              class="level"
+              id="level-2"
+              data-level="2"
+              aria-label="Niveau 2 : AGI (Artificial General Intelligence)"
+              aria-pressed="false"
+            >
+              <div class="level-inner">
+                <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
+                <span class="level-name">AGI</span>
+                <span class="level-type"
+                  ><i class="fas fa-brain"
+                    >Artificial General Intelligence</i
+                  ></span
+                >
+              </div>
+              <div class="level-shine" aria-hidden="true"></div>
+            </button>
+            <button
+              class="level"
+              id="level-1"
+              data-level="1"
+              aria-label="Niveau 1 : ANI (Artificial Narrow Intelligence)"
+              aria-pressed="false"
+            >
+              <div class="level-inner">
+                <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
+                <span class="level-name">ANI</span>
+                <span class="level-type"
+                  ><i class="fas fa-brain"
+                    >Artificial Narrow Intelligence</i
+                  ></span
+                >
+              </div>
+              <div class="level-shine" aria-hidden="true"></div>
+            </button>
           </div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
-        <button class="level" id="level-4" data-level="4" aria-label="Niveau 4 : IA Agentique — Autonome" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">🤖</span> -->
-            <span class="level-name">IA Agentique</span>
-            <!-- <span class="level-type">Autonome</span> -->
+          <div class="autonomy-axis" aria-hidden="true">
+            <span class="axis-label axis-top">Autonomie totale</span>
+            <div class="axis-line"></div>
+            <span class="axis-label axis-bottom">Outil passif</span>
           </div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
-        <button class="level" id="level-3.5" data-level="3.5" aria-label="Niveau 3.5 : LLMs — Générative" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">💬</span> -->
-            <span class="level-name">LLMs</span>
-            <span class="level-type">(<i class="fas fa-brain">Large Language Models</i>)</span>
+        </div>
+
+        <aside
+          class="detail-panel"
+          id="detail-panel"
+          role="complementary"
+          aria-label="Détails du niveau sélectionné"
+          aria-live="polite"
+        >
+          <div id="panel-placeholder" class="panel-placeholder">
+            <div class="placeholder-icon">◈</div>
+            <p>
+              Sélectionnez un niveau<br />pour explorer ses caractéristiques
+            </p>
           </div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
-        <button class="level" id="level-3" data-level="3" aria-label="Niveau 3 : IA Adaptative — Apprentissage" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
-            <span class="level-name">IA Adaptative</span>
-            <!-- <span class="level-type">Apprentissage</span> -->
-          </div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
-        <button class="level" id="level-2" data-level="2" aria-label="Niveau 2 : IA Multi-tâches — Intégrative" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
-            <span class="level-name">IA Multi-tâches</span>
-            <!-- <span class="level-type">Intégrative</span> -->
-          </div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
-        <button class="level" id="level-1" data-level="1" aria-label="Niveau 1 : IA Étroite — Réactive" aria-pressed="false">
-          <div class="level-inner">
-            <!-- <span class="level-icon" aria-hidden="true">⚙️</span> -->
-            <span class="level-name">ANI</span>
-            <span class="level-type">(<i class="fas fa-brain">Artificial Narrow Intelligence</i>)</span>
-          </div>
-          <div class="level-shine" aria-hidden="true"></div>
-        </button>
+          <div id="panel-content" class="panel-content" hidden></div>
+        </aside>
       </div>
-      <div class="autonomy-axis" aria-hidden="true">
-        <span class="axis-label axis-top">Autonomie totale</span>
-        <div class="axis-line"></div>
-        <span class="axis-label axis-bottom">Outil passif</span>
-      </div>
-    </div>
 
-    <aside class="detail-panel" id="detail-panel" role="complementary" aria-label="Détails du niveau sélectionné" aria-live="polite">
-      <div id="panel-placeholder" class="panel-placeholder">
-        <div class="placeholder-icon">◈</div>
-        <p>Sélectionnez un niveau<br>pour explorer ses caractéristiques</p>
-      </div>
-      <div id="panel-content" class="panel-content" hidden></div>
-    </aside>
-  </div>
-
-  <!-- <section class="timeline-section" aria-labelledby="timeline-title">
+      <!-- <section class="timeline-section" aria-labelledby="timeline-title">
     <h2 id="timeline-title" class="section-title">Chronologie d'émergence</h2>
     <div class="timeline" role="list">
       <div class="timeline-item" data-level="1" role="listitem" tabindex="0" aria-label="IA Étroite — Années 1950"><div class="tl-dot"></div><div class="tl-content"><strong>Années 1950</strong><span>IA Étroite (ANI)</span><em>Maturité — Siri, Alexa</em></div></div>
@@ -242,40 +833,200 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
     </div>
   </section> -->
 
-  <p class="keyboard-hint" aria-label="Utiliser les touches fléchées pour naviguer entre les niveaux.">↑ ↓ Naviguer entre les niveaux · Entrée pour sélectionner</p>
-</div>
+      <p
+        class="keyboard-hint"
+        aria-label="Utiliser les touches fléchées pour naviguer entre les niveaux."
+      >
+        ↑ ↓ Naviguer entre les niveaux · Entrée pour sélectionner
+      </p>
+    </div>
 
-<script>
-const DATA={
-  1:{name:"ANI (Artificial Narrow Intelligence)",type:"Type : Réactive",icon:"⚙️",def:"Aussi appelée \"IA Étroite\" en français, elle est spécialisée dans une tâche unique, sans apprentissage continu. Elle exécute des règles prédéfinies de manière déterministe, sans conscience ni compréhension du contexte.",autoLabel:"Faible",autoVal:10,autoDesc:"Outil passif : nécessite une intervention humaine constante",cap:"Exécution de règles prédéfinies",lim:"Incapable de s'adapter à de nouvelles tâches",ex:["DeepBlue","Filtres anti-spam","Siri (basique)","Calculatrices"],eth:"Biais algorithmiques, dépendance aux données d'entraînement.",statut:"Déployée massivement",sColor:"#22c55e",sBg:"rgba(34,197,94,0.15)",per:"Années 1950",col:"#7726b1",txtCol:"#f5eeff"},
-  2:{name:"IA Multi-tâches",type:"Type : Intégrative",icon:"⚙️",def:"Combine plusieurs IA étroites dans un même domaine. Elle intègre des services distincts pour offrir une expérience cohérente, mais reste confinée à des scénarios prédéfinis.",autoLabel:"Limitée",autoVal:24,autoDesc:"Scénarios prédéfinis, combinaison d'outils sans vraie généralisation",cap:"Intégration de services, automatisation simple",lim:"Pas de généralisation hors du domaine configuré",ex:["Google Assistant","Alexa + routines","Voitures autonomes niv. 2-3"],eth:"Vie privée (écoute permanente), risques de sécurité.",statut:"Courante",sColor:"#3b82f6",sBg:"rgba(59,130,246,0.15)",per:"Années 2000",col:"#7726b1",txtCol:"#f5eeff"},
-  3:{name:"IA Adaptative",type:"Type : Apprentissage",icon:"⚙️",def:"Apprend de nouvelles tâches dans un domaine restreint grâce au renforcement ou aux données. Elle optimise ses performances au fil du temps, mais reste spécialisée.",autoLabel:"Moyenne",autoVal:44,autoDesc:"Ajustements locaux : apprend mais dans un périmètre défini",cap:"Apprentissage par renforcement, optimisation continue",lim:"Spécialisée : AlphaGo ne joue qu'au go",ex:["AlphaGo","Robots industriels auto-prog.","Recommandations Netflix"],eth:"Boîte noire (opacité), coûts énergétiques élevés.",statut:"Avancée",sColor:"#8b5cf6",sBg:"rgba(139,92,246,0.15)",per:"Années 2010",col:"#7726b1",txtCol:"#f5eeff"},
-  3.5:{name:"LLMs",type:"Type : Générative",icon:"💬",def:"Génère du contenu (texte, code, images) dans divers domaines sans mémoire persistante, en s'appuyant sur des patterns appris. Répond de manière contextuelle mais sans initiative propre.",autoLabel:"Moyenne-Élevée",autoVal:54,autoDesc:"Génération contextuelle : répond de manière versatile mais sans initiative",cap:"Génération multimodale, adaptation à des tâches variées, simulation de raisonnement",lim:"Hallucinations, absence de mémoire, dépendance aux données d'entraînement, boîte noire",ex:["ChatGPT","Claude","MidJourney (image)", "Le Chat", "Gemini", "Banana Pro (vidéo)"],eth:"Désinformation, biais, impacts écologiques et sociétaux, plagiat, régulation.",statut:"Déployée massivement",sColor:"#ec4899",sBg:"rgba(236,72,153,0.15)",per:"Années 2020+",col:"#7726b1",txtCol:"#f5eeff"},
-  4:{name:"IA Agentique",type:"Type : Autonome",icon:"🤖",def:"Agit de manière proactive pour atteindre des objectifs complexes, avec initiative et mémoire à long terme. Elle planifie, interagit avec son environnement et s'adapte en temps réel.",autoLabel:"Élevée",autoVal:66,autoDesc:"Prise de décision autonome : agit seule dans un cadre défini",cap:"Planification, mémoire à long terme, interaction environnement",lim:"Risque de boucles infinies ou d'hallucinations",ex:["AutoGPT","Rabbit R1","Agents de trading","Devin AI","Robots Amazon"],eth:"Responsabilité (qui répond d'une erreur ?), alignement des objectifs.",statut:"Émergente",sColor:"#ECA400",sBg:"rgba(236, 164, 0,0.15)",per:"Années 2020",col:"#7726b1",txtCol:"#f5eeff"},
-  5:{name:"AGI",type:"Type : Intelligence Générale",icon:"🧠",def:"Atteint le niveau humain dans tous les domaines cognitifs : raisonnement, créativité, compréhension émotionnelle. Hypothétique à ce jour, elle représente le seuil symbolique de l'IA « humaine ».",autoLabel:"Très élevée",autoVal:84,autoDesc:"Quasi-autonomie : raisonnement et transfert de connaissances généralisé",cap:"Raisonnement abstrait, transfert de connaissances, compréhension contextuelle",lim:"Aucune implémentation concrète validée",ex:["Hypothétique","DeepMind Gemini (recherche)","OpenAI Q* (rumeurs)"],eth:"Contrôle, risques existentiels, droits des machines.",statut:"Recherche",sColor:"#392F5A",sBg:"rgba(57, 47, 90,0.15)",per:"Non définie",col:"#7726b1",txtCol:"#f5eeff"},
-  6:{name:"ASI",type:"Type : Superintelligence",icon:"🌌",def:"Dépasse l'intelligence humaine dans tous les domaines avec auto-amélioration récursive. Concept actuellement de l'ordre de la science-fiction, mais au centre des débats sur l'avenir à long terme de l'IA.",autoLabel:"Totale (théorique)",autoVal:100,autoDesc:"Auto-détermination — objectifs définis de manière autonome",cap:"Créativité illimitée, objectifs auto-définis, auto-amélioration",lim:"Spéculatif — risques de perte de contrôle total",ex:["Science-fiction","Skynet (fiction)","HAL 9000 (fiction)"],eth:"Alignement des valeurs, régulation mondiale, survie de l'humanité.",statut:"Théorique",sColor:"#26532B",sBg:"rgba(38,83,43,0.15)",per:"Indéterminée",col:"#7726b1",txtCol:"#f5eeff"}
-};
+    <script>
+      const DATA = {
+        1: {
+          name: "ANI (Artificial Narrow Intelligence)",
+          def: "L’<i style='color: #7726b1;'>Artificial Narrow Intelligence (ANI)</i>, ou intelligence artificielle étroite, désigne des systèmes conçus pour accomplir une tâche spécifique avec une performance souvent supérieure à celle d’un humain, mais sans capacité à généraliser à d’autres domaines. Par exemple, un algorithme de reconnaissance faciale, le système de recommandation sur Netflix, ou un programme jouant aux échecs (comme Deep Blue) relèvent de l’ANI. Ces systèmes reposent sur des modèles d’apprentissage automatique (machine learning) ou de règles prédéfinies, et leur force réside dans leur précision et leur efficacité dans un cadre restreint.</br>Même si cela peut paraitre contre intuitif, les IA génératives comme Le Chat de Mistral ou Claude d'Anthropic, sont elles aussi des IA étroites. Bien qu'elles soient en capacité de générer du contenu dans divers domaines, et de diverses formes (textes, image, vidéo, code, etc.), elles sont cantonnées à une tâche unique : celle de la prédiction du token suivant (<i style='color: #7726b1;'>Next Token Prediction</i>)",
+          autoLabel: "Faible",
+          autoVal: 25,
+          autoDesc:
+            "Ne vise pas l'autonomie ou la polyvalence : elle est spécialisée, réactive et dépendante de l'humain.",
+          cap: "Exécution d'une tâche spécifique pouvant surpasser la performance de l'humain",
+          lim: "Ne possède pas de conscience, de compréhension contextuelle ou de capacité d'adaptation en dehors de sa spécialisation",
+          ex: [
+            "DeepBlue",
+            "Filtres anti-spam",
+            "Siri, Alexa",
+            "ChatGPT, Claude, Gemini (IA générative)",
+            "Algorithmes de recommandation",
+          ],
+          eth: "Soulève beaucoup de questions éthiques à propos des biais algorithmiques, de la protection des données, de l'impact sur l'emploi et de la responsabilité en cas d'erreurs ou le respect de la vie privée.",
+          statut: "Déployée massivement",
+          sColor: "#22c55e",
+          sBg: "rgba(34,197,94,0.15)",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+        2: {
+          name: "AGI",
+          def: "L’<i style='color: #7726b1;'>Artificial General Intelligence (AGI)</i>, ou intelligence artificielle générale, désigne un système d'intelligence artificielle encore théorique capable de comprendre, d’apprendre, de faire preuve de créativité, d'intelligence émotionnelle et d’appliquer ses connaissances à n’importe quelle tâche intellectuelle qu’un humain pourrait réaliser. Contrairement à l’ANI, l’AGI aurait une forme de raisonnement abstrait, de conscience de soi et de capacité à transférer ses compétences d’un domaine à l’autre. Par exemple, une AGI pourrait écrire un roman, résoudre un problème mathématique inconnu, puis apprendre à cuisiner en regardant des vidéos, sans être reprogrammée.",
+          autoLabel: "Très élevée",
+          autoVal: 80,
+          autoDesc:
+            "Quasi-autonomie : raisonnement et transfert de connaissances généralisé et la possibilité d'auto-amélioration. Pourrait potentiellement égaler l'intelligence humaine en polyvalence sans nécessairement la dépasser.",
+          cap: "Raisonnement, transfert de connaissances, compréhension contextuelle",
+          lim: "Développement qui soulève des défis techniques et éthiques colossaux. La faisabilité d'une telle technologie est encore débattue dans la communauté scientifique (comment reproduire la cognition humaine ?).",
+          ex: ["DeepMind Gemini (recherche)", "OpenAI Q* (rumeurs)"],
+          eth: "Pourrait être le déclenchement d'une mutation profonde de la société voire de l'humanité : comment assurer son alignement avec les valeurs humaines ? comment éviter qu’elle ne soit utilisée à des fins militaires ou manipulatoires ?",
+          statut: "Recherche",
+          sColor: "#ec4899",
+          sBg: "rgba(236,72,153,0.15)",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+        3: {
+          name: "ASI",
+          def: "L’<i style='color: #7726b1;'>Artificial Superintelligence (ASI)</i>, ou superintelligence artificielle, désigne un système d'intelligence artificielle supérieur à celle des humains dans tous les domaines, y compris la créativité, la stratégie et la résolution de problèmes. Ce concepts est actuellement de l'ordre de la science-fiction. Une ASI ne serait pas seulement plus rapide ou plus précise qu’un humain : elle pourrait inventer des concepts incompréhensibles pour nous. La complexité cognitive de l'ASI serait proportionnellement supérieure à celle de l'humain que cette dernière l'est par rapport à celle d'une fourmis.",
+          autoLabel: "Totale (théorique)",
+          autoVal: 100,
+          autoDesc:
+            "Auto-détermination : pourrait résoudre le problème de la fusion nucléaire en quelques heures, ou concevoir des nanorobots capables de guérir toutes les maladies.",
+          cap: "Créativité illimitée, objectifs auto-définis, auto-amélioration sans intervention humaine, l'ASI serait infiniment plus intelligente.",
+          lim: "Risques de perte de contrôle total, comment contrôler une entité plus intelligente que nous ? Comment éviter qu'elle ne considère les humains obsolètes ou nuisibles ?",
+          ex: ["Concept théorique : pas d'exemple concret"],
+          eth: "Considéré par certains comme l'espoir ultime (fin de la pauvreté, exploration spatiale, guérison de toutes les maladies), et par d'autres comme la plus grande menace pour l'humanité (extinction de l'humanité, perte de contrôle). Le risque existentiel est pris au sérieux par de nombreux chercheurs et de nombreux garde-fous sont proposés sans jamais faire consensus.",
+          statut: "Hypothétique",
+          sColor: "#ECA400",
+          sBg: "rgba(236, 164, 0,0.15)",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+        4: {
+          name: "IA Multi-tâches",
+          type: "Type : Intégrative",
+          icon: "⚙️",
+          def: "Combine plusieurs IA étroites dans un même domaine. Elle intègre des services distincts pour offrir une expérience cohérente, mais reste confinée à des scénarios prédéfinis.",
+          autoLabel: "Limitée",
+          autoVal: 24,
+          autoDesc:
+            "Scénarios prédéfinis, combinaison d'outils sans vraie généralisation",
+          cap: "Intégration de services, automatisation simple",
+          lim: "Pas de généralisation hors du domaine configuré",
+          ex: ["Google Assistant", "Alexa + routines", "Voitures autonomes"],
+          eth: "Vie privée (écoute permanente), risques de sécurité.",
+          statut: "Courante",
+          sColor: "#3b82f6",
+          sBg: "rgba(59,130,246,0.15)",
+          per: "Années 2000",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+        5: {
+          name: "IA Adaptative",
+          type: "Type : Apprentissage",
+          icon: "⚙️",
+          def: "Apprend de nouvelles tâches dans un domaine restreint grâce à l'apprentissage par renforcement ou à l'injection de nouvelles données. Elle optimise ses performances au fil du temps et en fonction des expériences rencontrées mais reste spécialisée à une tâche et/ou un domaine spécifique.",
+          autoLabel: "Moyenne",
+          autoVal: 44,
+          autoDesc:
+            "Ajustements locaux : apprend mais dans un périmètre défini",
+          cap: "Apprentissage par renforcement, optimisation continue",
+          lim: "Reste limitée à son domaine ou sa tâche spécifique",
+          ex: [
+            "AlphaGo",
+            "Robots industriels auto-programmé",
+            "Recommandations Netflix",
+          ],
+          eth: "Boîte noire (opacité), coûts énergétiques élevés.",
+          statut: "Avancée",
+          sColor: "#8b5cf6",
+          sBg: "rgba(139,92,246,0.15)",
+          per: "Années 2010",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+        6: {
+          name: "LLMs",
+          type: "Type : Générative",
+          icon: "💬",
+          def: "Génère du contenu (texte, code, images, vidéos, sons) dans divers domaines sans mémoire persistante à moyen-long terme, en s'appuyant sur des patterns appris. Répond de manière contextuelle mais sans initiative propre.",
+          autoLabel: "Moyenne-Élevée",
+          autoVal: 54,
+          autoDesc:
+            "Génération contextuelle : répond de manière versatile mais sans initiative",
+          cap: "Génération multimodale, adaptation à des tâches variées, simulation de raisonnement et des processus cognitifs humains",
+          lim: "Hallucinations, absence de mémoire, dépendance aux données d'entraînement, boîte noire",
+          ex: [
+            "ChatGPT",
+            "Claude",
+            "MidJourney (image)",
+            "Le Chat",
+            "Gemini",
+            "Banana Pro (vidéo)",
+          ],
+          eth: "Désinformation, biais, impacts écologiques et sociétaux, plagiat, régulation.",
+          statut: "Déployée massivement",
+          sColor: "#ec4899",
+          sBg: "rgba(236,72,153,0.15)",
+          per: "Années 2020+",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+        7: {
+          name: "IA Agentique",
+          type: "Type : Autonome",
+          icon: "🤖",
+          def: "Orchestration d'un ou plusieurs modèles qui agissent de manière proactive et autonome pour atteindre des objectifs complexes, avec initiative et mémoire à long terme. Ils planifient, interagissent avec leur environnement et s'adaptent en temps réel.",
+          autoLabel: "Élevée",
+          autoVal: 66,
+          autoDesc:
+            "Prise de décision autonome : agit seule dans un cadre défini",
+          cap: "Planification, mémoire à long terme, interaction environnement",
+          lim: "Risque de boucles infinies ou d'hallucinations, manque de cadre légal sur la question de la responsabilité (qui répond d'une erreur ?)",
+          ex: [
+            "AutoGPT",
+            "Rabbit R1",
+            "Agents de trading",
+            "Devin AI",
+            "Robots Amazon",
+          ],
+          eth: "Responsabilité (qui répond d'une erreur ?), alignement des objectifs.",
+          statut: "Émergente",
+          sColor: "#ECA400",
+          sBg: "rgba(236, 164, 0,0.15)",
+          per: "Années 2020",
+          col: "#7726b1",
+          txtCol: "#f5eeff",
+        },
+      };
 
-let active=null;
-const levelBtns=[...document.querySelectorAll('.level')];
-const tlItems=[...document.querySelectorAll('.timeline-item')];
-const placeholder=document.getElementById('panel-placeholder');
-const content=document.getElementById('panel-content');
-const panel=document.getElementById('detail-panel');
+      let active = null;
+      const levelBtns = [...document.querySelectorAll(".level")];
+      const tlItems = [...document.querySelectorAll(".timeline-item")];
+      const placeholder = document.getElementById("panel-placeholder");
+      const content = document.getElementById("panel-content");
+      const panel = document.getElementById("detail-panel");
 
-function select(num,focus){
-  const d=DATA[num];if(!d)return;active=num;
-  levelBtns.forEach(b=>b.setAttribute('aria-pressed','false'));
-  document.getElementById('level-'+num).setAttribute('aria-pressed','true');
-  tlItems.forEach(i=>i.classList.toggle('tl-active',+i.dataset.level===num));
-  placeholder.hidden=true;content.hidden=false;panel.classList.add('active');
-  content.innerHTML=`
+      function select(num, focus) {
+        const d = DATA[num];
+        if (!d) return;
+        active = num;
+        levelBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        document
+          .getElementById("level-" + num)
+          .setAttribute("aria-pressed", "true");
+        tlItems.forEach((i) =>
+          i.classList.toggle("tl-active", +i.dataset.level === num),
+        );
+        placeholder.hidden = true;
+        content.hidden = false;
+        panel.classList.add("active");
+        content.innerHTML = `
     <div class="panel-header">
       <span class="panel-level-badge" style="background:${d.col};color:${d.txtCol}">${num}</span>
       <!-- <span class="panel-icon-big">${d.icon}</span> -->
       <div class="panel-title-group">
         <div class="panel-level-name">${d.name}</div>
-        <div class="panel-level-type" style="color:${d.col}">${d.type}</div>
+        <!-- <div class="panel-level-type" style="color:${d.col}">${d.type}</div> -->
       </div>
       <span class="panel-status-badge" style="background:${d.sBg};color:${d.sColor}">${d.statut}</span>
     </div>
@@ -306,49 +1057,75 @@ function select(num,focus){
                 <div class="info-card-value">${d.autoDesc}</div>
             </div>
             <div class="info-card">
-                <div class="info-card-label">Exemples concrets</div>
-                <div class="info-card-value">
-                    ${d.ex.map(e=>`<div>${'• ' + e}</div>`).join('')}
-                </div>
+                <div class="info-card-label">⚠ Enjeux</div>
+                <div class="info-card-value">${d.eth}</div>
             </div>
         </div>
         <!-- <div>
             <div class="examples-title">Exemples concrets</div>
+            <span class="ethics-icon" aria-hidden="true">⚠</span>
             <div class="examples-chips" role="list" aria-label="Exemples">
-                ${d.ex.map(e=>`<span class="example-chip" role="listitem">${e}</span>`).join('')}
+                ${d.ex.map((e) => `<span class="example-chip" role="listitem">${e}</span>`).join("")}
             </div>
+            <div class="info-card-value">
+                    ${d.ex.map((e) => `<div>${"• " + e}</div>`).join("")}
+                </div>
         </div> 
         <div class="ethics-row" role="note" aria-label="Enjeux">
             <span class="ethics-icon" aria-hidden="true">⚠</span>
             <span class="ethics-text"><strong>Enjeux :</strong> ${d.eth}</span>
         </div> -->
     </div>`;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const f=document.getElementById('afill');if(f)f.style.width=d.autoVal+'%';
-  }));
-  if(focus){content.setAttribute('tabindex','-1');content.focus();}
-}
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            const f = document.getElementById("afill");
+            if (f) f.style.width = d.autoVal + "%";
+          }),
+        );
+        if (focus) {
+          content.setAttribute("tabindex", "-1");
+          content.focus();
+        }
+      }
 
-levelBtns.forEach(b=>{
-  b.addEventListener('click',()=>select(+b.dataset.level,false));
-  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(+b.dataset.level,true);}});
-});
-tlItems.forEach(i=>{
-  i.addEventListener('click',()=>select(+i.dataset.level,false));
-  i.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();i.click();}});
-});
-document.addEventListener('keydown',e=>{
-  if(!['ArrowUp','ArrowDown'].includes(e.key))return;
-  const focused=document.activeElement;
-  if(!focused?.closest('.pyramid')&&!focused?.closest('.detail-panel')&&active===null)return;
-  e.preventDefault();
-  const LEVELS=[1,2,3,3.5,4,5,6];
-  const curIdx=LEVELS.indexOf(active||1);
-  const nextIdx=e.key==='ArrowUp'?Math.min(LEVELS.length-1,curIdx+1):Math.max(0,curIdx-1);
-  const next=LEVELS[nextIdx];
-  select(next,false);
-  document.getElementById('level-'+next)?.focus();
-});
-</script>
-</body>
+      levelBtns.forEach((b) => {
+        b.addEventListener("click", () => select(+b.dataset.level, false));
+        b.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            select(+b.dataset.level, true);
+          }
+        });
+      });
+      tlItems.forEach((i) => {
+        i.addEventListener("click", () => select(+i.dataset.level, false));
+        i.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            i.click();
+          }
+        });
+      });
+      document.addEventListener("keydown", (e) => {
+        if (!["ArrowUp", "ArrowDown"].includes(e.key)) return;
+        const focused = document.activeElement;
+        if (
+          !focused?.closest(".pyramid") &&
+          !focused?.closest(".detail-panel") &&
+          active === null
+        )
+          return;
+        e.preventDefault();
+        const LEVELS = [1, 2, 3, 3.5, 4, 5, 6];
+        const curIdx = LEVELS.indexOf(active || 1);
+        const nextIdx =
+          e.key === "ArrowUp"
+            ? Math.min(LEVELS.length - 1, curIdx + 1)
+            : Math.max(0, curIdx - 1);
+        const next = LEVELS[nextIdx];
+        select(next, false);
+        document.getElementById("level-" + next)?.focus();
+      });
+    </script>
+  </body>
 </html>
