@@ -10,7 +10,7 @@
             --secondary-color: #dced59;
             --text-color: #333;
             --bg-color: #fff;
-            --border-color: #ddd;
+            --border-color: #ddd; 
         }
 
         * {
@@ -20,7 +20,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
             background-color: var(--bg-color);
@@ -341,6 +341,14 @@
     </div>
 
     <script>
+        // Déclarer PROBABILITIES comme variable globale avec des valeurs par défaut
+        window.PROBABILITIES = {
+            "<start>": {"le": 0.25, "il": 0.2, "une": 0.15, "la": 0.15, "je": 0.1, "les": 0.1, "un": 0.1},
+            "le": {"chat": 0.3, "chien": 0.2, "temps": 0.2, "ciel": 0.1, "vélo": 0.1, "café": 0.1},
+            "il": {"pleut": 0.4, "fait": 0.3, "est": 0.2, "court": 0.1},
+            "une": {"journée": 0.4, "tasse": 0.2, "montagne": 0.2, "feuille": 0.2},
+            "la": {"pluie": 0.3, "montagne": 0.2, "lecture": 0.2, "couleur": 0.2, "machine": 0.1}
+        };
         // --- Données --- //
         const PROMPTS = [
             "Décris une journée pluvieuse.",
@@ -357,20 +365,39 @@
 
         // Probabilités pré-calculées (exemple simplifié - à remplacer par votre probas.json)
         async function loadProbabilities() {
-        try {
-            const response = await fetch('https://votre-utilisateur.github.io/nom-du-depot/probas.json');
-            if (!response.ok) throw new Error(`Erreur ${response.status}`);
-            PROBABILITIES = await response.json();
-            console.log("probas.json chargé avec succès !");
-        } catch (error) {
-            console.error("Erreur de chargement :", error);
-            console.log("Utilisation des données par défaut.");
-        } finally {
-            // Initialiser l'activité dans tous les cas
-            init();
-            setMode("normal");
+            console.log("Début du chargement de probas.json..."); // Log 1
+
+            try {
+                const url = 'https://github.com/julie-reine15/ressources_num_module_ia/blob/main/them1_nugget2-5/probas.json' + Date.now();
+                console.log("URL utilisée :", url); // Log 2 : Affiche l'URL appelée
+
+                const response = await fetch(url);
+                console.log("Réponse reçue, statut :", response.status); // Log 3 : Statut HTTP
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP : ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Données JSON parsées :", data); // Log 4 : Contenu chargé
+
+                // Vérifier que les données sont valides
+                if (!data || !data["<start>"]) {
+                    throw new Error("Format JSON invalide : '<start>' manquant.");
+                }
+
+                // Assigner les données à la variable globale
+                window.PROBABILITIES = data;
+                console.log("PROBABILITIES mis à jour :", window.PROBABILITIES); // Log 5 : Vérification
+
+            } catch (error) {
+                console.error("Erreur complète :", error); // Log 6 : Erreur détaillée
+            } finally {
+                console.log("Valeur finale de PROBABILITIES :", window.PROBABILITIES); // Log 7 : État final
+                init();
+                setMode("normal");
+            }
         }
-    }
 
         // --- Variables globales ---
         let currentPrompt = "";
@@ -414,7 +441,14 @@
             const optionsDiv = document.getElementById("word-options");
             optionsDiv.innerHTML = "";
 
+             // Vérifier si les probabilités existent pour currentWord
             if (!PROBABILITIES[currentWord]) {
+                const errorMsg = document.createElement("p");
+                errorMsg.textContent = "Aucun mot probable trouvé. La réponse est terminée ou une erreur est survenue.";
+                errorMsg.style.color = "red";
+                optionsDiv.appendChild(errorMsg);
+
+                // Afficher le feedback final
                 showFeedback();
                 return;
             }
@@ -460,6 +494,7 @@
             response.push(word);
             document.getElementById("current-response").textContent = response.join(" ");
             currentWord = word;
+            console.log("Mot sélectionné :", word, "| currentWord mis à jour :", currentWord); // Log pour débogage
             updateOptions();
 
             // En mode debug, montrer les probabilités alternatives
@@ -570,10 +605,14 @@
         });
 
         // Initialiser au chargement
-        window.onload = () => {
-            init();
-            setMode("normal"); // Mode par défaut
-            loadProbabilities(); // Charger les probabilités depuis probas.json
+        window.onload = function() {
+            // Si on est en local ou si les données sont déjà chargées
+            if (!window.PROBABILITIES["<start>"] || Object.keys(window.PROBABILITIES["<start>"]).length < 3) {
+                loadProbabilities(); // Charger les données
+            } else {
+                init(); // Initialiser directement
+                setMode("normal");
+            }
         };
     </script>
 </body>
