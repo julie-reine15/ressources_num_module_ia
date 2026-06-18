@@ -20,12 +20,12 @@
         }
 
         body {
-            font-family: 'Montserrat', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat';
             line-height: 1.6;
             color: var(--text-color);
             background-color: var(--bg-color);
             padding: 20px;
-            min-height: 100vh;
+            max-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -57,7 +57,7 @@
         .instructions h2 {
             color: var(--primary-color);
             margin-bottom: 10px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .prompt-container {
@@ -301,12 +301,64 @@
     <div class="container">
         <h1>Comment fonctionne un LLM ?</h1>
 
-        <div class="instructions">
+        <!-- <div class="instructions">
             <h2>Instructions</h2>
             <p>Construisez une réponse mot par mot, comme le ferait un modèle de langage (LLM).</p>
             <p>À chaque étape, choisissez parmi les mots proposés. Les pourcentages indiquent leur probabilité d'apparition selon les données.</p>
             <p>Objectif : comprendre que la génération de texte est basée sur des calculs de probabilités, sans "compréhension" réelle.</p>
-        </div>
+        </div> -->
+        <div class="instructions">
+            <h2>Instructions</h2>
+
+            <p>
+                Construisez une réponse mot par mot, comme le ferait un modèle de langage (LLM). À chaque étape, choisissez parmi les mots proposés. Les pourcentages indiquent leur probabilité d'apparition selon le dernier mot sélectionné.
+            </p>
+
+            <h3 style="font-size: 1.2rem; color:#7726b1">Comment utiliser l'activité ?</h3>
+            <ol style="padding-left: 1em;">
+                <li>
+                    Lisez le prompt (ex: "Décris une journée pluvieuse.") et commencez à construire votre réponse en choisissant un mot parmi les suggestions.
+                </li>
+                <li>
+                    Sélectionnez un mot en cliquant dessus (ou avec la touche Entrée après l'avoir sélectionné avec Tabulation).
+                </li>
+                <li>
+                    Continuez jusqu'à ce que votre réponse soit complète. Vous pouvez :
+                    <ul style="padding-left: 1em;">
+                        <li>Ajouter des signes de ponctuation (., !, ?) pour structurer votre phrase.</li>
+                        <li>Utiliser le bouton "Terminer" pour mettre fin à l'activité et voir votre score.</li>
+                    </ul>
+                </li>
+            </ol>
+            <h3 style="font-size: 1.2rem; color:#7726b1">Feedback et analyse</h3>
+            <p>
+                Utilisez le bouton <strong>"Terminer"</strong> pour mettre fin à l'activité et obtenir votre feedback.
+                <ul style="padding-left: 1em;">
+                    <li>Un score de cohérence : plus il est élevé, plus votre réponse suit les probabilités du modèle.</li>
+                    <li>Un temps écoulé comparé à celui d'un vrai LLM.</li>
+                    <!-- <li>Des explications sur les choix de mots et leur impact.</li> -->
+                </ul>
+            </p>
+
+            <!-- <h3>💡 Conseils pour explorer</h3>
+            <p>
+                Essayez les différents modes pour comprendre les mécanismes :
+                <ul style="padding-left: 1em;">
+                    <li><strong>Mode Normal</strong> : Génération classique de texte.</li>
+                    <li><strong>Mode Débug</strong> : Voir les autres options probables après chaque choix.</li>
+                    <li><strong>Mode Biais</strong> : Observer comment un mot biaisé influence la réponse.</li>
+                </ul>
+            </p> -->
+
+            <!-- <h3>⚠️ Points d'attention</h3>
+            <p>
+                <ul style="padding-left: 1em;">
+                    <li>Les mots en <strong>début de phrase</strong> commencent toujours par une majuscule.</li>
+                    <li>Les <strong>signes de ponctuation</strong> permettent de structurer votre réponse, mais ne terminent pas l'activité.</li>
+                    <li>Utilisez le bouton <strong>"Terminer"</strong> pour mettre fin à l'activité et obtenir votre feedback.</li>
+                </ul>
+            </p> -->
+    </div>
 
         <!-- <div class="mode-selector">
             <button class="mode-btn active" data-mode="normal">Mode Normal</button>
