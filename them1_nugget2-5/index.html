@@ -150,7 +150,7 @@
         }
 
         .feedback {
-            background-color: #f8f9fa;
+            background-color: #dced592e;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -163,7 +163,7 @@
         }
 
         .feedback h3 {
-            color: var(--secondary-color);
+            color: var(--primary-color);
             margin-bottom: 10px;
             font-size: 1.1rem;
         }
@@ -308,11 +308,11 @@
             <p>Objectif : comprendre que la génération de texte est basée sur des calculs de probabilités, sans "compréhension" réelle.</p>
         </div>
 
-        <div class="mode-selector">
+        <!-- <div class="mode-selector">
             <button class="mode-btn active" data-mode="normal">Mode Normal</button>
-            <button class="mode-btn" data-mode="debug">Mode Débug</button>
-            <button class="mode-btn" data-mode="bias">Mode Biais</button>
-        </div>
+            <!-- <button class="mode-btn" data-mode="debug">Mode Débug</button> -->
+            <!-- <button class="mode-btn" data-mode="bias">Mode Biais</button> -->
+    <!-- </div>  -->
 
         <div class="timer">Temps écoulé : <span id="timer">0</span> secondes</div>
 
@@ -337,6 +337,7 @@
         <div class="controls">
             <button class="btn" id="restart-btn">Recommencer</button>
             <button class="btn btn-secondary" id="new-prompt-btn">Nouveau prompt</button>
+            <button class="btn btn-secondary" id="end-btn">Terminer</button>  <!-- Nouveau bouton -->
         </div>
     </div>
 
@@ -391,7 +392,7 @@
                 }
 
                 const data = await response.json();
-                console.log("Données JSON parsées :", data); // Log 4 : Contenu chargé
+                <!-- console.log("Données JSON parsées :", data); // Log 4 : Contenu chargé -->
 
                 // Vérifier que les données sont valides
                 if (!data || !data["<start>"]) {
@@ -400,7 +401,7 @@
 
                 // Assigner les données à la variable globale
                 window.PROBABILITIES = data;
-                console.log("PROBABILITIES mis à jour :", window.PROBABILITIES); // Log 5 : Vérification
+                <!-- console.log("PROBABILITIES mis à jour :", window.PROBABILITIES); // Log 5 : Vérification -->
                 
                 currentWord = "<start>";
                 response = [];
@@ -410,7 +411,7 @@
             } catch (error) {
                 console.error("Erreur complète :", error); // Log 6 : Erreur détaillée
             } finally {
-                console.log("Valeur finale de PROBABILITIES :", window.PROBABILITIES); // Log 7 : État final
+                <!-- console.log("Valeur finale de PROBABILITIES :", window.PROBABILITIES); // Log 7 : État final -->
                 init();
                 setMode("normal");
             }
@@ -449,14 +450,14 @@
             const optionsDiv = document.getElementById("word-options");
             optionsDiv.innerHTML = "";
 
-             // Vérifier si les probabilités existent pour currentWord
+            // Vérifier si currentWord est "<start>"
+            const isStart = (currentWord === "<start>");
+
             if (!window.PROBABILITIES[currentWord]) {
                 const errorMsg = document.createElement("p");
-                errorMsg.textContent = "Aucun mot probable trouvé. La réponse est terminée ou une erreur est survenue.";
+                errorMsg.textContent = "Aucune option disponible. La réponse est terminée.";
                 errorMsg.style.color = "red";
                 optionsDiv.appendChild(errorMsg);
-
-                // Afficher le feedback final
                 showFeedback();
                 return;
             }
@@ -466,8 +467,7 @@
 
             // Appliquer le biais si activé
             if (biasActive && probabilities[biasWord]) {
-                probabilities[biasWord] *= 2; // Double la probabilité du mot biaisé
-                // Rééquilibrer les probabilités pour qu'elles somment à 1
+                probabilities[biasWord] *= 2;
                 const total = Object.values(probabilities).reduce((a, b) => a + b, 0);
                 for (const word in probabilities) {
                     probabilities[word] /= total;
@@ -479,36 +479,69 @@
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 20); // Limiter à 20 options
 
-            // Créer les boutons pour chaque option
+            // Créer les boutons pour chaque option de mot
             sortedWords.forEach(([word, prob]) => {
+                let displayWord = word;
+                if (isStart && word.startsWith("^")) {
+                    displayWord = word.substring(1);
+                    displayWord = displayWord.charAt(0).toUpperCase() + displayWord.slice(1);
+                }
+
                 const button = document.createElement("button");
                 button.className = "word-option";
                 button.innerHTML = `
-                    <span class="word-text">${word}</span>
+                    <span class="word-text">${displayWord}</span>
                     <span class="word-prob">${Math.round(prob * 100)}%</span>
                 `;
-                button.onclick = () => selectWord(word);
+                button.onclick = () => selectWord(isStart && word.startsWith("^") ? displayWord : word);
                 button.onkeydown = (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                        selectWord(word);
+                        selectWord(isStart && word.startsWith("^") ? displayWord : word);
                     }
                 };
                 button.setAttribute('tabindex', '0');
                 optionsDiv.appendChild(button);
             });
+
+            // Ajouter des boutons de ponctuation (sauf si currentWord est "<start>")
+            if (currentWord !== "<start>") {
+                const punctuations = [
+                    { symbol: ".", label: "Point (.)" },
+                    { symbol: " !", label: "Exclamation (!)" },
+                    { symbol: " ?", label: "Question (?)"}
+                ];
+
+                punctuations.forEach(punct => {
+                    const button = document.createElement("button");
+                    button.className = "word-option";
+                    button.innerHTML = `
+                        <span class="word-text">${punct.symbol}</span>
+                        <span class="word-prob">Ponctuation</span>
+                    `;
+                    button.onclick = () => selectWord(punct.symbol);
+                    button.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            selectWord(punct.symbol);
+                        }
+                    };
+                    button.setAttribute('tabindex', '0');
+                    optionsDiv.appendChild(button);
+                });
+            }
         }
 
         function selectWord(word) {
             response.push(word);
             document.getElementById("current-response").textContent = response.join(" ");
-            currentWord = word;
-            console.log("Mot sélectionné :", word, "| currentWord mis à jour :", currentWord); // Log pour débogage
-            updateOptions();
 
-            // En mode debug, montrer les probabilités alternatives
-            if (currentMode === "debug") {
-                showDebugInfo(word);
+            // Vérifier si le mot est un signe de ponctuation (fin de phrase)
+            if ([".", " !", " ?"].includes(word)) {
+                currentWord = "<start>"; // Réinitialiser currentWord pour permettre de continuer après la ponctuation
+                return;
             }
+
+            currentWord = word.toLowerCase();
+            updateOptions();
         }
 
         function showDebugInfo(word) {
@@ -598,6 +631,7 @@
         // --- Événements ---
         document.getElementById("restart-btn").onclick = init;
         document.getElementById("new-prompt-btn").onclick = init;
+        document.getElementById("end-btn").onclick = showFeedback;
 
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.addEventListener('click', () => {
