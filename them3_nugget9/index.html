@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coulisses IA : l'enquête — La Vigie</title>
+<meta name="description" content="Activité interactive sur l'éthique de l'IA — incarnez un·e journaliste et bouclez le dossier spécial de La Vigie.">
+
+<style>
+/* ==========================================================================
+   0. TOKENS — palette, typographie, espacements
+   Thème "salle de rédaction / dossier d'enquête", clair, contrastes AA.
+   Aucune police externe chargée (fonctionnement hors-ligne + pas d'appel
+   tiers depuis l'iframe Moodle) : on s'appuie sur des piles de polices
+   système qui donnent quand même une vraie identité (serif de titrage,
+   monospace "pièce à conviction", sans-serif de lecture).
+   ========================================================================== */
+:root{
+  /* couleurs */
+  --paper:        #EFE8D8;   /* fond papier */
+  --paper-deep:   #E4DAC2;   /* cartes / zones creusées */
+  --paper-raised: #F7F2E6;   /* cartes / zones surélevées */
+  --ink:          #1E2430;   /* texte principal */
+  --ink-soft:     #4A5266;   /* texte secondaire */
+  --ink-faint:    #7A8299;   /* métadonnées, légendes */
+  --line:         #C9BE9F;   /* séparateurs, bordures discrètes */
+  --line-strong:  #A79B77;
+
+  --accent:       #9C2B22;   /* rouge d'imprimerie — actions, focus narratif */
+  --accent-text:  #7A211A;   /* variante plus sombre, pour le texte/liens (contraste) */
+  --accent-ink:   #631712;   /* hover/actif */
+  --accent-tint:  #F1DCD6;   /* fond très clair du rouge, pour zones d'alerte douces */
+
+  --gold:         #7A5E23;   /* tampons / badges */
+  --gold-tint:    #EBDFB9;
+
+  --success:      #2C5C41;
+  --success-tint: #DCE7DA;
+
+  --focus-ring:   #0B4FBF;
+
+  /* typographie */
+  --font-display: Montserrat, serif;
+  --font-mono:    Montserrat, monospace;
+  --font-body:    Montserrat, sans-serif;
+
+  --fs-base: 17px;
+
+  /* espacements & forme */
+  --radius: 3px;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --max-w: 52rem;
+
+  --shadow-card: 0 1px 0 var(--line), 0 8px 16px -12px rgba(30,36,48,0.35);
+}
+
+@media (prefers-reduced-motion: no-preference){
+  :root{ --transition: 160ms ease; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+/* ==========================================================================
+   1. RESET & BASE
+   ========================================================================== */
+*, *::before, *::after{ box-sizing: border-box; }
+html{ font-size: var(--fs-base); -webkit-text-size-adjust: 100%; }
+body{
+  margin: 0;
+  background: var(--paper);
+  background-image:
+    radial-gradient(var(--line) 0.6px, transparent 0.6px);
+  background-size: 14px 14px;
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+h1, h2, h3, h4{
+  font-family: var(--font-display);
+  color: var(--ink);
+  line-height: 1.2;
+  margin: 0 0 0.6em;
+}
+h1{ font-size: 1.9rem; }
+h2{ font-size: 1.5rem; }
+h3{ font-size: 1.2rem; }
+p{ margin: 0 0 1em; }
+ul, ol{ margin: 0 0 1em; padding-left: 1.3em; }
+a{ color: var(--accent-text); }
+a:not(.card-link){ text-underline-offset: 0.15em; }
+img, svg{ max-width: 100%; }
+button{ font: inherit; }
+
+.sr-only{
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* focus visible, cohérent partout, distinct des couleurs de statut */
+:focus{ outline: none; }
+:focus-visible{
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip-link{
+  position: absolute; left: -999px; top: 0; z-index: 100;
+  background: var(--ink); color: var(--paper-raised);
+  padding: 0.75em 1.2em; font-family: var(--font-mono); font-size: 0.95rem;
+}
+.skip-link:focus{ left: var(--space-2); top: var(--space-2); }
+
+/* ==========================================================================
+   2. MASTHEAD
+   ========================================================================== */
+.masthead{
+  border-bottom: 3px solid var(--ink);
+  background: var(--paper-raised);
+  padding: var(--space-2) var(--space-2) var(--space-1);
+}
+.masthead__inner{
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: var(--space-2);
+}
+.masthead__title-group{ display:flex; flex-direction: column; gap: 0.15em; }
+.masthead__eyebrow{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.masthead__title{
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+.masthead__title small{
+  display:block;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--accent-text);
+  letter-spacing: 0.04em;
+  margin-top: 0.25em;
+}
+.masthead__actions{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  grid-column: 2;
+  grid-row: 1;
+  margin-bottom: 0.25rem;
+}
+.masthead__back-link{
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.82rem;
+}
+.masthead__progress{
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  text-align: right;
+  min-width: 11rem;
+  grid-column: 2;
+  grid-row: 2;
+}
+.progress-track{
+  display: flex;
+  gap: 3px;
+  margin-top: 0.4em;
+}
+.progress-seg{
+  flex: 1 0 auto;
+  width: 1rem;
+  height: 0.55rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--line-strong);
+}
+.progress-seg[data-done="true"]{
+  background: var(--accent);
+  border-color: var(--accent-ink);
+}
+
+/* ==========================================================================
+   3. LAYOUT GÉNÉRAL
+   ========================================================================== */
+main{ display:block; }
+.view{
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-2) var(--space-4);
+}
+.view-narrow{ max-width: 40rem; }
+
+.storage-notice{
+  max-width: var(--max-w);
+  margin: var(--space-2) auto 0;
+  padding: 0.75em 1em;
+  background: var(--gold-tint);
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+footer.site-footer{
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+/* ==========================================================================
+   4. BOUTONS
+   ========================================================================== */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.65em 1.3em;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition, 0s), color var(--transition, 0s), transform var(--transition, 0s);
+}
+.btn:hover{ background: var(--paper-deep); }
+.btn:active{ transform: translateY(1px); }
+.btn-primary{
+  background: var(--accent);
+  border-color: var(--accent-ink);
+  color: #FFFFFF;
+}
+.btn-primary:hover{ background: var(--accent-ink); }
+.btn-primary:disabled{
+  background: var(--paper-deep);
+  border-color: var(--line-strong);
+  color: var(--ink-faint);
+  cursor: not-allowed;
+}
+.btn-ghost{
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink-soft);
+}
+.btn-ghost:hover{ background: var(--paper-deep); color: var(--ink); }
+.btn-row{ display:flex; flex-wrap:wrap; gap: 0.75em; margin-top: var(--space-2); }
+
+/* ==========================================================================
+   5. INTRO
+   ========================================================================== */
+.intro-kicker{
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  margin-bottom: 0.6em;
+}
+.intro-lede p{ font-size: 1.05rem; }
+.intro-note{
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  border-left: 3px solid var(--line-strong);
+  padding-left: 0.9em;
+  margin-top: var(--space-3);
+}
+
+/* ==========================================================================
+   6. TABLEAU DE BORD (grille des dossiers)
+   ========================================================================== */
+.volet{ margin-top: var(--space-4); }
+.volet:first-of-type{ margin-top: var(--space-3); }
+.volet__heading{
+  display:flex;
+  align-items:baseline;
+  gap: 0.6em;
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 0.4em;
+  margin-bottom: var(--space-2);
+}
+.volet__heading h2{ margin:0; }
+.volet__heading span{
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.dossier-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0; padding: 0;
+}
+.dossier-card{
+  position: relative;
+  display:block;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-2);
+  text-decoration: none;
+  color: var(--ink);
+  min-height: 9.5rem;
+}
+.dossier-card::before{
+  content: "";
+  position: absolute; top:0; left: 0.9em;
+  width: 2.4em; height: 0.5em;
+  background: var(--paper-deep);
+  border: 1px solid var(--line-strong);
+  border-top: none;
+}
+.dossier-card:hover{ background: var(--paper-deep); }
+.dossier-card__tag{
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
+.dossier-card__title{
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.08rem;
+  margin: 0.35em 0 0.5em;
+}
+.dossier-card__status{
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  display: flex;
+  align-items:center;
+  gap: 0.4em;
+  color: var(--ink-soft);
+}
+.dossier-card__status[data-state="solved"]{ color: var(--success); font-weight: 700; }
+.dossier-card__badge{
+  margin-top: 0.5em;
+  display:inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.2em 0.5em;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  transform: rotate(-2deg);
+}
+
+.dossier-card--locked{
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+.dossier-card--locked .dossier-card__title{ color: var(--ink-soft); }
+
+/* tampon "PISTE RÉSOLUE" */
+.stamp{
+  position:absolute; top: 0.6em; right: 0.6em;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--success);
+  border: 2px solid var(--success);
+  border-radius: 999px;
+  padding: 0.25em 0.55em;
+  transform: rotate(6deg);
+  background: var(--success-tint);
+}
+
+/* ==========================================================================
+   7. VUE ENJEU (piste)
+   ========================================================================== */
+.piste-header{
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.piste-header__meta{
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  display:flex; gap:0.8em; flex-wrap:wrap;
+  margin-bottom: 0.5em;
+}
+.accroche{
+  background: var(--paper-raised);
+  border-left: 4px solid var(--accent);
+  padding: var(--space-2);
+  font-size: 1.02rem;
+}
+.accroche p:last-child{ margin-bottom: 0; }
+
+.step{
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--line-strong);
+}
+.step:first-of-type{ border-top: none; }
+.step__label{
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-text);
+  margin-bottom: 0.4em;
+}
+.step__contexte{ margin-bottom: var(--space-2); }
+.step__question{ font-weight: 700; margin-bottom: 0.8em; }
+.step__instructions{
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin: -0.4em 0 0.9em;
+}
+
+fieldset.option-set{
+  border: none;
+  margin: 0; padding: 0;
+}
+.option{
+  display:block;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  margin-bottom: 0.6em;
+  border-radius: var(--radius);
+}
+.option label{
+  display:flex;
+  align-items:flex-start;
+  gap: 0.7em;
+  padding: 0.75em 0.9em;
+  cursor:pointer;
+}
+.option input{ margin-top: 0.28em; flex: none; width: 1.1em; height: 1.1em; }
+.option:has(input:checked){
+  border-color: var(--ink);
+  background: var(--paper-deep);
+}
+.option.is-correct{ border-color: var(--success); background: var(--success-tint); }
+.option.is-incorrect{ border-color: var(--accent); background: var(--accent-tint); }
+.option.is-disabled label{ cursor:not-allowed; color: var(--ink-faint); }
+
+.option-feedback{
+  font-size: 0.92rem;
+  padding: 0.6em 0.9em;
+  margin: -0.35em 0 0.6em;
+  border-left: 3px solid var(--line-strong);
+  color: var(--ink-soft);
+}
+.option-feedback[data-tone="correct"]{ border-color: var(--success); color: var(--success); }
+.option-feedback[data-tone="incorrect"]{ border-color: var(--accent); color: var(--accent-text); }
+
+.feedback-zone{
+  margin-top: var(--space-2);
+}
+.feedback-panel{
+  padding: var(--space-2);
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  margin-bottom: var(--space-2);
+}
+.feedback-panel[data-tone="correct"]{ border-color: var(--success); background: var(--success-tint); }
+.feedback-panel[data-tone="incorrect"]{ border-color: var(--accent); background: var(--accent-tint); }
+.feedback-panel[data-tone="neutral"]{ border-color: var(--line-strong); }
+.feedback-panel__lead{ font-weight: 700; margin-bottom: 0.3em; display:block; }
+
+.budget-counter{
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.8em;
+}
+.budget-counter[data-full="true"]{ color: var(--success); font-weight:700; }
+
+/* tri : chaque indice = un fieldset avec un radiogroup de catégories */
+.tri-indice{
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  padding: 0.9em;
+  margin-bottom: 0.8em;
+}
+.tri-indice legend{
+  padding: 0 0.3em;
+  font-style: italic;
+}
+.tri-indice__categories{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 0.5em;
+  margin-top: 0.6em;
+}
+.tri-indice__categories label{
+  display:inline-flex;
+  align-items:center;
+  gap: 0.4em;
+  border: 1px solid var(--line-strong);
+  padding: 0.35em 0.7em;
+  cursor:pointer;
+  font-size: 0.9rem;
+}
+.tri-indice__categories input{ width: 1em; height: 1em; }
+.tri-indice.is-correct{ border-color: var(--success); }
+.tri-indice.is-incorrect{ border-color: var(--accent); }
+.tri-indice__result{
+  margin-top: 0.6em;
+  font-size: 0.88rem;
+  padding: 0.5em 0.7em;
+}
+.tri-indice__result[data-tone="correct"]{ background: var(--success-tint); color: var(--success); }
+.tri-indice__result[data-tone="incorrect"]{ background: var(--accent-tint); color: var(--accent-text); }
+
+/* ==========================================================================
+   8. FICHE DE DOSSIER
+   ========================================================================== */
+.fiche{
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: var(--paper-raised);
+  border: 1px solid var(--ink);
+  position: relative;
+}
+.fiche::before{
+  content: "";
+  position:absolute; left: -1px; top: -1px; bottom: -1px;
+  width: 6px;
+  background: repeating-linear-gradient(45deg, var(--gold), var(--gold) 4px, var(--paper-raised) 4px, var(--paper-raised) 8px);
+}
+.fiche__unlock{
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4em;
+}
+.fiche h3{ margin-bottom: 0.3em; }
+.fiche__section{ margin-top: var(--space-2); }
+.fiche__section h4{
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-faint);
+  margin-bottom: 0.35em;
+}
+.fiche__sources{ font-size: 0.88rem; color: var(--ink-soft); }
+.fiche__sources li{ margin-bottom: 0.3em; }
+.fiche__badge-earned{
+  display:inline-block;
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  border: 1px dashed var(--gold);
+  color: var(--gold);
+  padding: 0.4em 0.7em;
+}
+
+/* ==========================================================================
+   9. CONCLUSION
+   ========================================================================== */
+.conclusion-recap{
+  list-style:none; margin: var(--space-2) 0; padding:0;
+  display:grid; grid-template-columns: repeat(auto-fill, minmax(11rem,1fr));
+  gap: 0.6em;
+}
+.conclusion-recap li{
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  padding: 0.6em 0.8em;
+  font-size: 0.85rem;
+}
+.conclusion-recap a{ font-weight: 700; text-decoration:none; }
+.conclusion-recap a:hover{ text-decoration: underline; }
+
+/* ==========================================================================
+   10. RESPONSIVE
+   ========================================================================== */
+@media (max-width: 30rem){
+  h1{ font-size: 1.55rem; }
+  .masthead__title{ font-size: 1.5rem; }
+  .masthead__progress{ text-align:left; }
+  .view{ padding: var(--space-3) 1.1rem var(--space-4); }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Aller au contenu principal</a>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="masthead__title-group">
+      <span class="masthead__eyebrow">La Vigie — dossier spécial</span>
+      <p class="masthead__title">Coulisses IA : l'enquête<small>Rédaction : La Vigie</small></p>
+    </div>
+    <div class="masthead__actions">
+      <a href="#" class="btn btn-ghost masthead__back-link" data-action="nav-intro">← Retour à l’intro</a>
+    </div>
+    <div class="masthead__progress" id="masthead-progress" aria-hidden="false">
+      <span id="progress-label">0/8 pistes résolues</span>
+      <div class="progress-track" id="progress-track"></div>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <div id="app"></div>
+</main>
+
+<footer class="site-footer">
+  Formation littératie IA — Inalco · Activité pédagogique "Coulisses IA : l'enquête"
+</footer>
+
+<div id="live-region" class="sr-only" aria-live="polite" role="status"></div>
+
+<script>
+/* ==========================================================================
+   SECTION 1 — DONNÉES
+   Un objet par enjeu : tout le contenu (scénario, config d'interaction,
+   fiche, sources) vit ici. Ajouter ou modifier un enjeu ne touche jamais
+   la logique du moteur (section 3) — seuls ces objets changent.
+
+   Schéma commun :
+   { id, axe: "amont"|"aval", numero, famille: "decryptage"|"tri"|"verification",
+     titrePiste, accroche, interaction, fiche }
+
+   interaction pour "decryptage" et "verification" (moteur commun renderSteps) :
+     { steps: [ ...étapes ] }
+     étape "hypothesis" : choix non noté, mémorisé pour l'étape "review" suivante.
+     étape "review"      : feedback conditionné par le choix de l'étape "hypothesis"
+                            référencée (basedOnStep), puis avance automatiquement.
+     étape "qcm"          : question notée classique (options avec correct + feedback).
+     étape "budget-select": choisir exactement N options parmi M (checkbox),
+                            chaque option porte "retain" (à privilégier) ou non
+                            (piège, avec feedback dédié) + un feedback de synthèse.
+
+   interaction pour "tri" (moteur renderTri) :
+     { categories: [...], indices: [...], feedbackFinal }
+   ========================================================================== */
+const ENJEUX = [
+
+// ---------------------------------------------------------------------------
+// A1 — TRANSPARENCE (amont / décryptage — révision progressive)
+// ---------------------------------------------------------------------------
+{
+  id: "A1", axe: "amont", numero: 1, famille: "decryptage",
+  titrePiste: "L'algorithme qui ne voyait pas tous les visages",
+  accroche: "Une association de défense des droits numériques vous signale des résultats troublants sur des logiciels de reconnaissance faciale vendus par plusieurs grandes entreprises technologiques : chargés de deviner le genre d'une personne à partir de son visage, ces outils affichent des taux d'erreur très différents selon les caractéristiques de la personne. Cet écart ne s'explique pas seulement par un biais racial ou un biais de genre, mais par leur combinaison. L'association a voulu comprendre pourquoi, mais s'est heurtée à un mur : impossible d'obtenir la composition des données d'entraînement, l'architecture des modèles, le détail des tests menés avant leur commercialisation, ou la moindre publication scientifique documentant leur développement.<br>Votre rédaction vous confie l'enquête : cibler la source du problème et mettre en lumière ce que la loi impose désormais aux fournisseurs d'IA en matière de transparence.",
+  interaction: { steps: [
+    {
+      type: "hypothesis", id: "etape1", label: "Étape 1 — Premier indice",
+      contexte: "Vos premières recherches vous ramènent en 2018, lorsqu'une étude a testé trois logiciels commerciaux de classification de genre par reconnaissance faciale (IBM, Microsoft, Face++) similaire à ceux signalés. Résultat : moins de 1% d'erreur pour les hommes à la peau claire, jusqu'à 34,7% d'erreur pour les femmes à la peau foncée. C'est tout ce que vous savez pour l'instant.",
+      question: "Quelle est votre première hypothèse ?",
+      instructions: "Ce choix n'est pas noté : il sera repris à l'étape suivante.",
+      options: [
+        { id: "A", texte: "Un problème technique, lié à la qualité des caméras ou à l'éclairage" },
+        { id: "B", texte: "Un manque de diversité dans les données d'entraînement" },
+        { id: "C", texte: "Un manque de tests avant la commercialisation" }
+      ]
+    },
+    {
+      type: "review", id: "etape2", label: "Étape 2 — Nouvel indice", basedOnStep: "etape1",
+      contexte: "Les chercheuses ont ensuite examiné la composition des jeux de données utilisés pour entraîner ces systèmes : ils étaient très majoritairement composés d'hommes à la peau claire.",
+      question: "Avec cet indice supplémentaire, confirmez-vous votre hypothèse de départ, ou la révisez-vous ?",
+      alignedOptionIds: ["B"],
+      feedbackAligned: "Votre hypothèse initiale se confirme : c'est bien un problème de représentativité des données. On retrouve la même logique que pour l'alignement (piste précédente) : une IA reproduit et amplifie les déséquilibres présents dans ses données d'entraînement.",
+      feedbackRevise: "Cet indice invite à réviser : la cause principale n'est ni matérielle (A) ni un simple défaut de test (C), mais la composition même des données d'entraînement.",
+      continueLabel: "Poursuivre l'enquête"
+    },
+    {
+      type: "qcm", id: "etape3", label: "Étape 3 — Généraliser",
+      contexte: "Après la publication de cette étude, IBM a annoncé l'arrêt de son programme de reconnaissance faciale.",
+      question: "Qu'est-ce que cette décision illustre ?",
+      unlocksFiche: true,
+      options: [
+        { id: "correct", texte: "Rendre visibles et documentées la composition des données d'entraînement permet d'identifier des biais avant qu'ils ne causent des dommages à grande échelle", correct: true, feedback: "Correct. La fiche de dossier est débloquée." },
+        { id: "A", texte: "IBM a arrêté parce que la reconnaissance faciale n'était plus rentable", correct: false, feedback: "Un facteur possible, mais ce n'est pas ce que la couverture de l'époque met en avant. La pression est venue de la mise en lumière des biais." },
+        { id: "B", texte: "IBM a été légalement obligée d'arrêter ce programme", correct: false, feedback: "Non : en 2020, il n'existait pas d'obligation légale spécifique aux États-Unis sur ce point précis c'est une décision volontaire, sous pression publique." },
+        { id: "C", texte: "La reconnaissance faciale de visages divers est techniquement impossible", correct: false, feedback: "Incorrect. C'est justement un problème qui se résout en diversifiant les données d'entraînement, pas une impossibilité technique." }
+      ]
+    }
+  ]},
+  fiche: {
+    enjeux: "La transparence",
+    definition: "La transparence en IA désigne l'ensemble des exigences et pratiques permettant de rendre visibles et compréhensibles la conception, les données et le fonctionnement d'un système d'IA notamment la composition et la représentativité des données utilisées pour l'entraîner.<br>La transparence est un levier crucial pour assurer la confiance entre les utilisateurs et les systèmes, réduire efficacement les biais, identifier la responsabilité en cas de dommages, prendre des décisions éclairées sur l'utilisation de l'IA et surtout assurer l'amélioration continue des systèmes.",
+    cadre: "L'AI Act européen distingue le fournisseur (qui conçoit et entraîne le système) du déployeur (qui le met à disposition d'un public), avec des obligations de transparence différentes selon le rôle. Pour les systèmes à haut risque, l'AI Act impose une documentation sur la représentativité des jeux de données d'entraînement. Le RGPD encadre par ailleurs la gouvernance des données personnelles (minimisation, finalité).",
+    exemples: [
+      "Étude Gender Shades (Buolamwini & Gebru, 2018) — écarts de précision selon le genre et la carnation.",
+      "Arrêt du programme de reconnaissance faciale d'IBM (2020), une décision largement attribuée à l'influence de cette étude."
+    ],
+    sources: [
+      "Buolamwini, J. & Gebru, T. (2018), \"Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification\", Proceedings of Machine Learning Research (Conference on Fairness, Accountability and Transparency)",
+      "MIT News (2018)",
+      "AI Act (Règlement UE 2024/1689)"
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// A2 — COÛT HUMAIN CACHÉ (amont / tri)
+// ---------------------------------------------------------------------------
+{
+  id: "A2", axe: "amont", numero: 2, famille: "tri",
+  titrePiste: "Le prix caché de nos écrans",
+  accroche: "Une source anonyme vous transmet un dossier sur la face cachée de la fabrication des machines et des IA que nous utilisons au quotidien. Dans plusieurs pays producteurs, des ONG dénoncent des conditions de travail difficiles, parfois associées au travail des enfants, dans certaines exploitations minières artisanales qui extraient les matières premières de nos appareils électroniques. Cette réalité rappelle que l'IA repose aussi sur une chaîne industrielle mondiale, dont les conséquences sociales restent souvent invisibles pour les utilisateurs. Contrairement à l'image d'une technologie entièrement automatisée, de nombreuses tâches essentielles à son fonctionnement restent réalisées par des humains : annotation d'images, modération de contenus, vérification de données, correction des réponses générées par l'IA. Plusieurs enquêtes montrent que nombre de ces travailleurs du numérique, notamment en Afrique, exercent ces activités dans des conditions précaires : contrats temporaires, rémunérations faibles, exposition à des contenus choquants, faible protection sociale.<br>Votre mission : remonter toute la chaîne de la mine à l'écran, et révéler au grand jour les coûts humains cachés de notre technologie.",
+  interaction: {
+    categories: [
+      { id: "extraction", label: "Extraction des matières premières" },
+      { id: "travail", label: "Travail humain invisible du numérique" },
+      { id: "horssujet", label: "Hors-sujet pour ce dossier" }
+    ],
+    indices: [
+      { id: "i1", texte: "\"Dans le sud de la République démocratique du Congo, environ 40 000 enfants travaillaient dans les mines artisanales de cobalt en 2014\" (UNICEF, cité par Amnesty International)", correct: "extraction", piegeExplication: "" },
+      { id: "i2", texte: "\"Des mineurs témoignent de journées de plusieurs heures sans équipement de protection, pour un à deux dollars\"", correct: "extraction", piegeExplication: ""},
+      { id: "i3", texte: "\"Au Kenya, des travailleurs ont été payés entre 1,32 et 2 dollars de l'heure pour lire et catégoriser des textes violents afin de rendre un agent conversationnel plus sûr\"", correct: "travail", piegeExplication: "" },
+      { id: "i4", texte: "\"Plusieurs de ces travailleurs rapportent des troubles psychologiques durables liés à l'exposition répétée à des contenus violents\"", correct: "travail", piegeExplication: ""},
+      { id: "i5", texte: "\"Les centres de données utilisés pour entraîner les IA consomment d'importantes quantités d'électricité et d'eau, avec un impact environnemental croissant\"", correct: "horssujet",
+        piegeExplication: "Piège : ce fait est réel et concerne bien la fabrication de l'IA, mais il relève d'un coût environnemental, pas humain — un enjeu voisin mais distinct de celui traité ici." }
+    ],
+    feedbackFinal: "Les deux premières catégories se répondent : ce sont les deux bouts d'une même chaîne de production, celle des appareils et des IA que nous utilisons au quotidien. Le 5ᵉ indice, lui, rappelle que le \"coût caché\" de l'IA a aussi une dimension environnementale, un sujet connexe qui mériterait sa propre enquête."
+  },
+  fiche: {
+    enjeux: "Le coût humain caché",
+    definition: "Le \"coût humain caché\" de l'IA désigne le travail humain difficile, faiblement rémunéré et souvent invisible qui rend possible la fabrication et le fonctionnement des systèmes d'IA : extraction des minerais nécessaires aux composants électroniques, annotation des données d'entraînement, modération des contenus utilisés pour rendre les IA plus sûres.",
+    cadre: "En France, la loi n° 2017-399 du 27 mars 2017 relative au devoir de vigilance oblige les grandes entreprises à identifier et prévenir les risques liés aux droits humains et à l'environnement dans leurs chaînes d'approvisionnement, un cadre directement applicable à ces enjeux.",
+    exemples: [
+      "Extraction du cobalt en RDC : rapport Amnesty International & Afrewatch (2016), \"This is what we die for\".",
+      "Modération/labellisation de données pour OpenAI par des travailleurs kényans sous-traités via Sama : enquête TIME (Perrigo, 2023)."
+    ],
+    sources: [
+      "Amnesty International & Afrewatch (2016)",
+      "Perrigo, B. (2023), TIME",
+      "Loi n° 2017-399 du 27 mars 2017"
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// A3 — ALIGNEMENT (amont / décryptage)
+// ---------------------------------------------------------------------------
+{
+  id: "A3", axe: "amont", numero: 3, famille: "decryptage",
+  titrePiste: "L'IA qui doit choisir qui sauver",
+  accroche: "Un accident impliquant une voiture autonome fait la une des journaux : le véhicule a dû choisir entre éviter un groupe de piétons ou protéger les passagers à son bord. Mais comment traduire des valeurs humaines complexes en règles algorithmiques et pourquoi est-ce si difficile ? Votre rédaction vous confie cette enquête pour comprendre comment ces choix sont programmés et ce que cela révèle sur l’alignement des valeurs humaines avec les systèmes d’IA.",
+  interaction: { steps: [
+    {
+      type: "qcm", id: "etape1", label: "Étape 1 — Le cas",
+      contexte: "En 2018, une voiture autonome d’Uber a percuté un piéton en Arizona, relançant le débat sur les dilemmes moraux auxquels ces véhicules sont confrontés. Les algorithmes doivent prendre des décisions en cas d’accident inévitable : freiner pour éviter un piéton, mais risquer de blesser les passagers, ou inversement. Comment ces systèmes sont-ils programmés pour faire des choix \"éthiques\" ?",
+      question: "Quel semble être le principal défi soulevé dans ce cas ?",
+      options: [
+        { id: "A", texte: "Un problème technique : les capteurs ou les algorithmes de la voiture autonome ne fonctionnaient pas correctement", correct: false, feedback: "Incorrect. Cette réponse correspond à une idée reçue selon laquelle les accidents impliquant des voitures autonomes sont dus à des défaillances techniques (ex. : capteurs défectueux). Cependant, dans ce cas précis, le système fonctionnait comme prévu, mais les règles programmées ne reflétaient pas nécessairement les attentes éthiques de la société." },
+        { id: "correct", texte: "Un problème d’alignement des valeurs : l’algorithme a été conçu pour optimiser un objectif (ex. : minimiser les dommages), mais cela ne reflète pas toujours les valeurs humaines complexes", correct: true, feedback: "Cette réponse met en lumière le cœur du problème : l’alignement des valeurs. Les algorithmes des voitures autonomes sont conçus pour optimiser des objectifs spécifiques (ex. : minimiser les dommages), mais ces objectifs peuvent entrer en conflit avec des valeurs humaines plus complexes (ex. : protéger les piétons vs protéger les passagers). Ce décalage illustre le défi de l’alignement en IA." },
+        { id: "C", texte: "Un manque de réglementation : les voitures autonomes sont déployées sans cadre juridique clair pour encadrer leurs décisions", correct: false, feedback: "Bien que la réglementation soit un enjeu important, ce n’est pas le problème central dans ce cas. Le défi principal relève davantage de l’alignement des valeurs que de l’absence de cadre juridique." },
+        { id: "D", texte: "Il y avait un bug technique", correct: false, feedback: "Non, l'outil fonctionnait exactement comme entraîné, c'est bien le problème." }
+      ]
+    },
+    {
+      type: "qcm", id: "etape2", label: "Étape 2 — L'analyse",
+      contexte: "Le projet Moral Machine du MIT a recueilli des millions de réponses à des dilemmes moraux impliquant des voitures autonomes. Les résultats montrent que les préférences varient selon les cultures : par exemple, certains pays privilégient la protection des passagers, tandis que d’autres accordent plus d’importance à la sécurité des piétons. Ces divergences rendent difficile la programmation de règles universelles pour les algorithmes.",
+      question: "D’après ces informations, quel est le défi principal de l’alignement des valeurs dans le cas des voitures autonomes ?",
+      unlocksFiche: true,
+      options: [
+        { id: "A", texte: "Les algorithmes ne sont pas assez performants pour éviter les accidents", correct: false, feedback: "Cette réponse correspond à une idée reçue selon laquelle le problème est exclusivement technique. Cependant, le défi principal relève davantage de l’alignement des valeurs que de la performance des algorithmes." },
+        { id: "correct", texte: "Les valeurs humaines sont complexes et variées, ce qui rend difficile leur traduction en règles algorithmiques universelles", correct: true, feedback: "Correct. La fiche de dossier est débloquée." },
+        { id: "C", texte: "Les constructeurs automobiles ne prennent pas au sérieux les questions d’éthique", correct: false, feedback: "Bien que l’éthique soit un enjeu important, cette réponse ne reflète pas le défi principal de l’alignement. Elle est trop réductrice et ne tient pas compte des efforts réels des constructeurs pour aborder ces questions." },
+        { id: "D", texte: "Les utilisateurs ne font pas confiance aux voitures autonomes, ce qui limite leur adoption", correct: false, feedback: "Cette réponse aborde un enjeu réel (la confiance des utilisateurs), mais elle ne traite pas du problème central de l’alignement des valeurs." }
+      ]
+    }
+  ]},
+  fiche: {
+    enjeux: "L'alignement",
+    definition: "L’alignement en intelligence artificielle désigne le processus visant à concevoir des systèmes dont les décisions et comportements respectent les valeurs, intentions et normes humaines. Ce défi est particulièrement complexe, car les valeurs humaines sont souvent ambiguës, contradictoires ou culturelles. L’alignement ne se limite pas à une question technique, mais soulève des enjeux éthiques, philosophiques et sociétaux.",
+    cadre: "L'alignement reste un champ de recherche actif et non résolu. Une technique courante, le RLHF (apprentissage par renforcement à partir de retours humains), consiste à faire évaluer les réponses d'une IA par des humains pour orienter son comportement (sans garantir une résolution complète du problème).",
+    exemples: [
+      "L'outil de recrutement d'Amazon (2014-2017), abandonné après découverte du biais de genre (Dastin, Reuters, 2018).",
+      "Les algorithmes de recommandation optimisés pour maximiser l'engagement, qui peuvent favoriser des contenus clivants, l'objectif spécifié (temps passé) divergeant du bien-être réel des utilisateurs.",
+      "A peine lancée, une intelligence artificielle de Microsoft dérape sur Twitter (Tual, Le Monde, 2016).",
+      "États-Unis : un véhicule autonome d’Uber provoque la mort une piétonne (Lesnes, Le Monde, 2018)."
+
+    ],
+    sources: [
+      "Gabriel, I. (2020), \"Artificial Intelligence, Values, and Alignment\", Minds and Machines.",
+      "Christian, B. (2020), The Alignment Problem.",
+      "Moral Machine (MIT, 2018) — Étude sur les préférences morales dans les dilemmes des voitures autonomes."
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// V1 — ESPACE PUBLIC ET BIEN-ÊTRE SOCIAL (aval / tri)
+// ---------------------------------------------------------------------------
+{
+  id: "V1", axe: "aval", numero: 1, famille: "tri",
+  titrePiste: "Deux visages de l'IA dans nos vies",
+  accroche: "Plusieurs sujets concernant l'IA agitent l'actualité. Certains concernent des applications avec lesquelles nous échangeons volontairement, comme les compagnons IA. D'autres concernent les espaces publics, où l'IA peut être utilisée pour identifier ou suivre des personnes. Votre rédacteur en chef vous demande de distinguer les bénéfices potentiels des risques réels afin de préparer un dossier sur l'impact de l'IA sur la société.",
+  interaction: {
+    categories: [
+      { id: "compagne", label: "IA compagne" },
+      { id: "surveille", label: "IA qui surveille" },
+      { id: "horssujet", label: "Hors-sujet pour ce dossier" }
+    ],
+    indices: [
+      { id: "i1", texte: "\"Une étude sur les utilisateurs de <a href=\"https://fr.wikipedia.org/wiki/Replika\">Replika</a> suggère que la relation évolue d'une interaction superficielle vers un attachement émotionnel stable\" (Laestadius et al., 2022)", correct: "compagne", piegeExplication: "" },
+      { id: "i2", texte: "\"Les résultats sur le lien entre usage des compagnons IA et solitude sont contrastés : certaines études montrent une réduction, d'autres une aggravation en cas d'usage intensif\" (International AI Safety Report, 2026)", correct: "compagne", piegeExplication: "" },
+      { id: "i3", texte: "\"La CNIL a jugé disproportionné le recours à la reconnaissance faciale à l'entrée de deux lycées, alors qu'un contrôle par badge suffisait\"", correct: "surveille", piegeExplication: "" },
+      { id: "i4", texte: "\"L'AI Act interdit la reconnaissance faciale “à la volée” en temps réel dans l'espace public, sauf exceptions très encadrées\"", correct: "surveille", piegeExplication: "" },
+      { id: "i5", texte: "\"Une enquête montre que l'usage des réseaux sociaux en général, indépendamment de toute IA générative, est déjà associé à une hausse du sentiment de solitude chez les adolescents\"", correct: "horssujet",
+        piegeExplication: "Piège : le lien entre numérique et solitude est réel, mais ce constat concerne les réseaux sociaux en général, pas spécifiquement l'IA." }
+    ],
+    feedbackFinal: "Deux logiques bien différentes : l'anthropomorphisation/dépendance affective relève d'une relation individuelle choisie (avec ses risques), la reconnaissance faciale d'une surveillance collective souvent non consentie. Les deux posent la question : quelle place laisse-t-on à l'IA dans notre vie sociale et notre espace public ? Comme pour les données d'entraînement biaisées (piste Transparence), c'est encore une fois l'absence de visibilité (ici sur le fonctionnement des systèmes de surveillance) qui pose problème."
+  },
+  fiche: {
+    enjeux: "L'espace public et le bien-être social",
+    definition: "Ce dossier recouvre deux phénomènes distincts : l'anthropomorphisation (tendance à attribuer des caractéristiques humaines à une IA, pouvant mener à un attachement émotionnel voire une dépendance affective) et la reconnaissance faciale dans l'espace public (technologie d'identification biométrique strictement encadrée en France et en Europe).",
+    cadre: "L'AI Act (Règlement UE 2024/1689, art. 5) classe la reconnaissance faciale biométrique \"en temps réel\" dans l'espace public parmi les pratiques interdites, sauf exceptions strictement encadrées. En France, la CNIL a précisé sa doctrine à plusieurs reprises (expérimentations jugées disproportionnées, mises en demeure 2025-2026).",
+    exemples: [
+      "Étude sur les utilisateurs de Replika (Laestadius et al., 2022, New Media & Society).",
+      "Refus de la CNIL d'une expérimentation de reconnaissance faciale à l'entrée de deux lycées de la région PACA."
+    ],
+    sources: [
+      "Laestadius, L. et al. (2022), New Media & Society",
+      "International AI Safety Report (2026)",
+      "CNIL (2019, 2023)",
+      "AI Act, art. 5"
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// V2 — MANIPULATION : DEEPFAKE & AI SLOP (aval / vérification)
+// ---------------------------------------------------------------------------
+{
+  id: "V2", axe: "aval", numero: 2, famille: "verification",
+  titrePiste: "Vrai, fabriqué, ou juste... du remplissage ?",
+  accroche: "Deux contenus arrivent à la rédaction le même jour : une vidéo suspecte d'un dirigeant d'entreprise annonçant une fusion, et une image virale bouleversante partagée des milliers de fois. Les deux ont été générés par IA, mais pas pour les mêmes raisons.",
+  interaction: { steps: [
+    {
+      type: "budget-select", id: "cas1", label: "Cas 1 — la vidéo (deepfake)", budget: 3,
+      contexte: "Votre rédacteur en chef vous donne 10 minutes avant bouclage : vous n'avez le temps de mener que 3 vérifications sur les 6 possibles. Lesquelles choisissez-vous ?",
+      wrapupFeedback: "Une méta-analyse de 56 études (Diel et al., 2024) montre que la précision humaine de détection visuelle des deepfakes plafonne à environ 55% donc à peine mieux que le hasard. D'où l'importance du recoupement de sources plutôt que de l'instinct visuel ou de signaux trompeurs comme la viralité ou la certification d'un compte.",
+      options: [
+        { id: "o4", texte: "Se fier au nombre de vues, déjà élevé", retain: false, feedback: "Piège : la viralité précède souvent la vérification, elle ne la remplace pas." },
+        { id: "o1", texte: "Rechercher la source originale de la vidéo", retain: true },
+        { id: "o5", texte: "Se fier au fait que le compte qui partage est certifié", retain: false, feedback: "Piège : un compte certifié peut relayer sans vérifier." },
+        { id: "o2", texte: "Vérifier si d'autres médias fiables relaient l'information", retain: true },
+        { id: "o3", texte: "Chercher une conférence de presse officielle correspondante", retain: true },
+        { id: "o6", texte: "Publier vite pour ne pas se faire devancer", retain: false, feedback: "Piège : c'est l'inverse du réflexe professionnel attendu." },
+      ]
+    },
+    {
+      type: "qcm", id: "cas2", label: "Cas 2 — l'image virale (AI slop)",
+      contexte: "Cette image a été partagée des milliers de fois avant d'être identifiée comme générée par IA.",
+      question: "Quel est l'objectif principal derrière ce type de contenu généré en masse ?",
+      unlocksFiche: true,
+      options: [
+        { id: "A", texte: "Manipuler délibérément l'opinion sur un événement précis", correct: false, feedback: "Parfois vrai, mais ce n'est pas l'objectif premier de la majorité de ces contenus." },
+        { id: "correct", texte: "Générer de l'engagement (likes, partages) à moindre coût, à des fins de monétisation publicitaire", correct: true, feedback: "Correct. La plupart de \"l'AI slop\" vise le profit via l'économie de l'attention, même si certains contenus sont ensuite récupérés, ou généré initialement à des fins de désinformation. Comme pour les jeux de données non documentés (piste Transparence), c'est l'opacité du mécanisme, ici publicitaire, qui rend ce phénomène difficile à combattre. La fiche de dossier est débloquée." },
+        { id: "C", texte: "Tester les limites techniques des outils de génération d'images", correct: false, feedback: "Incorrect." },
+        { id: "D", texte: "Remplacer les créateurs de contenu humains", correct: false, feedback: "Une conséquence indirecte, pas l'objectif premier." }
+      ]
+    }
+  ]},
+  fiche: {
+    enjeux: "La manipulation de l'information : deepfake et AI slop",
+    definition: "Un deepfake est un contenu audiovisuel généré ou modifié par IA pour représenter de façon réaliste des propos ou actions qu'une personne n'a jamais tenus. L'\"AI slop\" (\"bouillie IA\" — mot de l'année 2025 pour Merriam-Webster) désigne un contenu numérique produit en masse par IA, perçu comme de faible qualité ou effort, généralement destiné à capter l'attention ou générer des revenus publicitaires plutôt qu'à informer.",
+    cadre: "L'AI Act impose des obligations de transparence sur les contenus générés ou manipulés par IA. Aux États-Unis, le TAKE IT DOWN Act (2025) oblige les plateformes à retirer les deepfakes intimes non consentis. L'AI slop, en revanche, relève surtout des politiques de modération des plateformes, sans cadre juridique dédié à ce jour.",
+    exemples: [
+      "Précision humaine de détection des deepfakes ≈ 55% (Diel et al., 2024).",
+      "Fraude d'entreprise : en 2024, une entreprise (Arup, Hong Kong) a perdu 25,6 millions de dollars après qu'un employé a suivi les instructions données lors d'un appel vidéo où plusieurs participants étaient en réalité des deepfakes.",
+      "Phénomène des images virales générées en masse lors de catastrophes naturelles (ex. ouragan Helene, 2024), brouillant l'accès à une information fiable en temps de crise."
+    ],
+    sources: [
+      "Diel, A. et al. (2024), Computers in Human Behavior Reports",
+      "Article Wikipedia \"AI slop\" (référence Merriam-Webster 2025)",
+      "What is AI slop ?, Nemeroff (2025), The Conversation",
+      "What is AI slop ?, Roozenbeek (2025), , The Conversation"
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// V3 — MANIPULATION : TEXTE GÉNÉRÉ CONVAINCANT (aval / vérification)
+// ---------------------------------------------------------------------------
+{
+  id: "V3", axe: "aval", numero: 3, famille: "verification",
+  titrePiste: "L'article qui sonnait trop vrai",
+  accroche: "Un article de santé publique, largement partagé, s'avère truffé d'erreurs factuelles habilement dissimulées sous un style journalistique impeccable. Votre rédaction veut savoir : un texte généré par IA peut-il vraiment tromper un lecteur averti ?",
+  interaction: { steps: [
+    {
+      type: "budget-select", id: "verif", label: "Vérifier l'article", budget: 3,
+      contexte: "Vous avez le temps de mener 3 vérifications sur les 6 possibles sur cet article de santé publique avant la deadline. Lesquelles choisissez-vous ?",
+      wrapupFeedback: "Une étude (Spitale et al., 2023, Science Advances) a montré que GPT-3 était jugé aussi, voire plus convaincant que des humains pour rédiger des textes informatifs y compris lorsqu'il s'agit de désinformer, précisément parce que le style est impeccable. D'où le piège de l'option \"texte bien écrit\" : comme pour le deepfake vidéo, l'apparence de qualité ne garantit rien. Seul le recoupement de sources est fiable.",
+      options: [
+        { id: "o1", texte: "Vérifier si les chiffres cités renvoient à une source primaire identifiable", retain: true },
+        { id: "o2", texte: "Rechercher si l'auteur existe réellement et possède les qualifications annoncées", retain: true },
+        { id: "o4", texte: "Compter le nombre de partages sur les réseaux sociaux", retain: false, feedback: "Piège : la popularité n'indique pas la fiabilité." },
+        { id: "o5", texte: "Vérifier que le texte est bien écrit, sans fautes d'orthographe", retain: false, feedback: "Piège : un texte impeccable n'est pas un gage de vérité — c'est même souvent le contraire qui doit alerter." },
+        { id: "o6", texte: "Regarder si l'article a une date de publication récente", retain: false, feedback: "Piège : la fraîcheur n'indique pas l'exactitude." },
+        { id: "o3", texte: "Vérifier si d'autres médias spécialisés reprennent la même information", retain: true },
+      ]
+    },
+    {
+      type: "qcm", id: "complementaire", label: "Question complémentaire",
+      contexte: "Une autre étude (Goldstein et al., 2024, PNAS Nexus) a testé la propagande générée par IA.",
+      question: "Quel est son principal résultat ?",
+      unlocksFiche: true,
+      options: [
+        { id: "correct", texte: "La propagande générée par IA est jugée quasiment aussi persuasive que la propagande écrite par des professionnels humains", correct: true, feedback: "Correct. La fiche de dossier est débloquée." },
+        { id: "A", texte: "La propagande IA est nettement moins persuasive que la propagande humaine", correct: false, feedback: "Incorrect, c'est l'inverse qui inquiète les chercheurs." },
+        { id: "B", texte: "La propagande IA n'est efficace que si elle est relue et corrigée par un humain", correct: false, feedback: "L'étude ne fait pas cette distinction. La propagande générée seule était déjà quasiment aussi persuasive." },
+        { id: "C", texte: "La propagande IA est nettement plus persuasive que la propagande humaine", correct: false, feedback: "L'étude ne fait pas cette distinction." },
+      ]
+    }
+  ]},
+  fiche: {
+    enjeux: "La manipulation de l'information : texte généré convaincant",
+    definition: "La génération de texte convaincant mais faux désigne la capacité des IA génératives, notamment les grands modèles de langage, à produire des textes informatifs en apparence mais contenant des informations fausses ou trompeuses, rédigés dans un style imitant la crédibilité journalistique ou scientifique.",
+    cadre: "Au-delà des obligations générales de transparence de l'AI Act sur le contenu généré par IA, il n'existe pas à ce jour de régulation européenne spécifique à la désinformation textuelle générée par IA. Les plateformes développent des politiques de modération et de marquage.",
+    exemples: [
+      "Spitale et al. (2023, Science Advances) : GPT-3 jugé aussi voire plus convaincant que des humains pour informer et désinformer.",
+      "Goldstein et al. (2024, PNAS Nexus) : propagande générée par IA quasiment aussi persuasive que celle rédigée par des professionnels."
+    ],
+    sources: [
+      "Spitale, G. et al. (2023), Science Advances",
+      "Goldstein, J. A. et al. (2024), PNAS Nexus"
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// V4 — ATROPHIE COGNITIVE (aval / décryptage)
+// ---------------------------------------------------------------------------
+{
+  id: "V4", axe: "aval", numero: 4, famille: "decryptage",
+  titrePiste: "Le muscle qu'on arrête de faire travailler",
+  accroche: "Un enseignant vous contacte, inquiet : ses étudiants peinent de plus en plus à construire un raisonnement sans passer par un assistant IA. Est-ce une impression, ou un phénomène mesurable ? Votre rédaction vous demande d'enquêter sur l'atrophie cognitive.",
+  interaction: { steps: [
+    {
+      type: "qcm", id: "etape1", label: "Étape 1 — Le cas",
+      contexte: "Une étude du MIT Media Lab (Kosmyna et al., 2025, \"Your Brain on ChatGPT\") a suivi 54 participants pendant 4 mois, rédigeant des essais sans aide, avec un moteur de recherche, ou avec ChatGPT (avec suivi de leur activité cérébrale par EEG).",
+      question: "Que montre cette étude chez les utilisateurs de ChatGPT ?",
+      options: [
+        { id: "A", texte: "Ils rédigent plus lentement, mais leur \"charge cognitive pertinente\" est plus importante, leur permettant de mieux retenir ce qu'ils écrivent", correct: false, feedback: "Incorrect, c'est l'inverse." },
+        { id: "correct", texte: "Ils rédigent plus vite, mais leur \"charge cognitive pertinente\" chute considérablement", correct: true, feedback: "Les participants utilisant ChatGPT ont rédigé 60% plus vite mais leur \"charge cognitive pertinente\" chute de 32%, leur connectivité cérébrale est quasiment divisée par deux, et 83% d'entre eux sont incapables de se souvenir d'un passage qu'ils viennent d'écrire" },
+        { id: "C", texte: "Aucune différence mesurable n'apparaît", correct: false, feedback: "Incorrect, l'étude EEG montre des écarts nets." },
+        { id: "D", texte: "Leur créativité augmente significativement et les copies de ces participants montrent une originalité accrue", correct: false, feedback: "Incorrect. Une autre étude (Doshi & Hauser, 2024) montre même l'inverse à l'échelle collective : le gain individuel de créativité s'accompagne d'une baisse de la diversité globale des productions." }
+      ]
+    },
+    {
+      type: "qcm", id: "etape2", label: "Étape 2 — Généraliser",
+      contexte: "Le modèle du \"Distributed Atrophy\" (Jadhav, 2025) propose une explication théorique à ce type de cascade, en quatre étapes : <ol><li>délégation cognitive (on confie la tâche à l'IA)</li><li> réduction de l'effort de représentation mentale (moins de répétition, moins d'encodage)</li><li> désuétude de l'abstraction interne (on cesse de synthétiser, catégoriser, inférer par soi-même)</li><li> risque d'atrophie représentationnelle (érosion de la confiance dans ses propres capacités).</li></ol>",
+      question: "Quel mécanisme central ce modèle met-il en évidence ?",
+      options: [
+        { id: "A", texte: "Le modèle montre que l'IA finira par remplacer complètement la pensée humaine", correct: false, feedback: "Non, le modèle ne prédit pas un remplacement total, mais un risque de dépendance progressive si l'usage n'est pas réfléchi." },
+        { id: "C", texte: "Le modèle ne s'applique qu'aux tâches de rédaction", correct: false, feedback: "Non, le modèle est généraliste (raisonnement, mémorisation, abstraction) — la rédaction n'est qu'un exemple étudié empiriquement." },
+        { id: "correct", texte: "Le modèle montre que la délégation systématique mène a une réduction de l'effort d'abstraction interne", correct: true, feedback: "Chaque étape de délégation réduit un peu plus l'effort d'abstraction interne, jusqu'à fragiliser la confiance de la personne dans ses propres capacités de raisonnement, un cercle qui peut s'auto-renforcer (moins on s'exerce, moins on se sent capable, plus on délègue)" },
+        { id: "D", texte: "Le modèle prouve que tout usage de l'IA est nocif", correct: false, feedback: "Trop absolu — l'auteur précise que l'usage réfléchi et le design intentionnel des outils peuvent limiter ce risque ; ce n'est pas une fatalité." }
+      ]
+    },
+    {
+      type: "qcm", id: "etape3", label: "Étape 3 — Et maintenant ?",
+      contexte: "La consultante Kanchan Shine propose une distinction pratique : l'IA peut fonctionner comme un amplificateur (on élabore d'abord sa propre analyse, puis on sollicite l'IA pour l'affiner ou la challenger) ou comme une béquille (on délègue la réflexion dès le départ, sans être passé par sa propre analyse).",
+      question: "Quelle est la différence clé entre ces deux usages ?",
+      unlocksFiche: true,
+      options: [
+        { id: "A", texte: "Cela dépend uniquement du temps total passé à utiliser l'IA", correct: false, feedback: "Incorrect, c'est l'ordre des opérations qui compte, pas la durée." },
+        { id: "correct", texte: "Utiliser l'IA après avoir élaboré sa propre analyse muscle la pensée tandis que lui déléguer la réflexion dès le départ l'affaiblit", correct: true, feedback: "Correct. La fiche de dossier est débloquée." },
+        { id: "C", texte: "Tout usage de l'IA affaiblit systématiquement la pensée, sans exception", correct: false, feedback: "Trop absolu. L'enjeu n'est pas l'outil en soi, mais la façon de s'en servir." }
+      ]
+    }
+  ]},
+  fiche: {
+    enjeux: "L'atrophie cognitive",
+    definition: "L'atrophie cognitive désigne l'affaiblissement progressif de certaines capacités de raisonnement, de mémorisation ou d'analyse lorsqu'elles sont durablement déléguées à un outil externe. Le modèle du Distributed Atrophy (Jadhav) décrit ce phénomène comme une cascade en quatre étapes :  <ol><li>délégation cognitive</li> <li>réduction de l'effort de représentation</li> <li>désuétude de l'abstraction interne</li> <li>risque d'atrophie représentationnelle pouvant s'auto-renforcer dans le temps</li></ol>",
+    cadre: "Pas de cadre juridique dédié ; l'enjeu relève de la recherche en sciences cognitives et en sciences de l'éducation, avec une préoccupation croissante des chercheurs et des institutions d'enseignement supérieur (42% des jeunes Français utilisent déjà l'IA générative quotidiennement, moins de trois ans après le lancement de ChatGPT, Baromètre Born AI, 2025). Le Future of Jobs Report du Forum économique mondial distingue les compétences \"durables\" (pensée analytique, résolution créative de problèmes, jugement complexe) précisément celles les plus exposées à l'atrophie en cas de délégation excessive à l'IA, des compétences \"périssables\" (savoir-faire techniques rapidement automatisables).",
+    outilPratique: "La distinction amplificateur / béquille (Shine) offre un repère actionnable : solliciter l'IA après avoir élaboré sa propre analyse renforce la capacité de réflexion, lui déléguer la réflexion dès le départ l'affaiblit.",
+    exemples: [
+      "Kosmyna, N. et al. (2025), \"Your Brain on ChatGPT\" (MIT Media Lab) : étude EEG sur 4 mois, 54 participants : rédaction 60% plus rapide avec ChatGPT, charge cognitive pertinente en baisse de 32%, connectivité cérébrale quasi divisée par deux, 83% des utilisateurs d'IA incapables de se souvenir d'un passage qu'ils venaient d'écrire.",
+      "Lee, H-P. et al. (2025), CHI 2025 (Microsoft Research/Carnegie Mellon) : corrélation négative substantielle (r = -0,49) entre fréquence d'usage de l'IA et score de pensée critique chez 319 travailleurs du savoir.",
+      "Doshi, A. R. & Hauser, O. P. (2024, Science Advances) : l'IA générative améliore la créativité individuelle mais réduit la diversité collective des contenus produits."
+    ],
+    sources: [
+      "Jadhav, A., \"Distributed Atrophy: How AI Shapes and Shrinks Our Cognitive Habits\" (preprint, College of Computing, Grand Valley State University)",
+      "Kosmyna, N. et al. (2025), MIT Media Lab, arXiv",
+      "Lee, H-P. et al. (2025), CHI 2025",
+      "Doshi, A. R. & Hauser, O. P. (2024), Science Advances",
+      "Roxin, I. (2025), interview, Polytechnique Insights",
+      "Shine, K., \"The Cognitive Atrophy Crisis: What Happens When AI Does Our Thinking\" (article professionnel, LinkedIn — non académique)"
+    ]
+  }
+},
+
+// ---------------------------------------------------------------------------
+// V5 — EXPLICABILITÉ (aval / décryptage — révision progressive)
+// ---------------------------------------------------------------------------
+{
+  id: "V5", axe: "aval", numero: 5, famille: "decryptage",
+  titrePiste: "Le prêt refusé sans explication",
+  accroche: "Un lecteur vous écrit : sa demande de crédit a été refusée par un système automatisé, sans qu'aucune explication compréhensible ne lui soit donnée. Votre rédaction vous demande d'enquêter sur ce que la loi impose, et n'impose pas, en matière d'explicabilité de l'IA.",
+  interaction: { steps: [
+    {
+      type: "hypothesis", id: "etape1", label: "Étape 1 — Premier indice",
+      contexte: "Une banque utilise un système d'IA pour décider automatiquement d'accorder ou non un crédit. Un client se voit refuser sa demande sans justification compréhensible. C'est tout ce que vous savez pour l'instant.",
+      question: "Que pensez-vous que la loi permette ici ?",
+      instructions: "Ce choix n'est pas noté : il sera repris à l'étape suivante.",
+      options: [
+        { id: "A", texte: "Rien n'encadre spécifiquement ce type de décision en Europe" },
+        { id: "B", texte: "La banque doit fournir une explication au client" },
+        { id: "C", texte: "Seul un tribunal peut obliger la banque à s'expliquer" }
+      ]
+    },
+    {
+      type: "review", id: "etape2", label: "Étape 2 — Nouvel indice", basedOnStep: "etape1",
+      contexte: "L'AI Act européen classe les systèmes de notation de crédit parmi les systèmes \"à haut risque\", soumis à des obligations renforcées de transparence y compris un devoir d'explication envers la personne concernée.",
+      question: "Avec cet indice, confirmez-vous ou révisez-vous votre hypothèse ?",
+      alignedOptionIds: ["B"],
+      feedbackAligned: "Votre hypothèse se confirme. Comme pour la reconnaissance faciale (piste Transparence), l'AI Act impose ici un devoir de rendre visible ce qui, par défaut, resterait caché.",
+      feedbackRevise: "Cet indice invite à réviser : l'obligation existe bel et bien, et elle est préalable. Pas besoin d'un tribunal pour l'activer.",
+      continueLabel: "Poursuivre l'enquête"
+    },
+    {
+      type: "qcm", id: "etape3", label: "Étape 3 — Approfondir",
+      contexte: "L'explicabilité est souvent présentée comme une qualité essentielle d'une IA de confiance. Pourtant, elle est fréquemment confondue avec une autre notion : l'interprétabilité. Les distinguer permet de mieux comprendre ce qu'il est réellement possible d'expliquer sur le fonctionnement d'une IA.",
+      question: "Quelle est la différence entre interprétabilité et explicabilité ?",
+      unlocksFiche: true,
+      options: [
+        { id: "correct", texte: "L’interprétabilité se concentre sur la compréhension du fonctionnement interne des modèles d’IA, tandis que l’explicabilité vise à décrire les raisons qui ont conduit le modèle à produire ses résultats", correct: true, feedback: "Correct. La fiche de dossier est débloquée." },
+        { id: "A", texte: "Les deux termes sont synonymes et interchangeables", correct: false, feedback: "Non. Un modèle peut être interprétable (on devine comment il fonctionne globalement) sans produire d'explication active pour chaque décision individuelle."},
+        { id: "B", texte: "L'explicabilité ne concerne que les modèles symboliques, pas l'apprentissage profond", correct: false, feedback: "Non, c'est justement le champ de recherche qui vise à rendre explicables aussi les modèles de deep learning, réputés \"boîte noire\"." },
+        {id: "C", texte: "L'interprétabilité et l'explicabilité poursuivent le même objectif, mais l'interprétabilité s'adresse aux utilisateurs tandis que l'explicabilité est réservée aux experts en intelligence artificielle.", correct: false, feedback: "Non. La différence ne dépend pas du public visé, mais de ce que l'on cherche à comprendre : l'interprétabilité concerne la compréhension du fonctionnement du modèle, tandis que l'explicabilité fournit des raisons expliquant une décision ou un résultat."
+        }
+      ]
+    }
+  ]},
+  fiche: {
+    enjeux: "L'explicabilité",
+    definition: "Selon la CNIL, l'explicabilité en IA est la capacité de mettre en relation et de rendre compréhensible les éléments pris en compte par un système d'IA pour la production d'un résultat.",
+    cadre: "L'AI Act impose un devoir d'explication pour les décisions de crédit automatisées. La CNIL, via son laboratoire d'innovation numérique (LINC), documente depuis plusieurs années l'évolution de ce champ, notamment la tension entre IA symbolique (nativement interprétable) et apprentissage profond (\"boîte noire\").",
+    exemples: [
+      "Obligation légale d'explication pour les refus de crédit automatisés (AI Act).",
+      "Travaux de recherche du LINC (CNIL) sur l'explicabilité de l'IA."
+    ],
+    sources: [
+      "CNIL, fiche définition \"Explicabilité (IA)\"",
+      "CNIL/LINC, série d'articles sur l'explicabilité",
+      "AI Act (obligation d'explication, crédit)"
+    ]
+  }
+}
+
+];
+
+const INTRO = {
+  titre: "Bienvenue à La Vigie",
+  paragraphes: [
+    "Vous rejoignez aujourd'hui la rédaction de La Vigie pour une mission spéciale : boucler, avant la deadline, un dossier d'enquête sur les coulisses de l'intelligence artificielle. Votre rédaction vous confie huit pistes à recouper, organisées en deux volets : la fabrique de l'IA (comment ces systèmes sont conçus, entraînés, mis au point — avant même d'arriver entre vos mains) et ses usages (ce que l'IA change, une fois déployée, dans nos vies, nos espaces publics et notre rapport à l'information).",
+    "Chaque piste vous met face à une situation concrète à résoudre : interview à mener, indices à trier, source à vérifier... Une fois la piste résolue, vous débloquez la fiche de dossier correspondante — prête à publier, avec sa définition, son cadre juridique et ses exemples réels, sources à l'appui.",
+    "Progressez à votre rythme : votre avancée est enregistrée, vous pouvez interrompre l'enquête et la reprendre plus tard. À la fin des huit pistes, direction le bouclage : la rédaction vous attend pour la synthèse finale du dossier."
+  ],
+  note: "Navigation entièrement possible au clavier ; l'ordre de traitement des 8 pistes est libre."
+};
+
+const CONCLUSION = {
+  titre: "Conclusion",
+  paragraphes: [
+    "Huit pistes recoupées, huit fiches publiées : votre dossier spécial est bouclé. En remontant la fabrique de l'IA à travers ses données, son coût humain et ses tentatives d'alignement, vous avez vu que les choix faits en amont déterminent une grande partie des problèmes qui apparaissent ensuite dans nos usages. Et en enquêtant sur ses usages dans l'espace public, la manipulation de l'information qu'elle rend plus simple que jamais et les potentiels effets délétaires sur nos compétences cognitives, vous avez vu qu'aucun de ces enjeux n'est simple à trancher : la plupart mêlent bénéfices réels et risques documentés, rarement l'un sans l'autre.",
+    "Ce qui relie ces huit pistes : la nécessité de rendre visibles des mécanismes qui, par défaut, ne le sont pas, que ce soit la composition d'un jeu de données, la provenance d'une vidéo, ou le raisonnement d'un algorithme. Si dans cette activité c'est le métier de journaliste que vous avez imité, c'est aussi, de plus en plus, une compétence citoyenne : savoir questionner, recouper et vérifier l'information est un réflexe à cultiver pour chacun d'entre nous.",
+    "Le dossier est publié. À vous de le lire, de le questionner encore, et de le vérifier encore, comme vous l'avez fait pour chacune des huit pistes."
+  ]
+};
+
+
+/* ==========================================================================
+   SECTION 2 — ÉTAT & PERSISTANCE
+   ========================================================================== */
+const STORAGE_KEY = "coulisses-ia-progress-v1";
+
+let storageAvailable = true;
+function testStorage(){
+  try{
+    const t = "__test__";
+    window.localStorage.setItem(t, "1");
+    window.localStorage.removeItem(t);
+    return true;
+  }catch(e){ return false; }
+}
+storageAvailable = testStorage();
+
+let memoryFallback = { unlocked: [], badges: {}, introSeen: false };
+
+function loadProgress(){
+  if(!storageAvailable) return Object.assign({unlocked:[],badges:{},introSeen:false}, memoryFallback);
+  try{
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if(!raw) return { unlocked: [], badges: {}, introSeen: false };
+    const parsed = JSON.parse(raw);
+    return {
+      unlocked: Array.isArray(parsed.unlocked) ? parsed.unlocked : [],
+      badges: (parsed.badges && typeof parsed.badges === "object") ? parsed.badges : {},
+      introSeen: !!parsed.introSeen
+    };
+  }catch(e){ return { unlocked: [], badges: {}, introSeen: false }; }
+}
+
+function saveProgress(progress){
+  if(!storageAvailable){ memoryFallback = progress; return; }
+  try{
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  }catch(e){
+    storageAvailable = false;
+    memoryFallback = progress;
+  }
+}
+
+// État applicatif global (non persisté, sauf via progress)
+const APP = {
+  view: "intro",              // "intro" | "dashboard" | "enjeu" | "conclusion"
+  currentEnjeuId: null,
+  progress: loadProgress(),
+  runtime: {}                 // par enjeuId : état d'avancement en cours de piste
+};
+
+function isSolved(id){ return APP.progress.unlocked.indexOf(id) !== -1; }
+
+function markSolved(id, mistakeMade){
+  if(!isSolved(id)) APP.progress.unlocked.push(id);
+  APP.progress.badges[id] = mistakeMade ? "apres-fausse-piste" : "sans-detour";
+  saveProgress(APP.progress);
+}
+
+function getRuntime(id){
+  if(!APP.runtime[id]) APP.runtime[id] = createRuntime(id);
+  return APP.runtime[id];
+}
+function resetRuntime(id){
+  APP.runtime[id] = createRuntime(id);
+}
+function createRuntime(id){
+  const enjeu = ENJEUX_BY_ID[id];
+  if(enjeu.famille === "tri"){
+    return { assignments: {}, validated: false, mistakeMade: false };
+  }
+  // decryptage & verification : basés sur des étapes séquentielles
+  return { stepIndex: 0, steps: {}, mistakeMade: false };
+}
+function getStepState(runtime, stepId){
+  if(!runtime.steps[stepId]) runtime.steps[stepId] = { attemptedWrong: [], chosen: null, resolved: false, checked: {} };
+  return runtime.steps[stepId];
+}
+
+const ENJEUX_BY_ID = {};
+ENJEUX.forEach(function(e){ ENJEUX_BY_ID[e.id] = e; });
+
+/* ==========================================================================
+   SECTION 3 — UTILITAIRES
+   ========================================================================== */
+function announce(msg){
+  const region = document.getElementById("live-region");
+  if(!region) return;
+  region.textContent = "";
+  window.setTimeout(function(){ region.textContent = msg; }, 30);
+}
+
+function focusHeading(container){
+  const h = container.querySelector("h1, h2[tabindex]");
+  if(h){ h.setAttribute("tabindex", "-1"); h.focus(); }
+}
+
+function labelAxe(axe){ return axe === "amont" ? "1. La fabrique de l'IA" : "2. Ses usages"; }
+function labelFamille(famille){
+  if(famille === "decryptage") return "Décryptage";
+  if(famille === "tri") return "Classement d'indices";
+  if(famille === "verification") return "Vérification de source";
+  return famille;
+}
+function labelBadge(badge){
+  return badge === "sans-detour" ? "Piste résolue sans détour" : "Résolue après une fausse piste";
+}
+
+function paragraphs(list){
+  return list.map(function(p){ return "<p>" + p + "</p>"; }).join("");
+}
+
+/* ==========================================================================
+   SECTION 4 — RENDU DES VUES PRINCIPALES
+   ========================================================================== */
+function updateMasthead(){
+  const total = ENJEUX.length;
+  const done = APP.progress.unlocked.length;
+  document.getElementById("progress-label").textContent = done + "/" + total + " pistes résolues";
+  const track = document.getElementById("progress-track");
+  track.innerHTML = "";
+  ENJEUX.forEach(function(e){
+    const seg = document.createElement("span");
+    seg.className = "progress-seg";
+    seg.setAttribute("data-done", isSolved(e.id) ? "true" : "false");
+    track.appendChild(seg);
+  });
+}
+
+function render(){
+  const app = document.getElementById("app");
+  updateMasthead();
+  if(APP.view === "intro") return renderIntroView(app);
+  if(APP.view === "dashboard") return renderDashboardView(app);
+  if(APP.view === "enjeu") return renderEnjeuView(app, APP.currentEnjeuId);
+  if(APP.view === "conclusion") return renderConclusionView(app);
+}
+
+function goTo(view, enjeuId){
+  APP.view = view;
+  APP.currentEnjeuId = enjeuId || null;
+  if(view === "dashboard"){
+    APP.progress.introSeen = true;
+    saveProgress(APP.progress);
+  }
+  render();
+  const app = document.getElementById("app");
+  focusHeading(app);
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function renderIntroView(app){
+  app.innerHTML =
+    '<section class="view view-narrow" aria-labelledby="intro-h1">' +
+      '<p class="intro-kicker">Briefing de rédaction</p>' +
+      '<h1 id="intro-h1">' + INTRO.titre + '</h1>' +
+      '<div class="intro-lede">' + paragraphs(INTRO.paragraphes) + '</div>' +
+      '<p class="intro-note">' + INTRO.note + '</p>' +
+      '<div class="btn-row">' +
+        '<button type="button" class="btn btn-primary" data-action="nav-dashboard">Prendre connaissance des pistes</button>' +
+      '</div>' +
+    '</section>';
+}
+
+function renderDashboardView(app){
+  const amont = ENJEUX.filter(function(e){ return e.axe === "amont"; });
+  const aval = ENJEUX.filter(function(e){ return e.axe === "aval"; });
+  const allDone = APP.progress.unlocked.length === ENJEUX.length;
+
+  function card(e){
+    const solved = isSolved(e.id);
+    const badge = solved ? APP.progress.badges[e.id] : null;
+    return (
+      '<li>' +
+      '<button type="button" class="dossier-card" data-action="nav-enjeu" data-enjeu-id="' + e.id + '" aria-describedby="status-' + e.id + '">' +
+        (solved ? '<span class="stamp">Résolue</span>' : '') +
+        '<span class="dossier-card__tag">' + labelFamille(e.famille) + '</span>' +
+        '<span class="dossier-card__title">' + e.titrePiste + '</span>' +
+        '<span class="dossier-card__status" id="status-' + e.id + '" data-state="' + (solved ? "solved" : "open") + '">' +
+          (solved ? "✓ Fiche publiée" : "Piste à recouper") +
+        '</span>' +
+        (badge ? '<span class="dossier-card__badge">' + labelBadge(badge) + '</span>' : '') +
+      '</button>' +
+      '</li>'
+    );
+  }
+
+  app.innerHTML =
+    '<section class="view" aria-labelledby="dash-h1">' +
+      '<p class="intro-kicker">Salle de rédaction</p>' +
+      '<h1 id="dash-h1">Vos huit pistes</h1>' +
+      '<p>Choisissez une piste : l\'ordre est libre. Résolvez l\'enquête pour débloquer sa fiche de dossier.</p>' +
+
+      '<div class="volet">' +
+        '<div class="volet__heading"><h2>' + labelAxe("amont") + '</h2><span>3 pistes</span></div>' +
+        '<ul class="dossier-grid">' + amont.map(card).join("") + '</ul>' +
+      '</div>' +
+
+      '<div class="volet">' +
+        '<div class="volet__heading"><h2>' + labelAxe("aval") + '</h2><span>5 pistes</span></div>' +
+        '<ul class="dossier-grid">' + aval.map(card).join("") + '</ul>' +
+      '</div>' +
+
+      '<div class="volet">' +
+        '<div class="volet__heading"><h2>Bouclage du dossier</h2><span>' + APP.progress.unlocked.length + '/8</span></div>' +
+        '<ul class="dossier-grid">' +
+          '<li>' +
+          '<button type="button" class="dossier-card' + (allDone ? '' : ' dossier-card--locked') + '" data-action="' + (allDone ? 'nav-conclusion' : 'noop') + '"' + (allDone ? '' : ' aria-disabled="true"') + '>' +
+            '<span class="dossier-card__tag">Synthèse finale</span>' +
+            '<span class="dossier-card__title">Le bouclage</span>' +
+            '<span class="dossier-card__status" data-state="' + (allDone ? "solved" : "open") + '">' +
+              (allDone ? "✓ Disponible" : "Se débloque une fois les 8 pistes résolues") +
+            '</span>' +
+          '</button>' +
+          '</li>' +
+        '</ul>' +
+      '</div>' +
+    '</section>';
+}
+
+function renderConclusionView(app){
+  app.innerHTML =
+    '<section class="view view-narrow" aria-labelledby="concl-h1">' +
+      '<p class="intro-kicker">Bouclage du dossier</p>' +
+      '<h1 id="concl-h1">' + CONCLUSION.titre + '</h1>' +
+      paragraphs(CONCLUSION.paragraphes) +
+      '<ul class="conclusion-recap">' +
+        ENJEUX.map(function(e){
+          return '<li><a href="#" data-action="nav-enjeu" data-enjeu-id="' + e.id + '">'+ e.titrePiste + '</li>';
+        }).join("") +
+      '</ul>' +
+      '<div class="btn-row">' +
+        '<button type="button" class="btn btn-ghost" data-action="nav-dashboard">Retour aux pistes</button>' +
+      '</div>' +
+    '</section>';
+}
+
+/* ==========================================================================
+   Vue \"enjeu\" — répartit vers le bon moteur selon la famille
+   ========================================================================== */
+function renderEnjeuView(app, id){
+  const e = ENJEUX_BY_ID[id];
+  const solved = isSolved(id);
+  const badge = solved ? APP.progress.badges[id] : null;
+
+  let bodyHtml = "";
+  if(solved && !getRuntime(id)._forceReplay){
+    bodyHtml = renderFicheOnly(e, badge);
+  }else if(e.famille === "tri"){
+    bodyHtml = renderTriInteraction(e);
+  }else{
+    bodyHtml = renderStepsInteraction(e);
+  }
+
+  app.innerHTML =
+    '<section class="view" aria-labelledby="enjeu-h1">' +
+      '<div class="piste-header">' +
+        '<p class="piste-header__meta">' +
+          '<span>' + e.id + ' – ' + e.fiche.enjeux + ' • ' + labelFamille(e.famille) + '</span>' +
+        '</p>' +
+        '<h1 id="enjeu-h1">' + e.titrePiste + '</h1>' +
+        '<div class="accroche"><p>' + e.accroche + '</p></div>' +
+      '</div>' +
+      '<div id="interaction-zone">' + bodyHtml + '</div>' +
+      '<div class="btn-row">' +
+        '<button type="button" class="btn btn-ghost" data-action="nav-dashboard">← Retour aux pistes</button>' +
+        (solved ? '<button type="button" class="btn btn-ghost" data-action="restart-enjeu" data-enjeu-id="' + e.id + '">Reprendre l\'enquête depuis le début</button>' : '') +
+      '</div>' +
+    '</section>';
+}
+
+function renderFicheOnly(e, badge){
+  return (
+    '<p class="fiche__unlock" style="margin-top:0;">Piste déjà résolue</p>' +
+    (badge ? '<p class="fiche__badge-earned">' + labelBadge(badge) + '</p>' : '') +
+    renderFicheHtml(e)
+  );
+}
+
+function renderFicheHtml(e){
+  const f = e.fiche;
+  return (
+    '<div class="fiche">' +
+      '<p class="fiche__unlock">Fiche de dossier débloquée</p>' +
+      '<h3>' + labelFamille(f.enjeux) + '</h3>' +
+      '<div class="fiche__section"><h4>Définition</h4><p>' + f.definition + '</p></div>' +
+      '<div class="fiche__section"><h4>Cadre</h4><p>' + f.cadre + '</p></div>' +
+      (f.outilPratique ? '<div class="fiche__section"><h4>Outil pratique</h4><p>' + f.outilPratique + '</p></div>' : '') +
+      '<div class="fiche__section"><h4>Exemples concrets</h4><ul>' +
+        f.exemples.map(function(x){ return "<li>" + x + "</li>"; }).join("") +
+      '</ul></div>' +
+      '<div class="fiche__section fiche__sources"><h4>Sources</h4><ul>' +
+        f.sources.map(function(x){ return "<li>" + x + "</li>"; }).join("") +
+      '</ul></div>' +
+    '</div>'
+  );
+}
+
+/* ==========================================================================
+   SECTION 5 — MOTEUR \"ÉTAPES\" (familles Décryptage & Vérification de source)
+   Un seul moteur pour les deux familles : toutes deux sont des séquences
+   d'étapes (hypothesis / review / qcm / budget-select). Ce qui distingue
+   les familles pour l'apprenant, c'est uniquement le contenu et l'habillage
+   narratif — jamais la logique, qui reste unique et partagée ici.
+   ========================================================================== */
+function renderStepsInteraction(e){
+  const runtime = getRuntime(e.id);
+  const steps = e.interaction.steps;
+  let html = "";
+
+  for(let i = 0; i <= runtime.stepIndex && i < steps.length; i++){
+    const step = steps[i];
+    const isActive = (i === runtime.stepIndex);
+    html += renderStep(e, step, isActive);
+  }
+
+  if(runtime.solvedThisRender){
+    html += renderFicheHtml(e);
+  }
+
+  return html;
+}
+
+function renderStep(e, step, isActive){
+  const runtime = getRuntime(e.id);
+  const stepState = getStepState(runtime, step.id);
+
+  let inner = "";
+  if(step.type === "hypothesis") inner = renderHypothesisStep(e, step, stepState, isActive);
+  else if(step.type === "review") inner = renderReviewStep(e, step, stepState, isActive);
+  else if(step.type === "qcm") inner = renderQcmStep(e, step, stepState, isActive);
+  else if(step.type === "budget-select") inner = renderBudgetStep(e, step, stepState, isActive);
+
+  return (
+    '<div class="step" data-step-id="' + step.id + '">' +
+      '<p class="step__label">' + step.label + '</p>' +
+      '<div class="step__contexte"><p>' + step.contexte + '</p></div>' +
+      inner +
+    '</div>'
+  );
+}
+
+function optionRow(e, step, stepState, opt, groupRole, extraDataAttrs, disabled){
+  const chosen = stepState.chosen === opt.id;
+  const wasWrong = stepState.attemptedWrong.indexOf(opt.id) !== -1;
+  let cls = "option";
+  if(disabled){
+    // étape déjà passée : afficher l'état final (réponse retenue en vert)
+    if(opt.correct === true) cls += " is-correct";
+  }else{
+    if(wasWrong) cls += " is-incorrect";
+    if(chosen && opt.correct === true) cls += " is-correct";
+  }
+  if(disabled) cls += " is-disabled";
+  return (
+    '<div class="' + cls + '">' +
+      '<label>' +
+        '<input type="radio" name="' + e.id + "-" + step.id + '" value="' + opt.id + '"' +
+          (chosen ? " checked" : "") + (disabled ? " disabled" : "") +
+          ' data-role="' + groupRole + '" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '" data-option-id="' + opt.id + '"' + extraDataAttrs + '>' +
+        '<span>' + opt.texte + '</span>' +
+      '</label>' +
+    '</div>'
+  );
+}
+
+function renderHypothesisStep(e, step, stepState, isActive){
+  let html = '<p class="step__question">' + step.question + '</p>';
+  if(step.instructions) html += '<p class="step__instructions">' + step.instructions + '</p>';
+  html += '<fieldset class="option-set"><legend class="sr-only">' + step.question + '</legend>';
+  html += step.options.map(function(opt){
+    return optionRow(e, step, stepState, opt, "hypothesis-option", "", !isActive);
+  }).join("");
+  html += '</fieldset>';
+
+  if(stepState.chosen && isActive){
+    html += '<div class="feedback-zone" aria-live="polite">' +
+      '<div class="feedback-panel" data-tone="neutral">' +
+        '<span class="feedback-panel__lead">Hypothèse enregistrée.</span>' +
+        'Elle sera reprise à l\'étape suivante, à la lumière d\'un nouvel indice.' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary" data-action="continue-step" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '">Continuer l\'enquête</button>' +
+    '</div>';
+  }
+  return html;
+}
+
+function renderReviewStep(e, step, stepState, isActive){
+  const priorState = getStepState(getRuntime(e.id), step.basedOnStep);
+  const wasAligned = step.alignedOptionIds.indexOf(priorState.chosen) !== -1;
+  const feedback = wasAligned ? step.feedbackAligned : step.feedbackRevise;
+
+  let html = '<p class="step__question">' + step.question + '</p>';
+  html += '<div class="feedback-zone" aria-live="polite">' +
+    '<div class="feedback-panel" data-tone="' + (wasAligned ? "correct" : "incorrect") + '">' +
+      feedback +
+    '</div>';
+  if(isActive){
+    html += '<button type="button" class="btn btn-primary" data-action="continue-step" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '">' + step.continueLabel + '</button>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderQcmStep(e, step, stepState, isActive){
+  let html = '<p class="step__question">' + step.question + '</p>';
+  html += '<fieldset class="option-set"><legend class="sr-only">' + step.question + '</legend>';
+  html += step.options.map(function(opt){
+    return optionRow(e, step, stepState, opt, "qcm-option", "", !isActive);
+  }).join("");
+  html += '</fieldset>';
+
+  if(stepState.chosen){
+    const chosenOpt = step.options.filter(function(o){ return o.id === stepState.chosen; })[0];
+    if(chosenOpt){
+      html += '<div class="feedback-zone" aria-live="polite">' +
+        '<div class="feedback-panel" data-tone="' + (chosenOpt.correct ? "correct" : "incorrect") + '">' +
+          '<span class="feedback-panel__lead">' + (chosenOpt.correct ? "✓ Correct" : "Pas tout à fait") + '</span>' +
+          chosenOpt.feedback +
+        '</div>';
+      if(chosenOpt.correct && isActive){
+        const isLast = step.unlocksFiche;
+        html += '<button type="button" class="btn btn-primary" data-action="continue-step" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '">' +
+          (isLast ? "Publier la fiche de dossier" : "Continuer l'enquête") + '</button>';
+      }
+      html += '</div>';
+    }
+  }
+  return html;
+}
+
+function renderBudgetStep(e, step, stepState, isActive){
+  const checkedCount = Object.keys(stepState.checked).filter(function(k){ return stepState.checked[k]; }).length;
+  const full = checkedCount >= step.budget;
+
+  let html = '<p class="step__question">' + step.contexte + '</p>';
+  html += '<p class="budget-counter" data-full="' + full + '" aria-live="polite">' + checkedCount + ' / ' + step.budget + ' vérification(s) sélectionnée(s)</p>';
+  html += '<fieldset class="option-set"><legend class="sr-only">Choisissez ' + step.budget + ' vérifications</legend>';
+
+  html += step.options.map(function(opt){
+    const isChecked = !!stepState.checked[opt.id];
+    const lockOthers = full && !isChecked;
+    const showResult = stepState.resolved;
+    let cls = "option";
+    if(showResult){
+      if(opt.retain) cls += isChecked ? " is-correct" : "";
+      else if(isChecked) cls += " is-incorrect";
+    }
+    if(lockOthers && !stepState.resolved) cls += " is-disabled";
+    return (
+      '<div class="' + cls + '">' +
+        '<label>' +
+          '<input type="checkbox" value="' + opt.id + '"' + (isChecked ? " checked" : "") +
+            ((lockOthers && !stepState.resolved) || stepState.resolved ? " disabled" : "") +
+            ' data-role="budget-option" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '" data-option-id="' + opt.id + '">' +
+          '<span>' + opt.texte + '</span>' +
+        '</label>' +
+        (showResult && !opt.retain && isChecked ? '<p class="option-feedback" data-tone="incorrect">' + opt.feedback + '</p>' : '') +
+      '</div>'
+    );
+  }).join("");
+  html += '</fieldset>';
+
+  if(!stepState.resolved && isActive){
+    html += '<div class="btn-row">' +
+      '<button type="button" class="btn btn-primary" data-action="validate-budget" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '" ' + (full ? "" : "disabled") + '>Valider mes vérifications</button>' +
+    '</div>';
+  }
+
+  if(stepState.resolved){
+    const allGood = step.options.every(function(o){ return !!stepState.checked[o.id] === !!o.retain; });
+    html += '<div class="feedback-zone" aria-live="polite">' +
+      '<div class="feedback-panel" data-tone="' + (allGood ? "correct" : "incorrect") + '">' +
+        '<span class="feedback-panel__lead">' + (allGood ? "✓ Les bons réflexes." : "Quelques pièges vous ont eu.") + '</span>' +
+        step.wrapupFeedback +
+      '</div>';
+    if(allGood && isActive){
+      const isLast = step.unlocksFiche;
+      html += '<button type="button" class="btn btn-primary" data-action="continue-step" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '">' +
+        (isLast ? "Publier la fiche de dossier" : "Continuer l'enquête") + '</button>';
+    }else if(!allGood && isActive){
+      html += '<button type="button" class="btn btn-ghost" data-action="retry-budget" data-enjeu-id="' + e.id + '" data-step-id="' + step.id + '">Revoir ma sélection</button>';
+    }
+    html += '</div>';
+  }
+
+  return html;
+}
+
+/* ==========================================================================
+   SECTION 6 — MOTEUR \"TRI\" (famille Classement d'indices)
+   Accepte un nombre variable de catégories (2, 3...) — chaque indice est un
+   groupe de radios natif, pas de glisser-déposer, pour un vrai support clavier.
+   ========================================================================== */
+function renderTriInteraction(e){
+  const runtime = getRuntime(e.id);
+  const cats = e.interaction.categories;
+  const indices = e.interaction.indices;
+
+  let html = '<div class="step"><p class="step__label">Classement d\'indices</p>';
+  html += '<p class="step__instructions">Attribuez une catégorie à chaque indice, puis validez.</p>';
+
+  indices.forEach(function(ind){
+    const chosen = runtime.assignments[ind.id];
+    const showResult = runtime.validated;
+    let cls = "tri-indice";
+    if(showResult){
+      cls += (chosen === ind.correct) ? " is-correct" : " is-incorrect";
+    }
+    html += '<fieldset class="' + cls + '"><legend>' + ind.texte + '</legend>';
+    html += '<div class="tri-indice__categories">';
+    html += cats.map(function(cat){
+      return (
+        '<label>' +
+          '<input type="radio" name="tri-' + e.id + "-" + ind.id + '" value="' + cat.id + '"' +
+            (chosen === cat.id ? " checked" : "") + (runtime.validated ? " disabled" : "") +
+            ' data-role="tri-option" data-enjeu-id="' + e.id + '" data-indice-id="' + ind.id + '" data-category-id="' + cat.id + '">' +
+          '<span>' + cat.label + '</span>' +
+        '</label>'
+      );
+    }).join("");
+    html += '</div>';
+    if(showResult){
+      const correctCatLabel = cats.filter(function(c){ return c.id === ind.correct; })[0].label;
+      if(chosen === ind.correct){
+        html += '<p class="tri-indice__result" data-tone="correct">✓ Correct '+ ('<br>' +ind.piegeExplication) + '</p>';
+      }else{
+        html += '<p class="tri-indice__result" data-tone="incorrect">La bonne catégorie était \"' + correctCatLabel + '\". ' + (ind.piegeExplication || "") + '</p>';
+      }
+    }
+    html += '</fieldset>';
+  });
+
+  const allAssigned = indices.every(function(ind){ return !!runtime.assignments[ind.id]; });
+
+  if(!runtime.validated){
+    html += '<div class="btn-row">' +
+      '<button type="button" class="btn btn-primary" data-action="validate-tri" data-enjeu-id="' + e.id + '" ' + (allAssigned ? "" : "disabled") + '>Valider le classement</button>' +
+    '</div>';
+  }else{
+    const allCorrect = indices.every(function(ind){ return runtime.assignments[ind.id] === ind.correct; });
+    html += '<div class="feedback-zone" aria-live="polite">' +
+      '<div class="feedback-panel" data-tone="' + (allCorrect ? "correct" : "incorrect") + '">' +
+        '<span class="feedback-panel__lead">' + (allCorrect ? "✓ Classement complet." : "Encore quelques ajustements.") + '</span>' +
+        e.interaction.feedbackFinal +
+      '</div>';
+    if(allCorrect){
+      html += '<button type="button" class="btn btn-primary" data-action="continue-step" data-enjeu-id="' + e.id + '" data-step-id="tri">Publier la fiche de dossier</button>';
+    }else{
+      html += '<button type="button" class="btn btn-ghost" data-action="retry-tri" data-enjeu-id="' + e.id + '">Revoir mon classement</button>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  if(runtime.solvedThisRender){
+    html += renderFicheHtml(e);
+  }
+
+  return html;
+}
+
+/* ==========================================================================
+   SECTION 7 — GESTION DES ÉVÉNEMENTS (délégation sur #app)
+   ========================================================================== */
+function onAppClick(e){
+  const btn = e.target.closest("[data-action]");
+  if(!btn) return;
+  const action = btn.getAttribute("data-action");
+
+  if(action === "noop"){ e.preventDefault(); return; }
+  if(action === "nav-intro"){ e.preventDefault(); goTo("intro"); return; }
+  if(action === "nav-dashboard"){ e.preventDefault(); goTo("dashboard"); return; }
+  if(action === "nav-conclusion"){ e.preventDefault(); goTo("conclusion"); return; }
+  if(action === "nav-enjeu"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    goTo("enjeu", id);
+    return;
+  }
+  if(action === "restart-enjeu"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    resetRuntime(id);
+    getRuntime(id)._forceReplay = true;
+    render();
+    announce("Piste réinitialisée. Vous pouvez la reprendre depuis le début.");
+    return;
+  }
+  if(action === "continue-step"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    const stepId = btn.getAttribute("data-step-id");
+    handleContinueStep(id, stepId);
+    return;
+  }
+  if(action === "validate-budget"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    const stepId = btn.getAttribute("data-step-id");
+    handleValidateBudget(id, stepId);
+    return;
+  }
+  if(action === "retry-budget"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    const stepId = btn.getAttribute("data-step-id");
+    const runtime = getRuntime(id);
+    const stepState = getStepState(runtime, stepId);
+    stepState.resolved = false;
+    stepState.checked = {};
+    render();
+    announce("Sélection réinitialisée.");
+    return;
+  }
+  if(action === "validate-tri"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    handleValidateTri(id);
+    return;
+  }
+  if(action === "retry-tri"){
+    e.preventDefault();
+    const id = btn.getAttribute("data-enjeu-id");
+    const runtime = getRuntime(id);
+    runtime.validated = false;
+    render();
+    announce("Classement réinitialisé, vous pouvez ajuster vos réponses.");
+    return;
+  }
+}
+
+function onAppChange(e){
+  const input = e.target;
+  const role = input.getAttribute("data-role");
+  if(!role) return;
+
+  if(role === "hypothesis-option"){
+    const id = input.getAttribute("data-enjeu-id");
+    const stepId = input.getAttribute("data-step-id");
+    const optionId = input.getAttribute("data-option-id");
+    const stepState = getStepState(getRuntime(id), stepId);
+    stepState.chosen = optionId;
+    render();
+    return;
+  }
+
+  if(role === "qcm-option"){
+    const id = input.getAttribute("data-enjeu-id");
+    const stepId = input.getAttribute("data-step-id");
+    const optionId = input.getAttribute("data-option-id");
+    handleQcmChoice(id, stepId, optionId);
+    return;
+  }
+
+  if(role === "budget-option"){
+    const id = input.getAttribute("data-enjeu-id");
+    const stepId = input.getAttribute("data-step-id");
+    const optionId = input.getAttribute("data-option-id");
+    const stepState = getStepState(getRuntime(id), stepId);
+    stepState.checked[optionId] = input.checked;
+    render();
+    return;
+  }
+
+  if(role === "tri-option"){
+    const id = input.getAttribute("data-enjeu-id");
+    const indiceId = input.getAttribute("data-indice-id");
+    const categoryId = input.getAttribute("data-category-id");
+    const runtime = getRuntime(id);
+    runtime.assignments[indiceId] = categoryId;
+    render();
+    return;
+  }
+}
+
+function handleQcmChoice(id, stepId, optionId){
+  const e = ENJEUX_BY_ID[id];
+  const step = findStep(e, stepId);
+  const runtime = getRuntime(id);
+  const stepState = getStepState(runtime, stepId);
+  const opt = step.options.filter(function(o){ return o.id === optionId; })[0];
+
+  stepState.chosen = optionId;
+  if(!opt.correct){
+    if(stepState.attemptedWrong.indexOf(optionId) === -1) stepState.attemptedWrong.push(optionId);
+    runtime.mistakeMade = true;
+  }
+  render();
+  announce(opt.correct ? "Bonne réponse." : "Ce n'est pas la bonne piste, un indice corrige le tir.");
+}
+
+function handleContinueStep(id, stepId){
+  const e = ENJEUX_BY_ID[id];
+  const runtime = getRuntime(id);
+
+  if(e.famille === "tri"){
+    markSolved(id, runtime.mistakeMade);
+    runtime.solvedThisRender = true;
+    render();
+    focusFicheHeading();
+    announce("Fiche de dossier débloquée pour la piste " + id + ".");
+    return;
+  }
+
+  const stepState = getStepState(runtime, stepId);
+  stepState.confirmed = true;
+  const step = findStep(e, stepId);
+  const isLast = step && step.unlocksFiche;
+
+  if(isLast){
+    markSolved(id, runtime.mistakeMade);
+    runtime.solvedThisRender = true;
+    render();
+    focusFicheHeading();
+    announce("Fiche de dossier débloquée pour la piste " + id + ".");
+  }else{
+    runtime.stepIndex = runtime.stepIndex + 1;
+    render();
+    focusActiveStep();
+  }
+}
+
+function handleValidateBudget(id, stepId){
+  const runtime = getRuntime(id);
+  const stepState = getStepState(runtime, stepId);
+  const step = findStep(ENJEUX_BY_ID[id], stepId);
+  const allGood = step.options.every(function(o){ return !!stepState.checked[o.id] === !!o.retain; });
+  if(!allGood) runtime.mistakeMade = true;
+  stepState.resolved = true;
+  render();
+  announce(allGood ? "Bons réflexes de vérification." : "Certains choix méritent d'être revus.");
+}
+
+function handleValidateTri(id){
+  const e = ENJEUX_BY_ID[id];
+  const runtime = getRuntime(id);
+  runtime.validated = true;
+  const allCorrect = e.interaction.indices.every(function(ind){ return runtime.assignments[ind.id] === ind.correct; });
+  if(!allCorrect) runtime.mistakeMade = true;
+  render();
+  announce(allCorrect ? "Classement entièrement correct." : "Certains indices sont mal classés.");
+}
+
+function findStep(e, stepId){
+  return e.interaction.steps.filter(function(s){ return s.id === stepId; })[0];
+}
+
+function focusActiveStep(){
+  const zone = document.getElementById("interaction-zone");
+  if(!zone) return;
+  const steps = zone.querySelectorAll(".step");
+  const last = steps[steps.length - 1];
+  if(last){ last.setAttribute("tabindex", "-1"); last.focus(); }
+}
+function focusFicheHeading(){
+  const fiche = document.querySelector(".fiche h3");
+  if(fiche){ fiche.setAttribute("tabindex", "-1"); fiche.focus(); }
+}
+
+/* ==========================================================================
+   SECTION 8 — INITIALISATION
+   ========================================================================== */
+function init(){
+  const app = document.getElementById("app");
+  const backLink = document.querySelector(".masthead__back-link");
+  app.addEventListener("click", onAppClick);
+  app.addEventListener("change", onAppChange);
+  if(backLink){
+    backLink.addEventListener("click", function(e){
+      e.preventDefault();
+      goTo("intro");
+    });
+  }
+
+  if(!storageAvailable){
+    const notice = document.createElement("div");
+    notice.className = "storage-notice";
+    notice.setAttribute("role", "status");
+    notice.textContent = "Le stockage local est indisponible dans ce contexte (par ex. certains navigateurs partitionnent le stockage dans une iframe) : votre progression ne sera pas conservée d'une visite à l'autre.";
+    document.querySelector(".masthead").insertAdjacentElement("afterend", notice);
+  }
+
+  APP.view = APP.progress.introSeen ? "dashboard" : "intro";
+  render();
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", init);
+}else{
+  init();
+}
+
+/* Point d'accès de debug (facultatif) : permet d'inspecter l'état depuis la
+   console du navigateur, notamment utile en Phase 3 pour vérifier le
+   comportement une fois embarqué dans l'iframe Moodle. Sans effet sur le
+   fonctionnement de l'activité. */
+window.CoulissesIADebug = {
+  APP: APP, ENJEUX: ENJEUX, ENJEUX_BY_ID: ENJEUX_BY_ID,
+  goTo: goTo, getRuntime: getRuntime, resetRuntime: resetRuntime, isSolved: isSolved,
+  storageAvailable: function(){ return storageAvailable; }
+};
+
+</script>
+</body>
+</html>
