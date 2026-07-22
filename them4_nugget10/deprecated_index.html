@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tri de cartes — Familles de techniques de prompting</title>
+<title>Tri de cartes • Familles de techniques de prompting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -378,7 +378,7 @@
   <div class="modal">
     <p class="eyebrow">Bilan</p>
     <h2>Les huit techniques, rangées par famille</h2>
-    <p style="font-size:0.85rem;color:#6b4a5c;margin-top:-6px;">Ce classement n'est pas qu'un rangement : chaque famille correspond à une manière différente d'agir sur le modèle — par l'exemple, par le raisonnement, par le cadrage, ou par l'itération.</p>
+    <p style="font-size:0.85rem;color:#6b4a5c;margin-top:-6px;">Ce classement n'est pas qu'un rangement : chaque famille correspond à une manière différente d'agir sur le modèle. Par l'exemple, par le raisonnement, par le cadrage, ou par l'itération.</p>
     <div class="recap" id="recap"></div>
     <button class="close" id="close-btn">Retour au cours</button>
   </div>
@@ -398,14 +398,14 @@ const families = [
     roman: 'Famille 2',
     name: 'Structuration du raisonnement',
     subtitle: "Le modèle explicite ou vérifie sa réflexion",
-    definition: "Ces techniques agissent sur la manière dont le modèle déroule — ou contrôle — son raisonnement interne."
+    definition: "Ces techniques agissent sur la manière dont le modèle déroule ou contrôle son raisonnement interne."
   },
   {
     id: 'f3',
     roman: 'Famille 3',
     name: 'Cadrage de la réponse',
     subtitle: "Le modèle reçoit une posture ou des limites avant de répondre",
-    definition: "Ces techniques fixent un cadre a priori — un point de vue ou des limites — avant même que le modèle ne réponde."
+    definition: "Ces techniques fixent un cadre a priori (un point de vue ou des limites) avant même que le modèle ne réponde."
   },
   {
     id: 'f4',
@@ -435,7 +435,7 @@ const cards = [
     text: "Je demande au modèle de résoudre le problème en détaillant chaque étape avant la réponse finale.",
     technique: "Chain-of-Thought (CoT)",
     family: 'f2',
-    hints: { f4: "Cette technique structure le raisonnement à l'intérieur d'une seule réponse — elle ne repose pas sur plusieurs échanges successifs." }
+    hints: { f4: "Cette technique structure le raisonnement à l'intérieur d'une seule réponse. Elle ne repose pas sur plusieurs échanges successifs." }
   },
   {
     id: 'c4',
@@ -449,14 +449,14 @@ const cards = [
     text: "Je demande au modèle d'agir comme un juriste spécialisé en droit du travail.",
     technique: "Role prompting",
     family: 'f3',
-    hints: { f4: "Le rôle est fixé en un seul tour, avant la réponse — il ne s'agit pas d'un dialogue qui se construit progressivement." }
+    hints: { f4: "Le rôle est fixé en un seul tour, avant la réponse il ne s'agit pas d'un dialogue qui se construit progressivement." }
   },
   {
     id: 'c6',
     text: "Je précise explicitement : ne pas utiliser de jargon technique, ne pas dépasser 100 mots.",
     technique: "Prompt négatif",
     family: 'f3',
-    hints: { f4: "Ces limites sont posées avant la réponse, une fois pour toutes — ce n'est pas un ajustement fait après coup au fil d'un échange." }
+    hints: { f4: "Ces limites sont posées avant la réponse, une fois pour toutes, ce n'est pas un ajustement fait après coup au fil d'un échange." }
   },
   {
     id: 'c7',
@@ -598,7 +598,7 @@ function placeCorrect(card, familyId){
 
   placedCount++;
   updateProgress();
-  setStatus('Bien vu — ' + card.technique + ' rejoint la famille ' + families.find(f=>f.id===familyId).name + '.', 'ok');
+  setStatus('Très bien ! ' + card.technique + ' rejoint la famille ' + families.find(f=>f.id===familyId).name + '.', 'ok');
 
   if(placedCount === cards.length){
     setTimeout(showRecap, 700);
@@ -624,7 +624,7 @@ function showRecap(){
     const block = document.createElement('div');
     block.className = 'fam';
     block.innerHTML =
-      '<h4>' + fam.roman + ' — ' + fam.name + '</h4>' +
+      '<h4>' + fam.roman + ' : ' + fam.name + '</h4>' +
       '<p>' + fam.definition + '</p>' +
       '<ul>' + techs.map(t => '<li>' + t + '</li>').join('') + '</ul>';
     recapEl.appendChild(block);
