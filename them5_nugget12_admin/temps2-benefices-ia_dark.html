@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quels bénéfices peut-on attendre de l'IA ?</title>
+<style>
+  /* ── Variables & reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c-bg:       #f8f7f4;
+    --c-surface:  #ffffff;
+    --c-border:   #e4e2db;
+    --c-border-strong: #cac8c0;
+    --c-text:     #1a1a18;
+    --c-muted:    #6b6960;
+    --c-faint:    #9b9890;
+
+    --z1: #2e5fa3;
+    --z1-light: #e8eef8;
+    --z1-mid:   #c3d2ee;
+
+    --z2: #6d3fb5;
+    --z2-light: #f0ebfb;
+    --z2-mid:   #d4c3f0;
+
+    --z3: #0a7a68;
+    --z3-light: #e4f4f0;
+    --z3-mid:   #9dd9cc;
+
+    --z4: #a0540a;
+    --z4-light: #fdf0e3;
+    --z4-mid:   #f5c98a;
+
+    --c-success: #0a6e3f;
+    --c-success-bg: #e6f4ed;
+    --c-danger:  #b22222;
+    --c-danger-bg: #fbecec;
+    --c-info:    #1a4d8a;
+    --c-info-bg: #e8eef8;
+    --c-warn:    #8a5000;
+    --c-warn-bg: #fef5e4;
+
+    --radius-sm: 6px;
+    --radius:    10px;
+    --radius-lg: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --c-bg:       #1a1916;
+      --c-surface:  #232220;
+      --c-border:   #363430;
+      --c-border-strong: #4a4844;
+      --c-text:     #eceae4;
+      --c-muted:    #9b9890;
+      --c-faint:    #6b6960;
+
+      --z1-light: #1c2a40;
+      --z1-mid:   #2a3f60;
+
+      --z2-light: #251840;
+      --z2-mid:   #3c2660;
+
+      --z3-light: #0d2c28;
+      --z3-mid:   #164d44;
+
+      --z4-light: #2c1a06;
+      --z4-mid:   #6b3c10;
+
+      --c-success-bg: #0d2a1e;
+      --c-danger-bg:  #2c0f0f;
+      --c-info-bg:    #101e30;
+      --c-warn-bg:    #28190a;
+    }
+  }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--c-text);
+    background: var(--c-bg);
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--c-border);
+    padding-bottom: 1.5rem;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--c-faint);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--c-text);
+    margin-bottom: .6rem;
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: var(--c-muted);
+    max-width: 60ch;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 1.75rem;
+  }
+
+  @media (max-width: 580px) {
+    .tabs { grid-template-columns: 1fr 1fr; }
+  }
+
+  .tab {
+    padding: 12px 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-border);
+    background: var(--c-surface);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--c-muted);
+    transition: border-color .15s, color .15s, background .15s;
+    text-align: center;
+    line-height: 1.35;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tab svg { flex-shrink: 0; }
+  .tab:hover { border-color: var(--c-border-strong); color: var(--c-text); }
+
+  .tab[data-z="1"].active { background: var(--z1); border-color: var(--z1); color: #fff; }
+  .tab[data-z="2"].active { background: var(--z2); border-color: var(--z2); color: #fff; }
+  .tab[data-z="3"].active { background: var(--z3); border-color: var(--z3); color: #fff; }
+  .tab[data-z="4"].active { background: var(--z4); border-color: var(--z4); color: #fff; }
+
+  /* ── Panels ── */
+  .panel { display: none; }
+  .panel.active {
+    display: block;
+    animation: fadein .22s ease;
+  }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ── Zone header ── */
+  .zone-header {
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    color: #fff;
+  }
+  .zone-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: .3rem;
+  }
+  .zone-header p {
+    font-size: 13px;
+    opacity: .88;
+    line-height: 1.5;
+  }
+  .z1-bg { background: var(--z1); }
+  .z2-bg { background: var(--z2); }
+  .z3-bg { background: var(--z3); }
+  .z4-bg { background: var(--z4); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--c-faint);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: .85rem;
+  }
+
+  /* ── Alert boxes ── */
+  .alert {
+    border-radius: var(--radius);
+    padding: .85rem 1rem;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .alert strong { font-weight: 600; }
+  .alert-warning { background: var(--c-warn-bg); border: 1px solid var(--z4-mid); color: var(--c-warn); }
+  .alert-info    { background: var(--c-info-bg);  border: 1px solid var(--z1-mid); color: var(--c-info); }
+  .alert-success { background: var(--c-success-bg); border: 1px solid var(--z3-mid); color: var(--c-success); }
+
+  /* ── Bar charts ── */
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+  .bar-label {
+    font-size: 12px;
+    color: var(--c-muted);
+    width: 200px;
+    flex-shrink: 0;
+    line-height: 1.35;
+  }
+  .bar-track {
+    flex: 1;
+    height: 22px;
+    background: var(--c-bg);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 7px;
+    transition: width .7s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-fill span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin: 2px;
+  }
+  .badge-success { background: var(--c-success-bg); color: var(--c-success); }
+  .badge-danger  { background: var(--c-danger-bg);  color: var(--c-danger); }
+
+  /* ── Study cards ── */
+  .study-card {
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    margin-bottom: .85rem;
+  }
+  .study-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--c-muted);
+    margin-bottom: .75rem;
+  }
+  .study-stats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .study-stat {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    text-align: center;
+    flex: 1;
+    min-width: 90px;
+  }
+  .study-stat .num {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 2px;
+  }
+  .study-stat .lbl {
+    font-size: 10px;
+    color: var(--c-muted);
+    line-height: 1.35;
+  }
+  .num-success { color: var(--c-success); }
+  .num-danger  { color: var(--c-danger); }
+  .num-info    { color: var(--c-info); }
+
+  /* ── Frontier ── */
+  .frontier-wrap {
+    display: grid;
+    grid-template-columns: 62fr 38fr;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    margin-bottom: .85rem;
+  }
+  .frontier-in {
+    background: var(--c-success-bg);
+    padding: 1rem;
+    border-right: 2px dashed var(--z3-mid);
+  }
+  .frontier-out {
+    background: var(--c-danger-bg);
+    padding: 1rem;
+  }
+  .frontier-side-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    margin-bottom: .5rem;
+  }
+  .frontier-in .frontier-side-label  { color: var(--c-success); }
+  .frontier-out .frontier-side-label { color: var(--c-danger); text-align: right; }
+  .frontier-items {
+    font-size: 12px;
+    color: var(--c-muted);
+    line-height: 1.7;
+  }
+  .frontier-out .frontier-items { text-align: right; }
+
+  /* ── Usage grid ── */
+  .usage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .usage-item {
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: .9rem;
+  }
+  .usage-icon {
+    font-size: 22px;
+    margin-bottom: .4rem;
+  }
+  .usage-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--c-text);
+    margin-bottom: .3rem;
+    line-height: 1.3;
+  }
+  .usage-desc {
+    font-size: 11px;
+    color: var(--c-muted);
+    line-height: 1.5;
+  }
+
+  /* ── Case box ── */
+  .case-box {
+    background: var(--c-bg);
+    border-left: 3px solid var(--z3);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: .85rem 1rem;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--c-muted);
+  }
+  .case-box strong { color: var(--c-text); font-weight: 600; }
+
+  /* ── Gauge chart (zone 4) ── */
+  .threshold-line-wrap {
+    position: relative;
+    margin-bottom: .2rem;
+  }
+  .threshold-label {
+    font-size: 11px;
+    color: var(--c-danger);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .threshold-label::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 1px;
+    border-top: 2px dashed var(--c-danger);
+  }
+  .gauge-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .gauge-label {
+    font-size: 12px;
+    color: var(--c-muted);
+    width: 195px;
+    flex-shrink: 0;
+    line-height: 1.35;
+  }
+  .gauge-track {
+    flex: 1;
+    height: 22px;
+    background: var(--c-bg);
+    border-radius: var(--radius-sm);
+    overflow: visible;
+    border: 1px solid var(--c-border);
+    position: relative;
+  }
+  .gauge-fill {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 7px;
+    transition: width .7s cubic-bezier(.4,0,.2,1);
+  }
+  .gauge-fill span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .seuil-divider {
+    border: none;
+    border-top: 2px dashed var(--c-danger);
+    margin: 10px 0 12px;
+    opacity: .5;
+  }
+
+  /* ── Quote box ── */
+  .quote-box {
+    background: var(--c-info-bg);
+    border: 1px solid var(--z1-mid);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--c-info);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .quote-box .source {
+    font-style: normal;
+    font-size: 11px;
+    opacity: .75;
+    margin-top: .4rem;
+    display: block;
+  }
+
+  /* ── Limit list ── */
+  .limit-list {
+    list-style: none;
+    font-size: 12.5px;
+    color: var(--c-muted);
+    line-height: 1.7;
+  }
+  .limit-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .limit-list .icon-x {
+    color: var(--c-danger);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+</style>
+</head>
+<body>
+<main class="page" role="main">
+
+  <!-- <header class="page-header">
+    <p class="eyebrow">IA &amp; travail administratif en ESR</p>
+    <h1>Quels bénéfices peut-on attendre de l'IA ?</h1>
+    <p>Des bénéfices réels, mais conditionnels. Explorez les quatre dimensions documentées par les études et rapports disponibles.</p>
+  </header> -->
+
+  <!-- Onglets de navigation -->
+  <nav class="tabs" role="tablist" aria-label="Zones thématiques">
+    <button class="tab active" data-z="1" role="tab" aria-selected="true"  aria-controls="panel-1" onclick="show(1)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Gain de temps
+    </button>
+    <button class="tab" data-z="2" role="tab" aria-selected="false" aria-controls="panel-2" onclick="show(2)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Productivité mesurée
+    </button>
+    <button class="tab" data-z="3" role="tab" aria-selected="false" aria-controls="panel-3" onclick="show(3)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+      Nouvelles capacités
+    </button>
+    <button class="tab" data-z="4" role="tab" aria-selected="false" aria-controls="panel-4" onclick="show(4)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Ce que l'IA n'apporte pas
+    </button>
+  </nav>
+
+  <!-- ──────────────── ZONE 1 ──────────────── -->
+  <section id="panel-1" class="panel active" role="tabpanel" aria-labelledby="tab-1">
+
+    <div class="zone-header z1-bg">
+      <h2>Gain de temps et allègement de la charge</h2>
+      <p>Un bénéfice perçu massivement par les répondants, mais conditionnel à la nature de la tâche.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Bénéfice perçu selon les sources</div>
+      <div class="bar-row">
+        <div class="bar-label"><div>L'IA peut améliorer le service</div><i>Pascal & Taddei 2025</i></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 80%; background: var(--z1);"><span>+80 %</span></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><div>Tâches simples ou répétitives</div><i>Enquête Laval (Obvia)</i></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 72%; background: var(--z1);"><span>72 %</span></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><div>Impact positif sur gestion d'établissement</div><i>Cadres (IGÉSR)</i></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 50%; background: var(--z1);"><span>50 %</span></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><div>Améliorer la gestion des établissements</div><i>Pascal & Taddei 2025</i></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: 50%; background: var(--z1);"><span>~50 %</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <strong>À retenir (IGAS-IGF-IGA)</strong> — 1,13 million d'agents publics sont <em>exposés</em> à l'IA, dont 700 000 dans les catégories les plus concernées. Mais <strong>exposition ≠ gain de productivité garanti</strong>. Ce chiffre mesure un potentiel théorique, pas un bénéfice acquis.
+    </div>
+
+    <div class="card">
+      <div class="card-title">Sur quelles tâches le gain se concrétise-t-il ?</div>
+      <div style="margin-bottom: .7rem; line-height: 2;">
+        <span class="badge badge-success">Rédaction et relecture</span>
+        <span class="badge badge-success">Synthèse de documents</span>
+        <span class="badge badge-success">Admissions / inscriptions</span>
+        <span class="badge badge-success">Gestion des bourses</span>
+        <span class="badge badge-success">Correspondances courantes</span>
+        <span class="badge badge-danger">RH et décision complexe</span>
+        <span class="badge badge-danger">Finances à fort enjeu</span>
+      </div>
+      <p style="font-size: 12.5px; color: var(--c-muted); line-height: 1.6;">Sur les tâches à <strong>jugement</strong>, l'usage reste marginal : le gain de temps ne compense pas le risque perçu.</p>
+    </div>
+
+  </section>
+
+  <!-- ──────────────── ZONE 2 ──────────────── -->
+  <section id="panel-2" class="panel" role="tabpanel" aria-labelledby="tab-2">
+
+    <div class="zone-header z2-bg">
+      <h2>Zone 2 — Productivité mesurée : ce que disent les études expérimentales</h2>
+      <p>Deux études contrôlées permettent d'aller au-delà des perceptions déclarées et de mesurer un effet réel.</p>
+    </div>
+
+    <div class="study-card">
+      <div class="study-name">Noy &amp; Zhang (2023) — 453 professionnels diplômés, tâches de rédaction professionnelle</div>
+      <div class="study-stats">
+        <div class="study-stat">
+          <div class="num num-success">−40 %</div>
+          <div class="lbl">de temps sur la tâche</div>
+        </div>
+        <div class="study-stat">
+          <div class="num num-success">+18 %</div>
+          <div class="lbl">de qualité perçue</div>
+        </div>
+        <div class="study-stat">
+          <div class="num num-info" style="font-size: 14px;">↓ inégalités</div>
+          <div class="lbl">les moins performants bénéficient le plus</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="study-card">
+      <div class="study-name">Dell'Acqua et al. (2023, publié 2026) — 758 consultants BCG</div>
+      <div class="study-stats">
+        <div class="study-stat">
+          <div class="num num-success">+12 %</div>
+          <div class="lbl">de tâches complétées</div>
+        </div>
+        <div class="study-stat">
+          <div class="num num-success">+25 %</div>
+          <div class="lbl">de rapidité</div>
+        </div>
+        <div class="study-stat">
+          <div class="num num-success">+40 %</div>
+          <div class="lbl">de qualité</div>
+        </div>
+        <div class="study-stat">
+          <div class="num num-danger">−19 pts</div>
+          <div class="lbl">hors frontière irrégulière</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">La frontière irrégulière <em>(jagged frontier)</em></div>
+      <div class="frontier-wrap">
+        <div class="frontier-in">
+          <div class="frontier-side-label">✓ À l'intérieur de la frontière</div>
+          <div class="frontier-items">
+            Rédaction professionnelle<br>
+            Résolution mathématique complexe<br>
+            Synthèse et reformulation
+          </div>
+        </div>
+        <div class="frontier-out">
+          <div class="frontier-side-label">✗ À l'extérieur de la frontière</div>
+          <div class="frontier-items">
+            Compter les "r" dans "strawberry"<br>
+            Nuance interpersonnelle<br>
+            Ambiguïté éthique
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 12.5px; color: var(--c-muted); line-height: 1.6;">La frontière délimite ce qu'une IA peut réaliser <em>aussi bien ou mieux</em> qu'un expert humain. Elle ne suit pas la logique de complexité humaine : une IA peut échouer sur des tâches perçues comme simples, et réussir sur des tâches jugées très difficiles.</p>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>Bacalso et al. (2026, Frontiers in Education)</strong> — Dans les administrations réelles, les usages restent concentrés sur la communication et la gestion documentaire de base. Les usages plus avancés (analyse de données, automatisation de processus) restent freinés par le <strong>manque de formation</strong>.
+    </div>
+
+  </section>
+
+  <!-- ──────────────── ZONE 3 ──────────────── -->
+  <section id="panel-3" class="panel" role="tabpanel" aria-labelledby="tab-3">
+
+    <div class="zone-header z3-bg">
+      <h2>Zone 3 — Nouvelles capacités, pas seulement de la vitesse</h2>
+      <p>Le bénéfice ne se limite pas à "faire plus vite" : l'IA ouvre aussi de nouveaux possibles dans le travail quotidien.</p>
+    </div>
+
+    <div class="usage-grid">
+      <div class="usage-item">
+        <div class="usage-icon" aria-hidden="true">💡</div>
+        <div class="usage-title">Idéation et créativité</div>
+        <div class="usage-desc">Catalyseur pour le remue-méninges et la génération d'idées <em>(Guide bonnes pratiques QC)</em></div>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon" aria-hidden="true">♿</div>
+        <div class="usage-title">Accessibilité</div>
+        <div class="usage-desc">Descriptions audio, vulgarisation de concepts complexes <em>(Guide bonnes pratiques QC)</em></div>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon" aria-hidden="true">🔍</div>
+        <div class="usage-title">Accès à l'expertise</div>
+        <div class="usage-desc">Recherche d'informations réglementaires complexes — utile pour les agents moins formés <em>(OCDE / chatbot Albert)</em></div>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon" aria-hidden="true">✅</div>
+        <div class="usage-title">Traçabilité des décisions</div>
+        <div class="usage-desc">Listes de contrôle générées à partir de comptes-rendus <em>(Guide bonnes pratiques QC)</em></div>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon" aria-hidden="true">📚</div>
+        <div class="usage-title">Développement professionnel</div>
+        <div class="usage-desc">56,3 % des répondants (Obvia/Laval) jugent que l'IA offre de nouvelles façons de se former</div>
+      </div>
+      <div class="usage-item">
+        <div class="usage-icon" aria-hidden="true">📊</div>
+        <div class="usage-title">Traitement de données</div>
+        <div class="usage-desc">Résolution de problèmes à forte intensité de données <em>(Crescenzi et al., CHIIR '26)</em></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Cas documenté — Cassandre (académie de Lyon)</div>
+      <div class="case-box">
+        L'outil <strong>Cassandre</strong>, déployé dans l'académie de Lyon, <strong>pré-rédige des réponses aux questions RH des enseignants</strong> à partir d'un corpus documentaire défini. Chaque réponse reste soumise à la <strong>validation de l'agent gestionnaire</strong>. L'expérimentation ayant été jugée concluante, son déploiement a été annoncé dans l'ensemble des académies.<br><br>
+        <em>Un exemple où le bénéfice est net — mais où la validation humaine reste la condition de son bon fonctionnement.</em>
+      </div>
+    </div>
+
+    <div class="alert alert-success">
+      <strong>Enquête Laval (Obvia)</strong> — 62,4 % des répondants jugent que l'IA facilite la recherche de réponses à des questions liées au travail, et 56,3 % qu'elle offre de nouvelles façons de se former : un bénéfice de <strong>développement professionnel</strong>, pas seulement d'efficience.
+    </div>
+
+  </section>
+
+  <!-- ──────────────── ZONE 4 ──────────────── -->
+  <section id="panel-4" class="panel" role="tabpanel" aria-labelledby="tab-4">
+
+    <div class="zone-header z4-bg">
+      <h2>Zone 4 — Ce que l'IA n'apporte pas (ou peu)</h2>
+      <p>Cinq bénéfices perçus tombent sous le seuil de 50 % d'accord dans l'enquête Obvia / Université Laval.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Bénéfices perçus — enquête Laval (Obvia)</div>
+
+      <!-- Bénéfices au-dessus du seuil -->
+      <div class="gauge-row">
+        <div class="gauge-label">Tâches simples ou répétitives</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 72%; background: var(--z1);"><span>72 %</span></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-label">Recherche d'informations professionnelles</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 62%; background: var(--z1);"><span>62 %</span></div>
+        </div>
+      </div>
+
+      <!-- Ligne de seuil -->
+      <hr class="seuil-divider">
+      <div class="threshold-label">Seuil de 50 % — la moitié ne perçoit pas ces bénéfices</div>
+
+      <!-- Bénéfices sous le seuil -->
+      <div class="gauge-row">
+        <div class="gauge-label">Réduction des erreurs</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 49.5%; background: var(--z4);"><span>49,5 %</span></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-label">Prédictions et planification</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 43%; background: var(--z4);"><span>43 %</span></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-label">Meilleures décisions</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 39%; background: var(--z4);"><span>39 %</span></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-label">Plus d'autonomie au travail</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 36%; background: var(--z4);"><span>36 %</span></div>
+        </div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-label">Meilleure collaboration</div>
+        <div class="gauge-track">
+          <div class="gauge-fill" style="width: 23%; background: var(--z4);"><span>23 %</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      "Si les outils d'IA permettent au personnel administratif de <strong>faire davantage</strong>, ils ne leur permettent ni de travailler de manière plus <strong>autonome</strong>, ni de mieux <strong>collaborer</strong>."
+      <span class="source">— Rapport Obvia, enquête Université Laval</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Autres limites documentées</div>
+      <ul class="limit-list" aria-label="Limites de l'IA dans le travail administratif">
+        <li>
+          <span class="icon-x" aria-hidden="true">✗</span>
+          <span><strong>Tâches à forte nuance interpersonnelle</strong> — l'IA échoue systématiquement <em>(Huang et al., 2025)</em></span>
+        </li>
+        <li>
+          <span class="icon-x" aria-hidden="true">✗</span>
+          <span><strong>Ambiguïté éthique et sensibilité culturelle</strong> — hors de la frontière irrégulière documentée par Dell'Acqua et al.</span>
+        </li>
+        <li>
+          <span class="icon-x" aria-hidden="true">✗</span>
+          <span><strong>Usages analytiques avancés</strong> — potentiel existant mais non réalisé, freiné par le manque de formation <em>(Bacalso et al., 2026)</em></span>
+        </li>
+      </ul>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+  function show(n) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    document.getElementById('panel-' + n).classList.add('active');
+    const activeTab = document.querySelector('.tab[data-z="' + n + '"]');
+    activeTab.classList.add('active');
+    activeTab.setAttribute('aria-selected', 'true');
+  }
+
+  /* Navigation clavier entre onglets */
+  document.querySelectorAll('.tab').forEach((tab, i, tabs) => {
+    tab.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { tabs[(i + 1) % tabs.length].focus(); show((i % 4) + 2); }
+      if (e.key === 'ArrowLeft')  { tabs[(i + 3) % tabs.length].focus(); show(((i + 2) % 4) + 1); }
+    });
+  });
+</script>
+</body>
+</html>
