@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrice de décision : tâches et bénéfices de l'IA -- Capsule de formation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --font: 'Montserrat', system-ui, sans-serif;
+
+    --c-bg:      #ffffff;
+    --c-surface: #f6f7fb;
+    --c-border:  #e2e4ec;
+    --c-border-strong: #c8ccda;
+
+    --c-text:     #1a1a18;
+    --c-muted:    #454442;
+    --c-faint:    #282725;
+
+    --c-blue:    #2e5fa3;
+    --c-blue-bg: #eef2fa;
+    --c-blue-border: #b8caee;
+
+    --c-amber:   #c07a10;
+    --c-amber-bg: #fef7eb;
+    --c-amber-border: #f0ce88;
+
+    --c-pip-fort:   #788CE3;
+    --c-pip-cond:   #FEA06D;
+    --c-pip-faible: #f4d9c1;
+    --c-pip-faible-border: #8890aa;
+    --c-pip-na-bg:  #e8eaf0;
+    --c-pip-na-border: #9298b0;
+
+    --c-cell-active: #fef7eb;
+    --c-cell-dim:    #f6f7fb;
+    --c-row-active:  #eef2fa;
+
+    --radius-sm: 5px;
+    --radius:    8px;
+    --radius-lg: 12px;
+
+    --focus-ring: 0 0 0 3px #2e5fa366;
+  }
+
+  body {
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--c-text);
+    background: var(--c-bg);
+    min-height: 100vh;
+  }
+
+  /* Accessibilité : focus visible partout */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-sm);
+  }
+
+  /* Masquer visuellement mais garder pour les lecteurs d'écran */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── Mise en page ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ── En-tête ── */
+  .page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--c-faint);
+    margin-bottom: .5rem;
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--c-text);
+    margin-bottom: .6rem;
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: var(--c-muted);
+    max-width: 64ch;
+    line-height: 1.65;
+  }
+
+  /* ── Panneaux de commandes ── */
+  .controls-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .controls-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--c-faint);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: .5rem;
+  }
+
+  .controls-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .ctrl-btn {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-border-strong);
+    background: var(--c-bg);
+    color: var(--c-muted);
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+    line-height: 1;
+  }
+
+  .ctrl-btn:hover {
+    border-color: var(--c-blue);
+    color: var(--c-blue);
+  }
+
+  .ctrl-btn[aria-pressed="true"].type-t {
+    background: var(--c-blue-bg);
+    border-color: var(--c-blue);
+    color: var(--c-blue);
+    font-weight: 600;
+  }
+
+  .ctrl-btn[aria-pressed="true"].type-b {
+    background: var(--c-amber-bg);
+    border-color: var(--c-amber-border);
+    color: var(--c-amber);
+    font-weight: 600;
+  }
+
+  /* ── Légende ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 1.25rem;
+    align-items: center;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--c-muted);
+  }
+
+  .pip-demo {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+
+  .pip-demo.fort   { background: var(--c-pip-fort); }
+  .pip-demo.cond   { background: var(--c-pip-cond); }
+  .pip-demo.faible { background: var(--c-pip-faible); border: 1.5px solid var(--c-pip-faible-border); }
+  .pip-demo.na     { background: var(--c-pip-na-bg); border: 2px dashed var(--c-pip-na-border); }
+
+  /* ── Tableau ── */
+  .matrix-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 580px;
+  }
+
+  /* En-têtes colonnes */
+  thead th {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-muted);
+    padding: 10px 12px;
+    text-align: center;
+    white-space: nowrap;
+    border-bottom: 2px solid var(--c-border);
+    background: var(--c-bg);
+    transition: background .15s, color .15s;
+  }
+
+  thead th.col-label {
+    text-align: left;
+    width: 190px;
+    border-right: 1px solid var(--c-border);
+  }
+
+  thead th.hl-b {
+    background: var(--c-amber-bg);
+    color: var(--c-amber);
+    border-bottom-color: var(--c-amber-border);
+  }
+
+  /* Cellules corps */
+  tbody tr td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--c-border);
+    vertical-align: middle;
+    transition: background .15s;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  td.row-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--c-muted);
+    line-height: 1.4;
+    border-right: 1px solid var(--c-border);
+    background: var(--c-bg);
+    transition: background .15s, color .15s;
+  }
+
+  tbody tr.hl-t td.row-label {
+    background: var(--c-row-active);
+    color: var(--c-blue);
+  }
+
+  td.cell {
+    text-align: center;
+    background: var(--c-bg);
+    transition: background .15s;
+  }
+
+  td.cell.highlighted {
+    background: var(--c-cell-active);
+  }
+
+  td.cell.dimmed {
+    background: var(--c-cell-dim);
+  }
+
+  td.cell.dimmed .pip {
+    opacity: .3;
+  }
+
+  /* Indicateurs (pips) */
+  .pip {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: default;
+    transition: transform .12s;
+    vertical-align: middle;
+  }
+
+  .pip:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  .pip.fort   { background: var(--c-pip-fort); }
+  .pip.cond   { background: var(--c-pip-cond); }
+  .pip.faible { background: var(--c-pip-faible); border: 1.5px solid var(--c-pip-faible-border); }
+  .pip.na     { background: var(--c-pip-na-bg); border: 2px dashed var(--c-pip-na-border); }
+
+  .pip:hover,
+  .pip:focus-visible {
+    transform: scale(1.35);
+  }
+
+  /* ── Zone d'information ── */
+  .info-region {
+    margin-top: 1.25rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    font-size: 14px;
+    color: var(--c-muted);
+    line-height: 1.65;
+    min-height: 64px;
+  }
+
+  .info-region strong {
+    color: var(--c-text);
+    font-weight: 600;
+  }
+
+  .info-region .info-placeholder {
+    color: var(--c-faint);
+    font-style: italic;
+  }
+
+  /* ── Note de bas de page ── */
+  .footnote {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--c-border);
+    font-size: 12px;
+    color: var(--c-faint);
+    line-height: 1.6;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .page { padding: 1.5rem 1rem 3rem; }
+    .controls-group { gap: 5px; }
+    .ctrl-btn { font-size: 12px; padding: 6px 11px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main class="page" id="main-content">
+
+  <header class="page-header">
+    <p class="eyebrow">IA et travail administratif</p>
+    <h1>Quelle tâche ? Quel bénéfice ?</h1>
+    <p>
+      Sélectionnez un type de tâche ou un bénéfice attendu pour mettre en valeur
+      les correspondances dans la matrice. Survolez ou activez un indicateur pour
+      lire le détail et la source associés.
+    </p>
+  </header>
+
+  <!-- Commandes tâches -->
+  <section class="controls-section" aria-labelledby="label-taches">
+    <p class="controls-label" id="label-taches" aria-hidden="true">Filtrer par tâche</p>
+    <div
+      class="controls-group"
+      role="group"
+      aria-label="Filtrer par type de tâche"
+      id="group-taches"
+    >
+      <button class="ctrl-btn type-t" data-t="0" aria-pressed="false" onclick="setT(0)">Rédaction</button>
+      <button class="ctrl-btn type-t" data-t="1" aria-pressed="false" onclick="setT(1)">Recherche d'information</button>
+      <button class="ctrl-btn type-t" data-t="2" aria-pressed="false" onclick="setT(2)">Gestion administrative</button>
+      <button class="ctrl-btn type-t" data-t="3" aria-pressed="false" onclick="setT(3)">Planification</button>
+      <button class="ctrl-btn type-t" data-t="4" aria-pressed="false" onclick="setT(4)">Décision RH et financière</button>
+      <button class="ctrl-btn type-t" data-t="5" aria-pressed="false" onclick="setT(5)">Collaboration</button>
+    </div>
+  </section>
+
+  <!-- Commandes bénéfices -->
+  <section class="controls-section" aria-labelledby="label-benefices">
+    <p class="controls-label" id="label-benefices" aria-hidden="true">Filtrer par bénéfice</p>
+    <div
+      class="controls-group"
+      role="group"
+      aria-label="Filtrer par bénéfice attendu"
+      id="group-benefices"
+    >
+      <button class="ctrl-btn type-b" data-b="0" aria-pressed="false" onclick="setB(0)">Gain de temps</button>
+      <button class="ctrl-btn type-b" data-b="1" aria-pressed="false" onclick="setB(1)">Qualité</button>
+      <button class="ctrl-btn type-b" data-b="2" aria-pressed="false" onclick="setB(2)">Nouvelles capacités</button>
+      <button class="ctrl-btn type-b" data-b="3" aria-pressed="false" onclick="setB(3)">Réduction des erreurs</button>
+      <button class="ctrl-btn type-b" data-b="4" aria-pressed="false" onclick="setB(4)">Autonomie</button>
+    </div>
+  </section>
+
+  <!-- Légende -->
+  <div class="legend" role="note" aria-label="Légende des indicateurs">
+    <div class="leg-item">
+      <span class="pip-demo fort" aria-hidden="true"></span>
+      <span>Fort</span>
+    </div>
+    <div class="leg-item">
+      <span class="pip-demo cond" aria-hidden="true"></span>
+      <span>Conditionnel</span>
+    </div>
+    <div class="leg-item">
+      <span class="pip-demo faible" aria-hidden="true"></span>
+      <span>Faible</span>
+    </div>
+    <div class="leg-item">
+      <span class="pip-demo na" aria-hidden="true"></span>
+      <span>Non documenté</span>
+    </div>
+  </div>
+
+  <!-- Matrice -->
+  <div class="matrix-scroll">
+    <table
+      role="grid"
+      aria-label="Matrice croisant types de tâches et bénéfices attendus de l'IA"
+      aria-describedby="info-box"
+    >
+      <thead>
+        <tr>
+          <th class="col-label" scope="col"></th>
+          <th id="th0" scope="col">Gain de temps</th>
+          <th id="th1" scope="col">Qualité</th>
+          <th id="th2" scope="col">Nouvelles capacités</th>
+          <th id="th3" scope="col">Réduction des erreurs</th>
+          <th id="th4" scope="col">Autonomie</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <!-- Généré par JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Zone d'information contextuelle -->
+  <div
+    class="info-region"
+    id="info-box"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    <span class="info-placeholder">Survolez ou activez un indicateur pour lire le détail et la source.</span>
+  </div>
+
+  <!-- <p class="footnote">
+    Sources : Obvia / Université Laval, IGÉSR, Pascal/Taddei, IGAS-IGF-IGA, Noy et Zhang (2023),
+    Dell'Acqua et al. (2026), Bacalso et al. (2026), Huang et al. (2025), Guide des bonnes pratiques QC,
+    OCDE. Les niveaux (Fort / Conditionnel / Faible) reflètent l'état de la documentation disponible
+    dans le corpus de référence, pas une évaluation absolue.
+  </p> -->
+
+</main>
+
+<script>
+(function () {
+
+  /* ── Données ── */
+  var ROWS = [
+    "Rédaction et relecture",
+    "Recherche d'information",
+    "Gestion administrative courante",
+    "Planification et prévision",
+    "Décision RH et financière",
+    "Collaboration et travail d'équipe"
+  ];
+
+  var COLS = [
+    "Gain de temps",
+    "Qualité",
+    "Nouvelles capacités",
+    "Réduction des erreurs",
+    "Autonomie"
+  ];
+
+  /* Niveaux : fort | cond | faible | na */
+  var MATRIX = [
+    /* Rédaction */
+    [
+      { level: "fort",   info: "Rédaction / Gain de temps : Fort. Noy et Zhang (2023) : réduction de 40 % du temps sur les tâches de rédaction professionnelle. Dell'Acqua (2026) : gain de 25 % de rapidité à l'intérieur de la frontière irrégulière." },
+      { level: "fort",   info: "Rédaction / Qualité : Fort. Noy et Zhang (2023) : amélioration de 18 % de la qualité perçue. Dell'Acqua (2026) : amélioration de 40 % de la qualité à l'intérieur de la frontière irrégulière." },
+      { level: "cond",   info: "Rédaction / Nouvelles capacités : Conditionnel. L'IA facilite l'idéation et le remue-méninges (Guide QC), mais reste un outil d'assistance et non de création autonome." },
+      { level: "cond",   info: "Rédaction / Réduction des erreurs : Conditionnel. 49,5 % d'accord seulement (Obvia/Laval). Le risque d'hallucination impose une vigilance constante sur les productions de l'IA." },
+      { level: "faible", info: "Rédaction / Autonomie : Faible. 36,4 % d'accord (Obvia/Laval). La validation humaine reste indispensable sur toutes les productions générées par l'IA." }
+    ],
+    /* Recherche d'information */
+    [
+      { level: "fort",   info: "Recherche / Gain de temps : Fort. 62,4 % des répondants (Obvia/Laval) jugent l'IA utile pour trouver des réponses à des questions liées au travail." },
+      { level: "cond",   info: "Recherche / Qualité : Conditionnel. L'accès à l'information réglementaire est amélioré (chatbot Albert, OCDE), mais les résultats nécessitent une vérification systématique." },
+      { level: "fort",   info: "Recherche / Nouvelles capacités : Fort. L'IA donne accès à une expertise réglementaire complexe, bénéfice particulièrement marqué pour les agents moins expérimentés (OCDE)." },
+      { level: "cond",   info: "Recherche / Réduction des erreurs : Conditionnel. Le bénéfice dépend de la qualité du corpus source et de la validation humaine (exemple : outil Cassandre, académie de Lyon)." },
+      { level: "faible", info: "Recherche / Autonomie : Faible. La vérification de l'information trouvée reste indispensable ; l'IA ne remplace pas le jugement de l'agent gestionnaire." }
+    ],
+    /* Gestion administrative */
+    [
+      { level: "fort",   info: "Gestion administrative / Gain de temps : Fort. Obvia : l'automatisation des admissions, inscriptions et gestion des bourses est le bénéfice le plus fortement perçu de toute l'enquête, avec 72 % d'accord." },
+      { level: "cond",   info: "Gestion administrative / Qualité : Conditionnel. Bacalso et al. (2026) : les usages restent concentrés sur la documentation de base ; les usages avancés sont freinés par le manque de formation." },
+      { level: "cond",   info: "Gestion administrative / Nouvelles capacités : Conditionnel. La production de listes de contrôle à partir de comptes-rendus est documentée (Guide QC), mais reste limitée aux tâches structurées." },
+      { level: "cond",   info: "Gestion administrative / Réduction des erreurs : Conditionnel. Potentiel existant sur les tâches répétitives, mais seulement 49,5 % d'accord dans l'enquête Laval (Obvia)." },
+      { level: "faible", info: "Gestion administrative / Autonomie : Faible. L'IA automatise des sous-tâches mais ne déplace pas les responsabilités des agents administratifs." }
+    ],
+    /* Planification */
+    [
+      { level: "cond",   info: "Planification / Gain de temps : Conditionnel. Le bénéfice est limité aux phases de rédaction (comptes-rendus, ordres du jour) ; la planification stratégique reste hors de portée des outils actuels." },
+      { level: "cond",   info: "Planification / Qualité : Conditionnel. Hors de la frontière irrégulière pour les tâches de prévision complexe (Dell'Acqua et al., 2026) : le risque de sur-confiance est documenté." },
+      { level: "faible", info: "Planification / Nouvelles capacités : Faible. Seulement 43,3 % d'accord sur les prédictions et la planification (Obvia/Laval). Ce bénéfice n'est pas documenté de façon probante dans le corpus." },
+      { level: "faible", info: "Planification / Réduction des erreurs : Faible. Les tâches de prévision impliquent des données incertaines ; les modèles d'IA peuvent amplifier des biais déjà présents dans les données." },
+      { level: "na",     info: "Planification / Autonomie : Non documenté. Aucune source disponible dans le corpus ne documente ce bénéfice pour ce type de tâche dans le périmètre ESR public." }
+    ],
+    /* Décision RH et financière */
+    [
+      { level: "faible", info: "Décision RH et financière / Gain de temps : Faible. Sur les tâches à jugement, le gain de temps perçu ne compense pas le risque associé (Obvia, IGÉSR) : l'usage de l'IA reste marginal dans ce domaine." },
+      { level: "faible", info: "Décision RH et financière / Qualité : Faible. Dell'Acqua et al. (2026) : perte de 19 points de bonnes réponses lorsque l'IA est utilisée hors de la frontière irrégulière, ce qui est le cas pour les décisions à fort enjeu." },
+      { level: "faible", info: "Décision RH et financière / Nouvelles capacités : Faible. Huang et al. (2025) : l'IA échoue sur les tâches à forte nuance interpersonnelle, ambiguïté éthique ou sensibilité culturelle." },
+      { level: "faible", info: "Décision RH et financière / Réduction des erreurs : Faible. Le risque d'erreur augmente hors de la frontière irrégulière. La validation humaine est impérative sur toutes les décisions à enjeu." },
+      { level: "na",     info: "Décision RH et financière / Autonomie : Non documenté et contre-indiqué. Ces décisions relèvent d'une responsabilité humaine non délégable à un système automatisé." }
+    ],
+    /* Collaboration */
+    [
+      { level: "faible", info: "Collaboration / Gain de temps : Faible. L'IA peut accélérer des livrables individuels, mais aucune source ne documente une amélioration de la dynamique collective." },
+      { level: "faible", info: "Collaboration / Qualité : Faible. Aucune étude dans le corpus ne documente une amélioration de la qualité du travail collaboratif grâce à l'IA dans le contexte administratif ESR." },
+      { level: "faible", info: "Collaboration / Nouvelles capacités : Faible. Seulement 23,5 % d'accord (Obvia/Laval), score le plus bas de toute l'enquête, avec davantage de désaccord que d'accord." },
+      { level: "na",     info: "Collaboration / Réduction des erreurs : Non documenté. Aucune source dans le corpus ne traite de ce bénéfice pour le travail collaboratif collectif." },
+      { level: "na",     info: "Collaboration / Autonomie : Non documenté. Le rapport Obvia souligne que l'IA ne permet pas de mieux collaborer ; l'autonomie collective n'est pas documentée." }
+    ]
+  ];
+
+  /* ── Construction du tableau ── */
+  var tbody = document.getElementById('tbody');
+  var allCells = [];
+
+  MATRIX.forEach(function (row, ri) {
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-t', ri);
+
+    /* Cellule label de ligne */
+    var th = document.createElement('th');
+    th.className = 'row-label';
+    th.setAttribute('scope', 'row');
+    th.textContent = ROWS[ri];
+    tr.appendChild(th);
+
+    /* Cellules de données */
+    row.forEach(function (cell, ci) {
+      var td = document.createElement('td');
+      td.className = 'cell';
+      td.setAttribute('data-row', ri);
+      td.setAttribute('data-col', ci);
+
+      var pip = document.createElement('button');
+      pip.className = 'pip ' + cell.level;
+      pip.setAttribute('type', 'button');
+      pip.setAttribute('aria-label',
+        ROWS[ri] + ', ' + COLS[ci] + ' : ' + labelFor(cell.level) + '. ' + cell.info
+      );
+
+      /* Affichage au survol et au focus */
+      (function (info) {
+        pip.addEventListener('mouseenter', function () { showInfo(info); });
+        pip.addEventListener('focus',      function () { showInfo(info); });
+        pip.addEventListener('mouseleave', function () { clearInfo(); });
+        pip.addEventListener('blur',       function () { clearInfo(); });
+      })(cell.info);
+
+      td.appendChild(pip);
+      tr.appendChild(td);
+      allCells.push({ td: td, row: ri, col: ci });
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  function labelFor(level) {
+    return { fort: 'Fort', cond: 'Conditionnel', faible: 'Faible', na: 'Non documenté' }[level] || level;
+  }
+
+  /* ── Zone d'information ── */
+  var infoBox = document.getElementById('info-box');
+
+  function showInfo(text) {
+    infoBox.innerHTML = text;
+  }
+
+  function clearInfo() {
+    infoBox.innerHTML = '<span class="info-placeholder">Survolez ou activez un indicateur pour lire le détail et la source.</span>';
+  }
+
+  /* ── État de sélection ── */
+  var selT = null;
+  var selB = null;
+
+  window.setT = function (i) {
+    selT = (selT === i) ? null : i;
+    selB = null;
+    render();
+  };
+
+  window.setB = function (i) {
+    selB = (selB === i) ? null : i;
+    selT = null;
+    render();
+  };
+
+  function render() {
+    /* Boutons tâches */
+    document.querySelectorAll('.ctrl-btn.type-t').forEach(function (b) {
+      var pressed = (selT === parseInt(b.getAttribute('data-t')));
+      b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+    });
+
+    /* Boutons bénéfices */
+    document.querySelectorAll('.ctrl-btn.type-b').forEach(function (b) {
+      var pressed = (selB === parseInt(b.getAttribute('data-b')));
+      b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+    });
+
+    /* En-têtes de colonnes */
+    for (var c = 0; c < COLS.length; c++) {
+      var th = document.getElementById('th' + c);
+      if (selB === c) {
+        th.classList.add('hl-b');
+      } else {
+        th.classList.remove('hl-b');
+      }
+    }
+
+    /* Lignes */
+    document.querySelectorAll('tbody tr[data-t]').forEach(function (tr) {
+      var ri = parseInt(tr.getAttribute('data-t'));
+      if (selT === ri) {
+        tr.classList.add('hl-t');
+      } else {
+        tr.classList.remove('hl-t');
+      }
+    });
+
+    /* Cellules */
+    var nothing = (selT === null && selB === null);
+    allCells.forEach(function (c) {
+      var active = nothing || (selT === c.row) || (selB === c.col);
+      c.td.classList.remove('highlighted', 'dimmed');
+      if (!nothing) {
+        if (active) {
+          c.td.classList.add('highlighted');
+        } else {
+          c.td.classList.add('dimmed');
+        }
+      }
+    });
+  }
+
+  /* ── Navigation clavier entre boutons de chaque groupe ── */
+  function arrowNav(groupId, type) {
+    var group = document.getElementById(groupId);
+    var btns = Array.from(group.querySelectorAll('.ctrl-btn'));
+    btns.forEach(function (btn, i) {
+      btn.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          next = btns[(i + 1) % btns.length];
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          next = btns[(i - 1 + btns.length) % btns.length];
+        }
+        if (next) {
+          e.preventDefault();
+          next.focus();
+        }
+      });
+    });
+  }
+
+  arrowNav('group-taches',    'type-t');
+  arrowNav('group-benefices', 'type-b');
+
+})();
+</script>
+
+</body>
+</html>
