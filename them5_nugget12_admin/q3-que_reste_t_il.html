@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Que reste-t-il entre vos mains ?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+ 
+  :root {
+    --c-bg: #ffffff;
+    --c-surface: #f8f8f8;
+    --c-surface-2: #f0f0f0;
+    --c-border: #e0e0e0;
+    --c-text: #1a1a1a;
+    --c-text-soft: #555555;
+    --c-text-muted: #888888;
+    --c-anchor: #25104d;
+    --c-anchor-light: #e8edf5;
+    --c-accent: #25104d;
+    --c-accent-light: #f8f4ff;
+    --c-warn: #f8c662;
+    --c-warn-light: #fdf0e0;
+    --c-ok: #2e7d56;
+    --c-ok-light: #e3f2eb;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --t-fast: 180ms ease;
+  }
+ 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--c-text);
+    background: var(--c-bg);
+    min-height: 100vh;
+  }
+ 
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+ 
+  .skip-link {
+    position: absolute; left: -9999px; top: 8px;
+    background: var(--c-anchor); color: #fff;
+    padding: 8px 16px; border-radius: var(--radius-sm); font-size: 14px;
+    text-decoration: none; z-index: 9999;
+  }
+  .skip-link:focus { left: 8px; }
+ 
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+ 
+  /* EN-TÊTE */
+  .page-header {
+    background: var(--c-anchor);
+    color: #fff;
+    padding: 40px 0 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--c-accent) 0%, #8ab4d8 100%);
+  }
+  .page-header .container { position: relative; }
+  .header-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: rgba(255,255,255,.6); margin-bottom: 10px;
+  }
+  .page-header h1 {
+    font-size: clamp(18px, 3vw, 24px); font-weight: 700;
+    line-height: 1.25; max-width: 640px; margin-bottom: 12px;
+  }
+  .page-header .header-intro {
+    font-size: 14px; line-height: 1.7;
+    color: rgba(255,255,255,.82); max-width: 580px;
+  }
+ 
+  /* CORPS */
+  .section { padding: 48px 0; }
+ 
+  .section-label {
+    font-size: 14px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--c-accent); margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: clamp(18px, 2.5vw, 22px); font-weight: 700;
+    line-height: 1.3; margin-bottom: 12px;
+  }
+ 
+  .positioning-intro {
+    font-size: 16px; color: var(--c-text-soft);
+    margin-bottom: 28px; max-width: 620px;
+  }
+ 
+  /* GRILLE DE TÂCHES */
+  .task-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-bottom: 32px;
+  }
+  @media (max-width: 600px) { .task-grid { grid-template-columns: 1fr 1fr; } }
+ 
+  .task-card {
+    background: var(--c-surface);
+    border: 2px solid var(--c-border);
+    border-radius: var(--radius-md);
+    padding: 16px 14px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    text-align: left;
+    transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+    width: 100%;
+  }
+  .task-card:hover {
+    border-color: var(--c-accent);
+    background: var(--c-accent-light);
+    transform: translateY(-1px);
+  }
+  .task-card.selected {
+    border-color: var(--c-anchor);
+    background: var(--c-anchor-light);
+  }
+  .task-card .task-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+  .task-card .task-name { font-size: 14px; font-weight: 600; color: var(--c-text); line-height: 1.35; }
+ 
+  /* PROMPT */
+  .select-prompt {
+    text-align: center; padding: 32px;
+    color: var(--c-text-muted); font-size: 14px;
+    background: var(--c-surface);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--c-border);
+  }
+  .select-prompt-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+ 
+  /* PANNEAU RÉSULTAT */
+  .positioning-panel {
+    display: none;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .positioning-panel.visible { display: block; }
+ 
+  .positioning-panel-header {
+    background: var(--c-anchor); color: #fff;
+    padding: 20px 24px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .positioning-panel-header .panel-icon { font-size: 28px; }
+  .positioning-panel-header h3 { font-size: 16px; font-weight: 700; line-height: 1.25; }
+ 
+  .positioning-panel-body {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  }
+  @media (max-width: 580px) { .positioning-panel-body { grid-template-columns: 1fr; } }
+ 
+  .panel-col {
+    padding: 20px 22px;
+    border-right: 1px solid var(--c-border);
+  }
+  .panel-col:last-child { border-right: none; }
+  .panel-col-label {
+    font-size: 13px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .panel-col.ai-col .panel-col-label { color: var(--c-warn); }
+  .panel-col.human-col .panel-col-label { color: var(--c-ok); }
+ 
+  .panel-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .panel-col ul li {
+    font-size: 14px; line-height: 1.5; color: var(--c-text-soft);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .panel-col ul li::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 7px;
+  }
+  .ai-col ul li::before { background: var(--c-warn); }
+  .human-col ul li::before { background: var(--c-ok); }
+ 
+  .panel-source {
+    padding: 12px 22px;
+    background: var(--c-surface);
+    border-top: 1px solid var(--c-border);
+    font-size: 11px; font-style: italic; color: var(--c-text-muted);
+  }
+ 
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+ 
+<!-- <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+ 
+<header class="page-header" role="banner">
+  <div class="container">
+    <p class="header-eyebrow">Formation à l'IA — Question 3 sur 3</p>
+    <h1>Que reste-t-il entre vos mains ?</h1>
+    <p class="header-intro">
+      Sélectionnez un type de tâche pour voir ce que l'IA peut prendre en charge — et ce qui demeure dans le registre du jugement humain.
+    </p>
+  </div>
+</header> -->
+ 
+<main id="main-content">
+<section class="section" aria-labelledby="s-title">
+  <div class="container">
+    <!-- <p class="section-label">Votre travail, en détail</p> -->
+    <!-- <h2 class="section-title" id="s-title">Que reste-t-il entre vos mains ?</h2> -->
+    <p class="positioning-intro">
+      Sélectionnez un type de tâche pour voir ce que l'IA pourrait prendre en charge et ce qui demeurerait dans le registre du jugement humain.
+    </p>
+ 
+    <div class="task-grid" role="group" aria-label="Types de tâches administratives">
+      <button class="task-card" onclick="showTask('redaction')" aria-pressed="false">
+        <span class="task-icon" aria-hidden="true">📝</span>
+        <span class="task-name">Rédaction et mise en forme</span>
+      </button>
+      <button class="task-card" onclick="showTask('rh')" aria-pressed="false">
+        <span class="task-icon" aria-hidden="true">👥</span>
+        <span class="task-name">Gestion RH et réponses aux agents</span>
+      </button>
+      <button class="task-card" onclick="showTask('docs')" aria-pressed="false">
+        <span class="task-icon" aria-hidden="true">📂</span>
+        <span class="task-name">Gestion documentaire et archivage</span>
+      </button>
+      <button class="task-card" onclick="showTask('relation')" aria-pressed="false">
+        <span class="task-icon" aria-hidden="true">🤝</span>
+        <span class="task-name">Relation aux étudiants et usagers</span>
+      </button>
+      <button class="task-card" onclick="showTask('decision')" aria-pressed="false">
+        <span class="task-icon" aria-hidden="true">⚖️</span>
+        <span class="task-name">Aide à la décision et instruction</span>
+      </button>
+      <button class="task-card" onclick="showTask('coordination')" aria-pressed="false">
+        <span class="task-icon" aria-hidden="true">🔗</span>
+        <span class="task-name">Coordination et pilotage de projets</span>
+      </button>
+    </div>
+ 
+    <div id="task-prompt" class="select-prompt" aria-live="polite">
+      <span class="select-prompt-icon" aria-hidden="true">☝️</span>
+      Sélectionnez une tâche ci-dessus pour explorer son positionnement
+    </div>
+ 
+    <div id="task-panel" class="positioning-panel" aria-live="polite" aria-label="Analyse de la tâche sélectionnée">
+    </div>
+  </div>
+</section>
+</main>
+ 
+<script>
+const taskData = {
+  redaction: {
+    icon: '📝',
+    name: 'Rédaction et mise en forme',
+    ai: [
+      'Génération de premiers jets à partir d\'instructions',
+      'Reformulation et correction grammaticale',
+      'Mise en forme et standardisation de documents',
+      'Résumé de documents longs',
+    ],
+    human: [
+      'Validation du ton et de l\'adéquation au contexte institutionnel',
+      'Contrôle de l\'exactitude factuelle et réglementaire',
+      'Jugement sur la sensibilité du propos (destinataire, enjeux)',
+      'Signature et responsabilité du contenu produit',
+    ],
+    source: 'Huang et al. 2025 ; Frontiers in Education 2026'
+  },
+  rh: {
+    icon: '👥',
+    name: 'Gestion RH et réponses aux agents',
+    ai: [
+      'Pré-rédaction de réponses à des questions réglementaires standardisées',
+      'Synthèse de textes réglementaires',
+      'Classement et orientation de demandes entrantes',
+    ],
+    human: [
+      'Validation de chaque réponse avant envoi (cf. outil Cassandre)',
+      'Appréciation des situations individuelles hors normes',
+      'Gestion des situations conflictuelles ou sensibles',
+      'Décisions engageant la responsabilité de l\'établissement',
+    ],
+    source: 'Outil Cassandre, Académie de Lyon (IGEN 2024) ; Cadre DGAFP 2024'
+  },
+  docs: {
+    icon: '📂',
+    name: 'Gestion documentaire et archivage',
+    ai: [
+      'Indexation et classification automatique',
+      'Extraction de données structurées depuis des documents',
+      'Recherche sémantique dans des corpus',
+      'Production de métadonnées',
+    ],
+    human: [
+      'Définition des politiques de conservation et de classification',
+      'Arbitrage sur les documents sensibles ou à usage restreint',
+      'Contrôle de la qualité de l\'indexation automatique',
+      'Interprétation des exceptions et cas limites',
+    ],
+    source: 'Frontiers in Education 2026 ; Rapport IGAS/IGF/IGA 2026'
+  },
+  relation: {
+    icon: '🤝',
+    name: 'Relation aux étudiants et usagers',
+    ai: [
+      'Réponses aux questions fréquentes et standardisées',
+      'Orientation vers les bons interlocuteurs ou procédures',
+      'Disponibilité hors des horaires d\'ouverture',
+    ],
+    human: [
+      'Situations impliquant une détresse, une vulnérabilité, un conflit',
+      'Nuance culturelle, ambiguïté éthique, sensibilité interpersonnelle',
+      'Décisions discrétionnaires (dérogations, cas particuliers)',
+      'Représentation de l\'établissement dans des moments délicats',
+    ],
+    source: 'Huang et al. 2025 (nuance interpersonnelle) ; Wirtz et al. 2019'
+  },
+  decision: {
+    icon: '⚖️',
+    name: 'Aide à la décision et instruction de dossiers',
+    ai: [
+      'Agrégation et synthèse d\'informations existantes',
+      'Identification de précédents ou de similitudes dans des corpus',
+      'Production de tableaux comparatifs à partir de données fournies',
+    ],
+    human: [
+      'Instruction finale et responsabilité de la décision',
+      'Prise en compte du contexte institutionnel non documenté',
+      'Évaluation des risques et des conséquences politiques ou relationnelles',
+      'Signature et engagement de l\'établissement',
+    ],
+    source: 'Pascal &amp; Taddei 2025 ; Cadre DGAFP 2024 ; Jacob et al. 2025 — Enquête Université Laval (39 % sur la décision)'
+  },
+  coordination: {
+    icon: '🔗',
+    name: 'Coordination et pilotage de projets',
+    ai: [
+      'Rédaction de comptes-rendus à partir de notes ou enregistrements',
+      'Génération de plans et rétroplannings sur la base d\'informations fournies',
+      'Synthèse de l\'état d\'avancement depuis des sources multiples',
+    ],
+    human: [
+      'Animation des relations entre parties prenantes',
+      'Gestion des tensions et arbitrages entre services',
+      'Adaptation aux imprévus et décisions en situation d\'incertitude',
+      'Portage politique et institutionnel du projet',
+    ],
+    source: 'Jacob et al. 2025 — Enquête Université Laval (24 % sur la collaboration) ; Wirtz et al. 2019'
+  }
+};
+ 
+let lastTask = null;
+ 
+function showTask(taskId) {
+  const data = taskData[taskId];
+  if (!data) return;
+ 
+  if (lastTask === taskId) {
+    document.querySelectorAll('.task-card').forEach(btn => {
+      btn.classList.remove('selected');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    document.getElementById('task-panel').classList.remove('visible');
+    document.getElementById('task-prompt').style.display = '';
+    lastTask = null;
+    return;
+  }
+ 
+  lastTask = taskId;
+ 
+  document.querySelectorAll('.task-card').forEach(btn => {
+    const isThis = btn.getAttribute('onclick').includes("'" + taskId + "'");
+    btn.classList.toggle('selected', isThis);
+    btn.setAttribute('aria-pressed', isThis.toString());
+  });
+ 
+  const aiItems = data.ai.map(item => `<li>${item}</li>`).join('');
+  const humanItems = data.human.map(item => `<li>${item}</li>`).join('');
+ 
+  const panel = document.getElementById('task-panel');
+  panel.innerHTML = `
+    <div class="positioning-panel-header">
+      <span class="panel-icon" aria-hidden="true">${data.icon}</span>
+      <h3>${data.name}</h3>
+    </div>
+    <div class="positioning-panel-body">
+      <div class="panel-col ai-col">
+        <p class="panel-col-label">Ce que l'IA peut prendre en charge</p>
+        <ul>${aiItems}</ul>
+      </div>
+      <div class="panel-col human-col">
+        <p class="panel-col-label">Ce qui reste dans le registre du jugement</p>
+        <ul>${humanItems}</ul>
+      </div>
+    </div>
+    <p class="panel-source">Sources : ${data.source}</p>
+  `;
+ 
+  document.getElementById('task-prompt').style.display = 'none';
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+ 
+</body>
+</html>
+ 

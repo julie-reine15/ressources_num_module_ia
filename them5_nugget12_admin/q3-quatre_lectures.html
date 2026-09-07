@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quatre lectures pour comprendre ce qui se joue</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --c-bg: #ffffff;
+    --c-surface: #f8f8f8;
+    --c-surface-2: #f0f0f0;
+    --c-border: #e0e0e0;
+    --c-text: #1a1a1a;
+    --c-text-soft: #2e2e2e;
+    --c-text-muted: #383838;
+    --c-anchor: #25104d;
+    --c-anchor-light: #e8edf5;
+    --c-accent: #25104d;
+    --c-accent-light: #f8f4ff;
+    --c-warn: #f8c662;
+    --c-warn-light: #fdf0e0;
+    --c-ok: #2e7d56;
+    --c-ok-light: #e3f2eb;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --t-fast: 180ms ease;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--c-text);
+    background: var(--c-bg);
+    min-height: 100vh;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  .skip-link {
+    position: absolute; left: -9999px; top: 8px;
+    background: var(--c-anchor); color: #fff;
+    padding: 8px 16px; border-radius: var(--radius-sm); font-size: 14px;
+    text-decoration: none; z-index: 9999;
+  }
+  .skip-link:focus { left: 8px; }
+
+  .container {
+    max-width: 875px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* EN-TÊTE */
+  .page-header {
+    background: var(--c-anchor);
+    color: #fff;
+    padding: 40px 0 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--c-accent) 0%, #8ab4d8 100%);
+  }
+  .page-header .container { position: relative; }
+  .header-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: rgba(255,255,255,.6); margin-bottom: 10px;
+  }
+  .page-header h1 {
+    font-size: clamp(18px, 3vw, 24px); font-weight: 700;
+    line-height: 1.25; max-width: 640px; margin-bottom: 12px;
+  }
+  .page-header .header-intro {
+    font-size: 14px; line-height: 1.7;
+    color: rgba(255,255,255,.82); max-width: 580px;
+  }
+
+  /* CORPS */
+  .section { padding: 48px 0; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--c-accent); margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: clamp(18px, 2.5vw, 22px); font-weight: 700;
+    line-height: 1.3; margin-bottom: 12px;
+  }
+  .section-intro {
+    font-size: 14px; color: var(--c-text-soft);
+    max-width: 640px; margin-bottom: 32px;
+  }
+
+  /* ONGLETS */
+  .acts-nav {
+    display: flex; gap: 0;
+    border-bottom: 2px solid var(--c-border);
+    margin-bottom: 32px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .acts-nav::-webkit-scrollbar { display: none; }
+  .act-tab {
+    flex-shrink: 0; background: none; border: none;
+    border-bottom: 3px solid transparent; margin-bottom: -2px;
+    padding: 12px 18px 9px;
+    font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--c-text-soft); cursor: pointer;
+    transition: color var(--t-fast), border-color var(--t-fast);
+    white-space: nowrap;
+  }
+  .act-tab:hover { color: var(--c-anchor); }
+  .act-tab.active {
+    color: var(--c-anchor);
+    border-bottom-color: var(--c-anchor);
+    font-weight: 700;
+  }
+
+  .act-panel { display: none; }
+  .act-panel.active { display: block; }
+
+  .act-content {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; align-items: start;
+  }
+  @media (max-width: 600px) { .act-content { grid-template-columns: 1fr; } }
+
+  .act-narrative { font-size: 14px; line-height: 1.75; color: var(--c-text); }
+  .act-narrative p { margin-bottom: 12px; }
+  .act-narrative p:last-child { margin-bottom: 0; }
+
+  .act-data-panel {
+    background: var(--c-surface); border: 1px solid var(--c-border);
+    border-radius: var(--radius-md); padding: 20px;
+  }
+  .act-data-label {
+    font-size: 12px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--c-text-muted); margin-bottom: 16px;
+  }
+
+  .stat-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+  .stat-row:last-child { margin-bottom: 0; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--c-anchor); line-height: 1; flex-shrink: 0; }
+  .stat-desc { font-size: 14px; line-height: 1.5; color: var(--c-text-soft); }
+  .stat-src { font-size: 12px; font-style: italic; color: var(--c-text-muted); display: block; margin-top: 2px; }
+
+  .bar-viz { display: flex; flex-direction: column; gap: 10px; }
+  .bar-label {
+    font-size: 14px; color: var(--c-text-soft); margin-bottom: 4px;
+    display: flex; justify-content: space-between;
+  }
+  .bar-track { height: 8px; background: var(--c-surface-2); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: var(--c-accent); transition: width 600ms ease; }
+  .bar-fill.warn { background: var(--c-warn); }
+  .bar-fill.ok { background: var(--c-ok); }
+
+  .callout {
+    border-left: 3px solid var(--c-accent); background: var(--c-accent-light);
+    padding: 14px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 14px; line-height: 1.6; margin-top: 16px;
+  }
+  .callout.warn { border-left-color: var(--c-warn); background: var(--c-warn-light); }
+  .callout.ok { border-left-color: var(--c-anchor); background: var(--c-anchor-light); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  .jagged-viz { margin-top: 12px; }
+  .jagged-chart {
+    position: relative; height: 80px;
+    background: linear-gradient(90deg, var(--c-ok-light) 0%, var(--c-ok-light) 62%, var(--c-warn-light) 62%, var(--c-warn-light) 100%);
+    border-radius: var(--radius-sm); overflow: hidden;
+  }
+  .jagged-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .jagged-labels {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--c-text-muted); margin-top: 4px; padding: 0 2px;
+  }
+  .jagged-marker {
+    position: absolute; left: 62%; top: 0; bottom: 0;
+    width: 2px; background: var(--c-warn); opacity: .7;
+  }
+  .jagged-marker::after {
+    content: '−19 pts'; position: absolute; top: 4px; left: 6px;
+    font-size: 12px; font-weight: 700; color: var(--c-warn); white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+  @media print { .act-panel { display: block !important; } }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+<!-- <header class="page-header" role="banner">
+  <div class="container">
+    <p class="header-eyebrow">Formation à l'IA — Question 3 sur 3</p>
+    <h1>Quatre lectures pour comprendre ce qui se joue</h1>
+    <p class="header-intro">
+      Naviguez entre les quatre dimensions documentées par les études. Chacune apporte un éclairage différent sur la place des personnels dans un environnement assisté par IA.
+    </p>
+  </div>
+</header> -->
+
+<main id="main-content">
+<section class="section" aria-labelledby="s-title">
+  <div class="container">
+    <!-- <p class="section-label">Ce que disent les données</p> -->
+    <!-- <h2 class="section-title" id="s-title">Quatre lectures pour comprendre ce qui se joue</h2> -->
+
+    <div class="acts-nav" role="tablist" aria-label="Les quatre dimensions">
+      <button class="act-tab active" role="tab" aria-selected="true" aria-controls="act-1" id="tab-1" onclick="switchAct(1)">1 · Exposition ≠ remplacement</button>
+      <button class="act-tab" role="tab" aria-selected="false" aria-controls="act-2" id="tab-2" onclick="switchAct(2)">2 · Le cœur du métier</button>
+      <button class="act-tab" role="tab" aria-selected="false" aria-controls="act-3" id="tab-3" onclick="switchAct(3)">3 · La validation humaine</button>
+      <button class="act-tab" role="tab" aria-selected="false" aria-controls="act-4" id="tab-4" onclick="switchAct(4)">4 · Une place à construire</button>
+    </div>
+
+    <!-- ACTE 1 -->
+    <div class="act-panel active" id="act-1" role="tabpanel" aria-labelledby="tab-1">
+      <div class="act-content">
+        <div class="act-narrative">
+          <p>Un chiffre circule et inquiète : <strong>20 % des agents publics</strong> sont "exposés" au déploiement de l'IA générative selon le rapport conjoint des inspections générales.</p>
+          <p>Le rapport lui-même précise qu'il s'agit d'une <em>mesure d'exposition</em> (la part d'activités susceptibles d'être transformées) et non d'une estimation de postes supprimés ni de gains de productivité acquis.</p>
+          <p>Le cadre stratégique de la DGAFP (2024) va dans le même sens : l'IA y est posée comme un <strong>soutien</strong> à l'action des agents, subordonné à des principes de transparence, de contrôle humain et de responsabilité. Le rapport Pascal &amp; Taddei (2025) dissocie explicitement l'introduction de l'IA d'une logique de réduction d'effectifs.</p>
+          <div class="callout">
+            <strong>Ce que cela signifie concrètement</strong>
+            Être dans le périmètre des fonctions "exposées" ne préjuge pas de ce qui va changer, ni à quelle vitesse. Cela signifie que certaines tâches sont candidates à la transformation, pas que le poste disparaît.
+          </div>
+        </div>
+        <div class="act-data-panel">
+          <p class="act-data-label">Chiffres clés</p>
+          <div class="stat-row">
+            <span class="stat-num">20 %</span>
+            <div>
+              <span class="stat-desc">des agents publics exposés au déploiement de l'IA générative</span>
+              <span class="stat-src">Rapport IGAS/IGF/IGA 2026</span>
+            </div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-num">1,13M</span>
+            <div>
+              <span class="stat-desc">de personnes concernées par ces transformations potentielles</span>
+              <span class="stat-src">Rapport IGAS/IGF/IGA 2026</span>
+            </div>
+          </div>
+          <!-- <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--c-border);">
+            <p class="act-data-label">Fonctions les plus exposées</p>
+            <div class="bar-viz">
+              <div class="bar-item">
+                <div class="bar-label"><span>Fonctions support de bureau</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width: 88%"></div></div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label"><span>Ressources humaines</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width: 78%"></div></div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label"><span>Fonctions documentaires</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width: 72%"></div></div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label"><span>Relation à l'usager</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width: 65%"></div></div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label"><span>Fonctions comptables</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width: 60%"></div></div>
+              </div>
+            </div>
+            <p style="font-size: 10px; color: var(--c-text-muted); margin-top: 8px; font-style: italic;">Niveau d'exposition relatif (illustration qualitative)</p>
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTE 2 -->
+    <div class="act-panel" id="act-2" role="tabpanel" aria-labelledby="tab-2">
+      <div class="act-content">
+        <div class="act-narrative">
+          <p>La distinction proposée par Wirtz et al. (2019) est empiriquement vérifiable : les tâches automatisables sont répétitives, standardisées, à faible variabilité. Celles qui reposent sur le discernement, l'appréciation contextuelle et la responsabilité ne le sont pas.</p>
+          <p>L'étude de Huang et al. (2025) menée auprès de personnels administratifs universitaires ayant suivi une formation à l'IA est démontre qu'après la formation, les participants n'expriment pas une adhésion accrue à l'outil, mais une <strong>lecture plus fine de ses limites</strong> : ils identifient précisément les situations marquées par la nuance interpersonnelle, l'ambiguïté éthique ou la sensibilité culturelle comme celles où l'IA n'apporte rien.</p>
+          <p>Ils en tirent une conclusion sur leur propre rôle : leur jugement professionnel, leur connaissance du contexte et leur capacité relationnelle constituent ce que l'outil ne réplique pas.</p>
+          <div class="callout ok">
+            <strong>Ce que cela signifie concrètement</strong>
+            L'IA peut prendre en charge des <em>gestes</em>, pas des <em>responsabilités</em>. Ce qui reste entre les mains des personnels, c'est précisément ce qui constitue le cœur du métier.
+          </div>
+        </div>
+        <div class="act-data-panel">
+          <p class="act-data-label">Jacob et al. — Enquête Université Laval (2025)</p>
+          <p style="font-size: 12px; color: var(--c-text-muted); margin-bottom: 14px; font-style: italic;">Proportion estimant que l'IA les aide sur ces dimensions</p>
+          <div class="bar-viz">
+            <div class="bar-item">
+              <div class="bar-label"><span>Tâches simples et répétitives</span><strong>72 %</strong></div>
+              <div class="bar-track"><div class="bar-fill ok" style="width: 72%"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label"><span>Prise de meilleures décisions</span><strong>39 %</strong></div>
+              <div class="bar-track"><div class="bar-fill warn" style="width: 39%"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label"><span>Autonomie accrue</span><strong>36 %</strong></div>
+              <div class="bar-track"><div class="bar-fill warn" style="width: 36%"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label"><span>Amélioration de la collaboration</span><strong>24 %</strong></div>
+              <div class="bar-track"><div class="bar-fill warn" style="width: 24%"></div></div>
+            </div>
+          </div>
+          <div class="callout warn" style="margin-top: 14px;">
+            Le bénéfice sur la collaboration recueille <strong>plus de désaccord que d'accord</strong> parmi les répondants.
+          </div>
+          <p style="font-size: 12px; color: var(--c-text-muted); margin-top: 10px; font-style: italic;">Source : Jacob et al. (2025), Enquête en ligne, personnel administratif, Université Laval</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTE 3 -->
+    <div class="act-panel" id="act-3" role="tabpanel" aria-labelledby="tab-3">
+      <div class="act-content">
+        <div class="act-narrative">
+          <p>L'expérience de Dell'Acqua et al. menée avec <strong>758 consultants</strong> a mis en évidence un phénomène désormais connu sous le nom de <em>frontière irrégulière</em> (<em>jagged frontier</em>) : les performances augmentent nettement à l'intérieur du périmètre de compétence du modèle, mais chutent de 19 points de pourcentage juste au-delà sans que les utilisateurs perçoivent ce franchissement.</p>
+          <p>Ce résultat donne à la <strong>vérification humaine</strong> une toute autre valeur. Ce n'est plus une formalité en fin de chaîne, mais le moment où se joue la fiabilité du travail produit.</p>
+          <p>L'outil <strong>Cassandre</strong>, déployé dans l'académie de Lyon et documenté par l'inspection générale de l'Éducation nationale, illustre concrètement cette organisation : l'outil pré-rédige des réponses aux questions RH à partir d'un corpus défini, mais chaque réponse est <strong>validée par l'agent gestionnaire avant envoi</strong>. L'agent devient le garant de la machine.</p>
+          <div class="callout">
+            <strong>Ce que cela signifie concrètement</strong>
+            La compétence de validation est centrale, se construit et s'entretient.
+          </div>
+        </div>
+        <div class="act-data-panel">
+          <p class="act-data-label">La frontière irrégulière, Dell'Acqua et al. (2023)</p>
+          <div class="jagged-viz">
+            <div class="jagged-chart" aria-label="Illustration : performance élevée dans le périmètre IA, chute de 19 points au-delà">
+              <svg class="jagged-line" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 0 65 C 30 55, 60 40, 90 35 C 120 30, 150 28, 186 28 C 190 28, 192 28, 196 45 C 200 62, 220 70, 260 68 C 280 67, 295 66, 300 66"
+                      fill="none" stroke="#2b4c7e" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="0" y1="75" x2="300" y2="75" stroke="#e0e0e0" stroke-width="1"/>
+              </svg>
+              <div class="jagged-marker" aria-hidden="true"></div>
+            </div>
+            <div class="jagged-labels" aria-hidden="true">
+              <span>Dans le périmètre IA ✓</span>
+              <span>Au-delà de la frontière</span>
+            </div>
+          </div>
+          <div style="margin-top: 16px;">
+            <div class="stat-row">
+              <span class="stat-num">−19</span>
+              <div>
+                <span class="stat-desc">points de performance quand la tâche dépasse le périmètre du modèle sans que l'utilisateur s'en aperçoive</span>
+                <span class="stat-src">Dell'Acqua et al. (2023), 758 consultants BCG</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--c-border);">
+            <p class="act-data-label">Cas Cassandre, Académie de Lyon</p>
+            <p style="font-size: 12px; line-height: 1.6; color: var(--c-text-soft);">
+              L'agent gestionnaire valide chaque réponse avant envoi. Le rôle humain n'est pas résiduel : il est <strong>garant de la fiabilité</strong>.
+            </p>
+            <p style="font-size: 10px; color: var(--c-text-muted); margin-top: 6px; font-style: italic;">Source : Inspection générale de l'Éducation nationale 2024</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTE 4 -->
+    <div class="act-panel" id="act-4" role="tabpanel" aria-labelledby="tab-4">
+      <div class="act-content">
+        <div class="act-narrative">
+          <p>Si la place des personnels n'est pas menacée par la technologie, elle n'est pas non plus garantie par elle. Elle se construit (ou se perd) selon les conditions dans lesquelles les personnels rencontrent ces outils.</p>
+          <p>Les données sur la formation sont préoccupantes. Le rapport de l'IGÉSR (2025) relève que <strong>92 % des cadres</strong> interrogés n'ont reçu aucune formation à l'IA, alors que 15 % en font déjà un usage régulier. Un usage informel et non cadré laisse chacun seul face à ses arbitrages.</p>
+          <p>Un résultat va cependant à l'encontre d'une crainte courante. Dans l'expérience de Noy et Zhang (<em>Science</em>, 2023), l'accès à l'IA a <strong>réduit l'écart de performance</strong> entre participants : ce sont ceux dont la production initiale était la moins bien évaluée qui ont le plus progressé.</p>
+          <div class="callout warn">
+            <strong>L'inégalité ne vient pas de l'outil</strong>
+            Elle vient de l'inégalité d'accès et de formation. Un usage documenté et discuté collectivement permet de définir ce qui relève de l'outil et ce qui n'en relèvera pas.
+          </div>
+        </div>
+        <div class="act-data-panel">
+          <p class="act-data-label">État des lieux de la formation</p>
+          <div class="stat-row" style="margin-bottom: 16px;">
+            <span class="stat-num" style="color: var(--c-warn);">92 %</span>
+            <div>
+              <span class="stat-desc">des cadres n'ont reçu aucune formation à l'IA</span>
+              <span class="stat-src">Rapport IGÉSR 2025, 556 chefs d'établissement et inspecteurs</span>
+            </div>
+          </div>
+          <div class="stat-row" style="margin-bottom: 16px;">
+            <span class="stat-num" style="color: var(--c-anchor);">15 %</span>
+            <div>
+              <span class="stat-desc">de ces mêmes cadres font déjà un usage régulier de l'IA</span>
+              <span class="stat-src">Rapport IGÉSR 2025</span>
+            </div>
+          </div>
+          <div class="stat-row" style="margin-bottom: 16px;">
+            <span class="stat-num" style="color: var(--c-warn);">40 %</span>
+            <div>
+              <span class="stat-desc">des agents dans certaines administrations utilisent des outils personnels hors cadre institutionnel</span>
+              <span class="stat-src">Rapport IGAS/IGF/IGA 2026</span>
+            </div>
+          </div>
+          <!-- <div style="padding-top: 14px; border-top: 1px solid var(--c-border);">
+            <p class="act-data-label">Effet équité — Noy &amp; Zhang, Science 2023</p>
+            <div class="bar-viz">
+              <div class="bar-item">
+                <div class="bar-label"><span>Participants initialement forts</span><strong>+18 %</strong></div>
+                <div class="bar-track"><div class="bar-fill" style="width: 45%"></div></div>
+              </div>
+              <div class="bar-item">
+                <div class="bar-label"><span>Participants initialement faibles</span><strong>+43 %</strong></div>
+                <div class="bar-track"><div class="bar-fill ok" style="width: 90%"></div></div>
+              </div>
+            </div>
+            <p style="font-size: 10px; color: var(--c-text-muted); margin-top: 8px; font-style: italic;">Gain de performance selon le niveau initial — 453 professionnels</p>
+          </div>
+        </div> -->
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<script>
+function switchAct(num) {
+  document.querySelectorAll('.act-tab').forEach((tab, i) => {
+    const active = i + 1 === num;
+    tab.classList.toggle('active', active);
+    tab.setAttribute('aria-selected', active.toString());
+  });
+  document.querySelectorAll('.act-panel').forEach((panel, i) => {
+    panel.classList.toggle('active', i + 1 === num);
+  });
+}
+</script>
+
+</body>
+</html>
