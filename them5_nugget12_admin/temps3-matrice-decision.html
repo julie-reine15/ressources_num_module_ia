@@ -365,7 +365,7 @@
 
 <main class="page" id="main-content">
 
-  <header class="page-header">
+  <!-- <header class="page-header">
     <p class="eyebrow">IA et travail administratif</p>
     <h1>Quelle tâche ? Quel bénéfice ?</h1>
     <p>
@@ -373,7 +373,7 @@
       les correspondances dans la matrice. Survolez ou activez un indicateur pour
       lire le détail et la source associés.
     </p>
-  </header>
+  </header> -->
 
   <!-- Commandes tâches -->
   <section class="controls-section" aria-labelledby="label-taches">
@@ -694,6 +694,21 @@
   arrowNav('group-benefices', 'type-b');
 
 })();
+</script>
+
+<script>
+  // Auto-resize the iframe hosting this page (same-origin embeds only,
+  // e.g. this file uploaded to Moodle and embedded via <iframe src="...">).
+  (function () {
+    function reportSize() {
+      if (window.frameElement) {
+        window.frameElement.style.height = document.documentElement.scrollHeight + 'px';
+      }
+    }
+    window.addEventListener('load', reportSize);
+    window.addEventListener('resize', reportSize);
+    new ResizeObserver(reportSize).observe(document.documentElement);
+  })();
 </script>
 
 </body>
