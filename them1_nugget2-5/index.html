@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comprendre les LLM - Simulation de génération de texte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --primary-color: #7726b1;
@@ -20,7 +24,7 @@
         }
 
         body {
-            font-family: 'Montserrat';
+            font-family: 'Montserrat', sans-serif;
             line-height: 1.6;
             color: var(--text-color);
             background-color: var(--bg-color);
@@ -140,11 +144,13 @@
         }
 
         .word-text {
+            font-family: 'Montserrat', sans-serif;
             margin-bottom: 5px;
             font-weight: 500;
         }
 
         .word-prob {
+            font-family: 'Montserrat', sans-serif;
             font-size: 0.8rem;
             color: #666;
         }
@@ -184,6 +190,7 @@
         }
 
         .btn {
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -212,6 +219,16 @@
             background-color: #c5d849;
         }
 
+        .btn:disabled {
+            background-color: #ccc;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            background-color: #ccc;
+        }
+
         .timer {
             text-align: center;
             margin-bottom: 10px;
@@ -219,33 +236,51 @@
             color: #666;
         }
 
-        .mode-selector {
+        .loading-indicator {
             display: flex;
+            align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            color: #666;
+            font-size: 0.95rem;
+            padding: 20px;
+            width: 100%;
         }
 
-        .mode-btn {
-            background-color: #f0f0f0;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            cursor: pointer;
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
         }
 
-        .mode-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .mode-btn:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(119, 38, 177, 0.3);
+        .feedback-response {
+            font-size: 1.05rem;
+            line-height: 2.4;
+            margin: 10px 0;
+        }
+
+        .feedback-word {
+            padding: 2px 5px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+
+        .feedback-word--punct {
+            padding: 0;
+        }
+
+        .feedback-legend {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 15px;
         }
 
         .debug-info {
@@ -308,34 +343,26 @@
             <p>Objectif : comprendre que la génération de texte est basée sur des calculs de probabilités, sans "compréhension" réelle.</p>
         </div> -->
         <div class="instructions">
-            <h2>Instructions</h2>
-
-            <p>
-                Construisez une réponse mot par mot, comme le ferait un modèle de langage (LLM). À chaque étape, choisissez parmi les mots proposés. Les pourcentages indiquent leur probabilité d'apparition selon le dernier mot sélectionné.
-            </p>
-
-            <h3 style="font-size: 1.2rem; color:#7726b1">Comment utiliser l'activité ?</h3>
-            <ol style="padding-left: 1em;">
+            <!-- <h2>Instructions</h2> -->
+            <!-- <p>
+                Construisez une réponse mot par mot, comme le ferait un modèle de langage (LLM). À chaque étape, choisissez parmi les mots proposés. Les pourcentages indiquent leur probabilité d'apparition selon les derniers mots sélectionnés.
+            </p> -->
+            <h3 style="font-size: 1.2rem; color:#7726b1">Comment ça marche ?</h3>
+            <ol style="padding-left: 2em;">
                 <li>
-                    Lisez le prompt (ex: "Décris une journée pluvieuse.") et commencez à construire votre réponse en choisissant un mot parmi les suggestions.
+                    Lisez le prompt et commencez à construire votre réponse en sélectionnant un mot en cliquant dessus (ou avec la touche Entrée après l'avoir sélectionné avec Tabulation) parmi les suggestions.
                 </li>
                 <li>
-                    Sélectionnez un mot en cliquant dessus (ou avec la touche Entrée après l'avoir sélectionné avec Tabulation).
+                    Lorsque vous êtes satisfait de votre réponse, cliquez sur le bouton <strong>"Terminer"</strong> pour voir votre score et obtenir un feedback.
                 </li>
-                <li>
-                    Continuez jusqu'à ce que votre réponse soit complète. Vous pouvez :
-                    <ul style="padding-left: 1em;">
-                        <li>Ajouter des signes de ponctuation (., !, ?) pour structurer votre phrase.</li>
-                        <li>Utiliser le bouton "Terminer" pour mettre fin à l'activité et voir votre score.</li>
-                    </ul>
-                </li>
+                <li>Utilisez le bouton <strong>"Retour arrière"</strong> pour modifier le dernier mot sélectionné, <strong>"Recommencer"</strong> pour recommencer votre réponse depuis le début sans changer de prompt et <strong>"Nouveau prompt"</strong> pour changer de question et reprendre la génération depuis le début.</li>
             </ol>
             <h3 style="font-size: 1.2rem; color:#7726b1">Feedback et analyse</h3>
             <p>
-                Utilisez le bouton <strong>"Terminer"</strong> pour mettre fin à l'activité et obtenir votre feedback.
-                <ul style="padding-left: 1em;">
+                Le feedback vous donnera :
+                <ul style="padding-left: 2em;">
+                    <li>Le temps écoulé pour générer la réponse comparé à celui d'un vrai LLM.</li>
                     <li>Un score de cohérence : plus il est élevé, plus votre réponse suit les probabilités du modèle.</li>
-                    <li>Un temps écoulé comparé à celui d'un vrai LLM.</li>
                     <!-- <li>Des explications sur les choix de mots et leur impact.</li> -->
                 </ul>
             </p>
@@ -360,12 +387,6 @@
             </p> -->
     </div>
 
-        <!-- <div class="mode-selector">
-            <button class="mode-btn active" data-mode="normal">Mode Normal</button>
-            <!-- <button class="mode-btn" data-mode="debug">Mode Débug</button> -->
-            <!-- <button class="mode-btn" data-mode="bias">Mode Biais</button> -->
-    <!-- </div>  -->
-
         <div class="timer">Temps écoulé : <span id="timer">0</span> secondes</div>
 
         <div class="prompt-container">
@@ -378,7 +399,12 @@
             </div>
         </div>
 
-        <div class="options-container" id="word-options"></div>
+        <div class="options-container" id="word-options">
+            <div class="loading-indicator">
+                <span class="spinner" aria-hidden="true"></span>
+                Chargement du modèle de langage...
+            </div>
+        </div>
 
         <div class="feedback" id="feedback">
             <h3>Analyse de votre réponse</h3>
@@ -387,6 +413,7 @@
         </div>
 
         <div class="controls">
+            <button class="btn btn-secondary" id="undo-btn">Retour arrière</button>
             <button class="btn" id="restart-btn">Recommencer</button>
             <button class="btn btn-secondary" id="new-prompt-btn">Nouveau prompt</button>
             <button class="btn btn-secondary" id="end-btn">Terminer</button>  <!-- Nouveau bouton -->
@@ -405,28 +432,21 @@
         };
         // --- Données --- //
         const PROMPTS = [
-            "Explique comment fonctionne la photosynthèse.",
-            "Pourquoi le ciel est-il bleu ?",
-            "Qu’est-ce qu’un écosystème ?",
-            "Comment les abeilles fabriquent-elles du miel ?",
-            "Qui était Léonard de Vinci ?",
-            "Qu’est-ce que la Révolution française ?",
-            "Comment vivait-on au Moyen Âge ?",
-            "Qu’est-ce que la mondialisation ?",
-            "Comment fonctionne un ordinateur ?",
-            "Qu’est-ce que l’intelligence artificielle ?"
+            "Qu'est-ce que l'intelligence artificielle ?",
+            "Qu'est-ce que le test de Turing ?",
+            "Qu'est-ce que l'intelligence artificielle générative (IAg) ?",
+            "Qu'est-ce qu'un agent conversationnel / chatbot ?",
+            "Qu'est-ce qu'un grand modèle de langage (LLM) ?",
+            "Qu'est-ce que l'intelligence artificielle générale (AGI) ?",
         ];
 
         // --- Variables globales ---
         let currentPrompt = "";
-        let currentWord = "<start>";
+        let wordHistory = []; // mots sélectionnés depuis le dernier "<start>" (minuscules)
         let response = [];
         let startTime = 0;
         let timerInterval = null;
-        let currentMode = "normal"; // normal, debug, bias
-        let biasActive = false;
-        let biasWord = "";
-        
+
         console.log("test avant chargement des probabilités");
         // Probabilités pré-calculées 
         async function loadProbabilities() {
@@ -436,7 +456,7 @@
                 const url = './probas.json' ;
                 console.log("URL utilisée :", url); // Log 2 : Affiche l'URL appelée
 
-                const response = await fetch(url);
+                const response = await fetch(url, { cache: 'no-store' }); // Éviter de servir une version en cache après régénération
                 console.log("Réponse reçue, statut :", response.status); // Log 3 : Statut HTTP
 
                 if (!response.ok) {
@@ -453,9 +473,10 @@
 
                 // Assigner les données à la variable globale
                 window.PROBABILITIES = data;
+                unigramCache = null; // Invalider le cache unigramme (nouvelles données)
                 <!-- console.log("PROBABILITIES mis à jour :", window.PROBABILITIES); // Log 5 : Vérification -->
                 
-                currentWord = "<start>";
+                wordHistory = [];
                 response = [];
                 document.getElementById("current-response").textContent = "";
                 updateOptions(); // Mettre à jour les options avec les nouvelles données
@@ -465,7 +486,6 @@
             } finally {
                 <!-- console.log("Valeur finale de PROBABILITIES :", window.PROBABILITIES); // Log 7 : État final -->
                 init();
-                setMode("normal");
             }
         }
 
@@ -478,7 +498,7 @@
 
             // Réinitialiser
             response = [];
-            currentWord = "<start>";
+            wordHistory = [];
             document.getElementById("current-response").textContent = "";
             document.getElementById("feedback").classList.remove("visible");
             document.getElementById("debug-info").classList.remove("visible");
@@ -493,37 +513,181 @@
             updateOptions();
         }
 
+        // Efface uniquement la réponse en cours : garde le prompt et le chrono
+        function restartResponse() {
+            response = [];
+            wordHistory = [];
+            document.getElementById("current-response").textContent = "";
+            document.getElementById("feedback").classList.remove("visible");
+            document.getElementById("debug-info").classList.remove("visible");
+
+            updateOptions();
+        }
+
+        // Annule le dernier mot (ou signe de ponctuation) choisi. Le contexte est
+        // reconstruit en rejouant la réponse restante depuis le début (plutôt que de
+        // simplement dépiler wordHistory) car une ponctuation réinitialise le contexte :
+        // annuler juste après une ponctuation doit donc restaurer le contexte d'avant.
+        function undoLastWord() {
+            if (response.length === 0) return;
+            response.pop();
+            document.getElementById("current-response").textContent = response.join(" ");
+
+            wordHistory = [];
+            for (const word of response) {
+                if ([".", " !", " ?"].includes(word)) {
+                    wordHistory = [];
+                } else {
+                    wordHistory.push(word.toLowerCase());
+                }
+            }
+
+            document.getElementById("feedback").classList.remove("visible");
+            document.getElementById("debug-info").classList.remove("visible");
+            updateOptions();
+        }
+
+        // Active/désactive le bouton "Retour arrière" selon qu'il y a quelque chose à annuler
+        function updateUndoButtonState() {
+            document.getElementById("undo-btn").disabled = (response.length === 0);
+        }
+
         function updateTimer() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             document.getElementById("timer").textContent = elapsed;
         }
 
+        // Fenêtre de contexte maximale (nombre de mots précédents utilisés), doit
+        // correspondre à MAX_CONTEXT_WINDOW dans cooc_gen.py
+        const MAX_CONTEXT_WINDOW = 3;
+
+        // Renvoie les clés de contexte à essayer dans PROBABILITIES pour un historique de
+        // mots donné (hist), de la plus précise (fenêtre la plus large, jusqu'à
+        // MAX_CONTEXT_WINDOW mots) à la moins précise (un seul mot). Utilisées en cascade
+        // pour le repli (backoff). Paramétrée par "hist" (plutôt que de lire directement
+        // wordHistory) pour pouvoir être rejouée sur n'importe quel historique, y compris
+        // a posteriori sur la réponse complète (cf. showFeedback).
+        function getContextKeysFor(hist) {
+            if (hist.length === 0) return ["<start>"];
+            const maxWindow = Math.min(MAX_CONTEXT_WINDOW, hist.length);
+            const keys = [];
+            for (let window = maxWindow; window >= 1; window--) {
+                keys.push(hist.slice(hist.length - window).join(" "));
+            }
+            return keys;
+        }
+
+        function getContextKeys() {
+            return getContextKeysFor(wordHistory);
+        }
+
+        // La clé de contexte la plus précise (fenêtre la plus large disponible)
+        function getCurrentKey() {
+            return getContextKeys()[0];
+        }
+
+        // Nombre minimum de mots à proposer avant de replier sur un contexte plus large
+        // (doit correspondre au nombre de boutons affichés, cf. slice(0, 20) plus bas)
+        const MIN_OPTIONS = 20;
+
+        // Distribution unigramme (fréquence globale des mots du corpus), dérivée de "<start>"
+        // en retirant le préfixe "^". Mise en cache car recalculée souvent sinon.
+        let unigramCache = null;
+        function getUnigramDistribution() {
+            if (unigramCache) return unigramCache;
+            const start = window.PROBABILITIES["<start>"];
+            if (!start) return null;
+            unigramCache = {};
+            for (const key in start) {
+                unigramCache[key.startsWith("^") ? key.substring(1) : key] = start[key];
+            }
+            return unigramCache;
+        }
+
+        // Repli grammatical (POS) : quand les n-grammes lexicaux ne suffisent pas, propose
+        // des mots cohérents avec la nature grammaticale probable après le dernier mot
+        // de "hist", plutôt que n'importe quel mot fréquent du corpus. Combine :
+        // P(POS suivant | POS du dernier mot) * P(mot | POS suivant).
+        function getPosBackoffDistribution(hist) {
+            const wordPos = window.PROBABILITIES["word_pos"];
+            const posTransitions = window.PROBABILITIES["pos_transitions"];
+            const posWords = window.PROBABILITIES["pos_words"];
+            if (!wordPos || !posTransitions || !posWords || hist.length === 0) return null;
+
+            const lastPos = wordPos[hist[hist.length - 1]];
+            const nextPosProbs = lastPos && posTransitions[lastPos];
+            if (!nextPosProbs) return null;
+
+            const combined = {};
+            for (const [pos, posProb] of Object.entries(nextPosProbs)) {
+                const wordsForPos = posWords[pos];
+                if (!wordsForPos) continue;
+                for (const [word, wordProb] of Object.entries(wordsForPos)) {
+                    const score = posProb * wordProb;
+                    if (!(word in combined) || combined[word] < score) {
+                        combined[word] = score;
+                    }
+                }
+            }
+            return combined;
+        }
+
+        // Complète "primary" avec les entrées de "fallback" (par probabilité décroissante)
+        // jusqu'à atteindre minCount mots, sans écraser les mots déjà présents.
+        function mergeDistributions(primary, fallback, minCount) {
+            const merged = { ...primary };
+            if (!fallback || Object.keys(merged).length >= minCount) return merged;
+
+            const fallbackSorted = Object.entries(fallback).sort((a, b) => b[1] - a[1]);
+            for (const [word, prob] of fallbackSorted) {
+                if (Object.keys(merged).length >= minCount) break;
+                if (!(word in merged)) {
+                    merged[word] = prob;
+                }
+            }
+            return merged;
+        }
+
+        // Calcule la distribution de mots proposée pour un historique de mots donné (hist),
+        // en rejouant exactement la même cascade de repli que updateOptions() : n-gramme
+        // lexical -> POS -> unigramme. Réutilisée par updateOptions() (génération en direct)
+        // et par showFeedback() (score de cohérence a posteriori), pour que les deux restent
+        // alignées quand la cascade évolue.
+        function getMergedDistribution(hist) {
+            const isStart = (hist.length === 0);
+            let probabilities = {};
+            for (const key of getContextKeysFor(hist)) {
+                probabilities = mergeDistributions(probabilities, window.PROBABILITIES[key], MIN_OPTIONS);
+                if (Object.keys(probabilities).length >= MIN_OPTIONS) break;
+            }
+            if (!isStart && Object.keys(probabilities).length < MIN_OPTIONS) {
+                probabilities = mergeDistributions(probabilities, getPosBackoffDistribution(hist), MIN_OPTIONS);
+            }
+            if (!isStart && Object.keys(probabilities).length < MIN_OPTIONS) {
+                probabilities = mergeDistributions(probabilities, getUnigramDistribution(), MIN_OPTIONS);
+            }
+            return probabilities;
+        }
+
         function updateOptions() {
             const optionsDiv = document.getElementById("word-options");
             optionsDiv.innerHTML = "";
+            updateUndoButtonState();
 
-            // Vérifier si currentWord est "<start>"
-            const isStart = (currentWord === "<start>");
+            const isStart = (wordHistory.length === 0);
 
-            if (!window.PROBABILITIES[currentWord]) {
+            // Repli (backoff) en cascade : fenêtre de mots (ex. 3 -> 2 -> 1) -> repli
+            // grammatical (POS) -> unigramme, jusqu'à réunir au moins MIN_OPTIONS mots
+            // (les mots les plus spécifiques, trouvés en premier, sont toujours prioritaires).
+            let probabilities = getMergedDistribution(wordHistory);
+
+            if (Object.keys(probabilities).length === 0) {
                 const errorMsg = document.createElement("p");
                 errorMsg.textContent = "Aucune option disponible. La réponse est terminée.";
                 errorMsg.style.color = "red";
                 optionsDiv.appendChild(errorMsg);
                 showFeedback();
                 return;
-            }
-
-            // Récupérer les probabilités pour le mot courant
-            let probabilities = window.PROBABILITIES[currentWord];
-
-            // Appliquer le biais si activé
-            if (biasActive && probabilities[biasWord]) {
-                probabilities[biasWord] *= 2;
-                const total = Object.values(probabilities).reduce((a, b) => a + b, 0);
-                for (const word in probabilities) {
-                    probabilities[word] /= total;
-                }
             }
 
             // Trier les mots par probabilité décroissante
@@ -555,8 +719,8 @@
                 optionsDiv.appendChild(button);
             });
 
-            // Ajouter des boutons de ponctuation (sauf si currentWord est "<start>")
-            if (currentWord !== "<start>") {
+            // Ajouter des boutons de ponctuation (sauf si on est au début d'une phrase)
+            if (!isStart) {
                 const punctuations = [
                     { symbol: ".", label: "Point (.)" },
                     { symbol: " !", label: "Exclamation (!)" },
@@ -588,11 +752,12 @@
 
             // Vérifier si le mot est un signe de ponctuation (fin de phrase)
             if ([".", " !", " ?"].includes(word)) {
-                currentWord = "<start>"; // Réinitialiser currentWord pour permettre de continuer après la ponctuation
+                wordHistory = []; // Réinitialiser le contexte pour permettre de continuer après la ponctuation
+                updateOptions(); // Recalculer les options sur la distribution "<start>"
                 return;
             }
 
-            currentWord = word.toLowerCase();
+            wordHistory.push(word.toLowerCase());
             updateOptions();
         }
 
@@ -600,9 +765,10 @@
             const debugInfo = document.getElementById("debug-info");
             debugInfo.innerHTML = "";
 
-            if (!window.PROBABILITIES[currentWord]) return;
+            const currentKey = getCurrentKey();
+            if (!window.PROBABILITIES[currentKey]) return;
 
-            const probs = window.PROBABILITIES[currentWord];
+            const probs = window.PROBABILITIES[currentKey];
             const sortedProbs = Object.entries(probs)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 3);
@@ -622,14 +788,47 @@
             const feedbackDiv = document.getElementById("feedback");
             const feedbackContent = document.getElementById("feedback-content");
 
-            // Calculer un score de cohérence (exemple simplifié)
+            // Score de cohérence + rendu mot par mot : pour chaque mot choisi, on rejoue la
+            // même distribution que celle réellement proposée à ce moment-là (cascade
+            // n-gramme -> POS -> unigramme, via getMergedDistribution), et on compare la
+            // probabilité du mot choisi à celle du meilleur mot disponible à ce moment-là
+            // (P(choisi) / P(max)). Un choix toujours optimal donne donc 100%, même si les
+            // probabilités individuelles sont faibles en valeur absolue (corpus riche =
+            // distributions étalées). La ponctuation réinitialise le contexte, comme
+            // pendant la génération (cf. selectWord).
             let coherenceScore = 0;
-            for (let i = 0; i < response.length - 1; i++) {
-                const w1 = i === 0 ? "<start>" : response[i-1];
-                const w2 = response[i];
-                if (window.PROBABILITIES[w1] && window.PROBABILITIES[w1][w2]) {
-                    coherenceScore += window.PROBABILITIES[w1][w2];
+            let hist = [];
+            const highlightedParts = [];
+            for (let i = 0; i < response.length; i++) {
+                const raw = response[i];
+                if ([".", " !", " ?"].includes(raw)) {
+                    highlightedParts.push(`<span class="feedback-word feedback-word--punct">${raw}</span>`);
+                    hist = [];
+                    continue; // la ponctuation elle-même n'est pas notée
                 }
+
+                const isStart = (hist.length === 0);
+                const word = raw.toLowerCase();
+                const lookupWord = isStart ? `^${word}` : word;
+                const dist = getMergedDistribution(hist);
+                const distValues = Object.values(dist);
+
+                let ratio = 0;
+                if (distValues.length > 0 && dist[lookupWord] !== undefined) {
+                    ratio = dist[lookupWord] / Math.max(...distValues);
+                }
+                coherenceScore += ratio;
+
+                // Couleur par mot : 0 = rouge (choix peu probable), 120 = vert (choix optimal)
+                const hue = Math.round(ratio * 120);
+                const pct = Math.round(ratio * 100);
+                highlightedParts.push(
+                    `<span class="feedback-word" style="background-color: hsl(${hue}, 75%, 88%); ` +
+                    `border-bottom: 3px solid hsl(${hue}, 65%, 45%);" ` +
+                    `title="${pct}% du meilleur choix possible à cet endroit">${raw}</span>`
+                );
+
+                hist.push(word);
             }
             coherenceScore = (coherenceScore / response.length) * 100 || 0;
 
@@ -638,9 +837,11 @@
 
             // Générer le feedback
             let feedback = `
-                <p>Votre réponse : <strong>"${response.join(" ")}"</strong></p>
+                <p>Votre réponse :</p>
+                <p class="feedback-response">${highlightedParts.join(" ")}</p>
+                <p class="feedback-legend">🟥 peu probable → 🟩 choix optimal (couleur = probabilité du mot choisi par rapport au meilleur mot disponible à cet endroit)</p>
                 <p>Temps mis : ${elapsed} secondes (un LLM mettrait environ ${llmTime} secondes).</p>
-                <p>Score de cohérence : ${Math.round(coherenceScore)}% (plus c'est élevé, plus votre texte est "probable" selon le modèle).</p>
+                <p>Score de cohérence global : ${Math.round(coherenceScore)}% (plus c'est élevé, plus votre texte est "probable" selon le modèle).</p>
             `;
 
             if (coherenceScore > 70) {
@@ -651,45 +852,15 @@
                 feedback += `<p>❌ Votre texte s'éloigne des probabilités du modèle, ce qui peut mener à des "hallucinations".</p>`;
             }
 
-            if (currentMode === "bias") {
-                feedback += `<p>🔍 <strong>Mode Biais activé</strong> : le mot "${biasWord}" avait une probabilité artificiellement augmentée.</p>`;
-            }
-
             feedbackContent.innerHTML = feedback;
             feedbackDiv.classList.add("visible");
         }
 
-        // --- Gestion des modes ---
-        function setMode(mode) {
-            currentMode = mode;
-            const modeButtons = document.querySelectorAll('.mode-btn');
-            modeButtons.forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
-
-            // Réinitialiser si on change de mode
-            init();
-
-            // Appliquer le biais si nécessaire
-            if (mode === "bias") {
-                biasActive = true;
-                // Choisir un mot aléatoire pour le biais (ex: "chat")
-                const biasOptions = ["chat", "pluie", "livre", "montagne", "eau"];
-                biasWord = biasOptions[Math.floor(Math.random() * biasOptions.length)];
-            } else {
-                biasActive = false;
-            }
-        }
-
         // --- Événements ---
-        document.getElementById("restart-btn").onclick = init;
+        document.getElementById("undo-btn").onclick = undoLastWord;
+        document.getElementById("restart-btn").onclick = restartResponse;
         document.getElementById("new-prompt-btn").onclick = init;
         document.getElementById("end-btn").onclick = showFeedback;
-
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                setMode(btn.dataset.mode);
-            });
-        });
 
         // Accessibilité : navigation au clavier
         document.addEventListener('keydown', (e) => {
