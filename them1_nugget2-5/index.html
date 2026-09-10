@@ -64,6 +64,43 @@
             font-size: 1.3rem;
         }
 
+        .instructions-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .instructions-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(119, 38, 177, 0.3);
+        }
+
+        .instructions-toggle-icon {
+            font-size: 0.9rem;
+            transition: transform 0.2s ease;
+        }
+
+        .instructions-content {
+            margin-top: 10px;
+        }
+
+        .instructions.collapsed .instructions-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .instructions.collapsed .instructions-content {
+            display: none;
+        }
+
         .prompt-container {
             background-color: var(--bg-color);
             border: 2px solid var(--border-color);
@@ -334,7 +371,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Comment un LLM génère du texte ?</h1>
+        <h1>Générez du texte comme un LLM !</h1>
 
         <!-- <div class="instructions">
             <h2>Instructions</h2>
@@ -342,49 +379,51 @@
             <p>À chaque étape, choisissez parmi les mots proposés. Les pourcentages indiquent leur probabilité d'apparition selon les données.</p>
             <p>Objectif : comprendre que la génération de texte est basée sur des calculs de probabilités, sans "compréhension" réelle.</p>
         </div> -->
-        <div class="instructions">
-            <!-- <h2>Instructions</h2> -->
-            <!-- <p>
-                Construisez une réponse mot par mot, comme le ferait un modèle de langage (LLM). À chaque étape, choisissez parmi les mots proposés. Les pourcentages indiquent leur probabilité d'apparition selon les derniers mots sélectionnés.
-            </p> -->
-            <h3 style="font-size: 1.2rem; color:#7726b1">Comment ça marche ?</h3>
-            <ol style="padding-left: 2em;">
-                <li>
-                    Lisez le prompt et commencez à construire votre réponse en sélectionnant un mot en cliquant dessus (ou avec la touche Entrée après l'avoir sélectionné avec Tabulation) parmi les suggestions.
-                </li>
-                <li>
-                    Lorsque vous êtes satisfait de votre réponse, cliquez sur le bouton <strong>"Terminer"</strong> pour voir votre score et obtenir un feedback.
-                </li>
-                <li>Utilisez le bouton <strong>"Retour arrière"</strong> pour modifier le dernier mot sélectionné, <strong>"Recommencer"</strong> pour recommencer votre réponse depuis le début sans changer de prompt et <strong>"Nouveau prompt"</strong> pour changer de question et reprendre la génération depuis le début.</li>
-            </ol>
-            <h3 style="font-size: 1.2rem; color:#7726b1">Feedback et analyse</h3>
-            <p>
-                Le feedback vous donnera :
-                <ul style="padding-left: 2em;">
-                    <li>Le temps écoulé pour générer la réponse comparé à celui d'un vrai LLM.</li>
-                    <li>Un score de cohérence : plus il est élevé, plus votre réponse suit les probabilités du modèle.</li>
-                    <!-- <li>Des explications sur les choix de mots et leur impact.</li> -->
-                </ul>
-            </p>
+        <div class="instructions" id="instructions">
+            <button class="instructions-toggle" id="instructions-toggle" aria-expanded="true" aria-controls="instructions-content">
+                <span>Instructions</span>
+                <span class="instructions-toggle-icon" aria-hidden="true">▲</span>
+            </button>
+            <div class="instructions-content" id="instructions-content">
+                <h3 style="font-size: 1.2rem; color:#7726b1">Comment ça marche ?</h3>
+                <ol style="padding-left: 2em;">
+                    <li>
+                        Lisez le prompt et commencez à construire votre réponse en sélectionnant un mot en cliquant dessus (ou avec la touche Entrée après l'avoir sélectionné avec Tabulation) parmi les suggestions.
+                    </li>
+                    <li>
+                        Lorsque vous êtes satisfait de votre réponse, cliquez sur le bouton <strong>"Terminer"</strong> pour voir votre score et obtenir un feedback.
+                    </li>
+                    <li>Utilisez le bouton <strong>"Retour arrière"</strong> pour modifier le dernier mot sélectionné, <strong>"Recommencer"</strong> pour recommencer votre réponse depuis le début sans changer de prompt et <strong>"Nouveau prompt"</strong> pour changer de question et reprendre la génération depuis le début.</li>
+                </ol>
+                <h3 style="font-size: 1.2rem; color:#7726b1">Feedback et analyse</h3>
+                <p>
+                    Le feedback vous donnera :
+                    <ul style="padding-left: 2em;">
+                        <li>Le temps écoulé pour générer la réponse comparé à celui d'un vrai LLM.</li>
+                        <li>Un score de cohérence : plus il est élevé, plus votre réponse suit les probabilités du modèle.</li>
+                        <!-- <li>Des explications sur les choix de mots et leur impact.</li> -->
+                    </ul>
+                </p>
 
-            <!-- <h3>💡 Conseils pour explorer</h3>
-            <p>
-                Essayez les différents modes pour comprendre les mécanismes :
-                <ul style="padding-left: 1em;">
-                    <li><strong>Mode Normal</strong> : Génération classique de texte.</li>
-                    <li><strong>Mode Débug</strong> : Voir les autres options probables après chaque choix.</li>
-                    <li><strong>Mode Biais</strong> : Observer comment un mot biaisé influence la réponse.</li>
-                </ul>
-            </p> -->
+                <!-- <h3>💡 Conseils pour explorer</h3>
+                <p>
+                    Essayez les différents modes pour comprendre les mécanismes :
+                    <ul style="padding-left: 1em;">
+                        <li><strong>Mode Normal</strong> : Génération classique de texte.</li>
+                        <li><strong>Mode Débug</strong> : Voir les autres options probables après chaque choix.</li>
+                        <li><strong>Mode Biais</strong> : Observer comment un mot biaisé influence la réponse.</li>
+                    </ul>
+                </p> -->
 
-            <!-- <h3>⚠️ Points d'attention</h3>
-            <p>
-                <ul style="padding-left: 1em;">
-                    <li>Les mots en <strong>début de phrase</strong> commencent toujours par une majuscule.</li>
-                    <li>Les <strong>signes de ponctuation</strong> permettent de structurer votre réponse, mais ne terminent pas l'activité.</li>
-                    <li>Utilisez le bouton <strong>"Terminer"</strong> pour mettre fin à l'activité et obtenir votre feedback.</li>
-                </ul>
-            </p> -->
+                <!-- <h3>⚠️ Points d'attention</h3>
+                <p>
+                    <ul style="padding-left: 1em;">
+                        <li>Les mots en <strong>début de phrase</strong> commencent toujours par une majuscule.</li>
+                        <li>Les <strong>signes de ponctuation</strong> permettent de structurer votre réponse, mais ne terminent pas l'activité.</li>
+                        <li>Utilisez le bouton <strong>"Terminer"</strong> pour mettre fin à l'activité et obtenir votre feedback.</li>
+                    </ul>
+                </p> -->
+            </div>
     </div>
 
         <div class="timer">Temps écoulé : <span id="timer">0</span> secondes</div>
@@ -861,6 +900,12 @@
         document.getElementById("restart-btn").onclick = restartResponse;
         document.getElementById("new-prompt-btn").onclick = init;
         document.getElementById("end-btn").onclick = showFeedback;
+
+        document.getElementById("instructions-toggle").onclick = () => {
+            const instructions = document.getElementById("instructions");
+            const collapsed = instructions.classList.toggle("collapsed");
+            document.getElementById("instructions-toggle").setAttribute("aria-expanded", String(!collapsed));
+        };
 
         // Accessibilité : navigation au clavier
         document.addEventListener('keydown', (e) => {
