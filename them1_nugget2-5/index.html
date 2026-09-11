@@ -192,23 +192,66 @@
             color: #666;
         }
 
-        .feedback {
-            background-color: #dced592e;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--secondary-color);
+        .feedback-overlay {
             display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
         }
 
-        .feedback.visible {
-            display: block;
+        .feedback-overlay.visible {
+            display: flex;
+        }
+
+        .feedback {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 4px solid var(--secondary-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .feedback-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .feedback-close:hover {
+            color: var(--primary-color);
+        }
+
+        .feedback-close:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(119, 38, 177, 0.3);
         }
 
         .feedback h3 {
             color: var(--primary-color);
             margin-bottom: 10px;
             font-size: 1.1rem;
+        }
+
+        .feedback-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
 
         .stats {
@@ -445,10 +488,16 @@
             </div>
         </div>
 
-        <div class="feedback" id="feedback">
-            <h3>Analyse de votre réponse</h3>
-            <div id="feedback-content"></div>
-            <div class="debug-info" id="debug-info"></div>
+        <div class="feedback-overlay" id="feedback-overlay">
+            <div class="feedback" id="feedback" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
+                <button class="feedback-close" id="feedback-close" aria-label="Fermer">×</button>
+                <h3 id="feedback-title">Analyse de votre réponse</h3>
+                <div id="feedback-content"></div>
+                <div class="debug-info" id="debug-info"></div>
+                <div class="feedback-actions">
+                    <button class="btn" id="feedback-restart-btn">Recommencer</button>
+                </div>
+            </div>
         </div>
 
         <div class="controls">
@@ -485,6 +534,11 @@
         let response = [];
         let startTime = 0;
         let timerInterval = null;
+        let timerStarted = false;
+
+        // Ponctuations qui terminent une phrase (réinitialisent le contexte). L'apostrophe
+        // n'en fait pas partie : elle s'insère dans la réponse sans casser le contexte.
+        const SENTENCE_ENDERS = [".", " !", " ?"];
 
         console.log("test avant chargement des probabilités");
         // Probabilités pré-calculées 
@@ -539,28 +593,46 @@
             response = [];
             wordHistory = [];
             document.getElementById("current-response").textContent = "";
-            document.getElementById("feedback").classList.remove("visible");
+            document.getElementById("feedback-overlay").classList.remove("visible");
             document.getElementById("debug-info").classList.remove("visible");
 
-            // Réinitialiser le timer
+            // Réinitialiser le timer : il ne démarre qu'au premier mot sélectionné
             clearInterval(timerInterval);
-            startTime = Date.now();
-            updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
+            timerInterval = null;
+            timerStarted = false;
+            startTime = 0;
+            document.getElementById("timer").textContent = "0";
 
             // Mettre à jour les options
             updateOptions();
         }
 
-        // Efface uniquement la réponse en cours : garde le prompt et le chrono
+        // Efface uniquement la réponse en cours : garde le prompt, réinitialise le chrono
         function restartResponse() {
             response = [];
             wordHistory = [];
             document.getElementById("current-response").textContent = "";
-            document.getElementById("feedback").classList.remove("visible");
+            document.getElementById("feedback-overlay").classList.remove("visible");
             document.getElementById("debug-info").classList.remove("visible");
 
+            // Le chrono ne redémarrera qu'au premier mot sélectionné
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerStarted = false;
+            startTime = 0;
+            document.getElementById("timer").textContent = "0";
+
             updateOptions();
+        }
+
+        // Démarre le chrono au premier token sélectionné seulement (pas d'avance
+        // artificielle pendant la lecture du prompt ou l'hésitation initiale).
+        function startTimerIfNeeded() {
+            if (timerStarted) return;
+            timerStarted = true;
+            startTime = Date.now();
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
         // Annule le dernier mot (ou signe de ponctuation) choisi. Le contexte est
@@ -574,14 +646,14 @@
 
             wordHistory = [];
             for (const word of response) {
-                if ([".", " !", " ?"].includes(word)) {
+                if (SENTENCE_ENDERS.includes(word)) {
                     wordHistory = [];
-                } else {
+                } else if (word !== "'") {
                     wordHistory.push(word.toLowerCase());
                 }
             }
 
-            document.getElementById("feedback").classList.remove("visible");
+            document.getElementById("feedback-overlay").classList.remove("visible");
             document.getElementById("debug-info").classList.remove("visible");
             updateOptions();
         }
@@ -763,7 +835,8 @@
                 const punctuations = [
                     { symbol: ".", label: "Point (.)" },
                     { symbol: " !", label: "Exclamation (!)" },
-                    { symbol: " ?", label: "Question (?)"}
+                    { symbol: " ?", label: "Question (?)"},
+                    { symbol: "'", label: "Apostrophe (')" }
                 ];
 
                 punctuations.forEach(punct => {
@@ -786,13 +859,21 @@
         }
 
         function selectWord(word) {
+            startTimerIfNeeded();
+
             response.push(word);
             document.getElementById("current-response").textContent = response.join(" ");
 
-            // Vérifier si le mot est un signe de ponctuation (fin de phrase)
-            if ([".", " !", " ?"].includes(word)) {
+            // Vérifier si le mot est un signe de ponctuation de fin de phrase
+            if (SENTENCE_ENDERS.includes(word)) {
                 wordHistory = []; // Réinitialiser le contexte pour permettre de continuer après la ponctuation
                 updateOptions(); // Recalculer les options sur la distribution "<start>"
+                return;
+            }
+
+            // L'apostrophe ne fait pas partie du contexte lexical du modèle
+            if (word === "'") {
+                updateOptions();
                 return;
             }
 
@@ -823,8 +904,8 @@
 
         function showFeedback() {
             clearInterval(timerInterval);
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const feedbackDiv = document.getElementById("feedback");
+            const elapsed = timerStarted ? Math.floor((Date.now() - startTime) / 1000) : 0;
+            const feedbackOverlay = document.getElementById("feedback-overlay");
             const feedbackContent = document.getElementById("feedback-content");
 
             // Score de cohérence + rendu mot par mot : pour chaque mot choisi, on rejoue la
@@ -840,10 +921,14 @@
             const highlightedParts = [];
             for (let i = 0; i < response.length; i++) {
                 const raw = response[i];
-                if ([".", " !", " ?"].includes(raw)) {
+                if (SENTENCE_ENDERS.includes(raw)) {
                     highlightedParts.push(`<span class="feedback-word feedback-word--punct">${raw}</span>`);
                     hist = [];
-                    continue; // la ponctuation elle-même n'est pas notée
+                    continue; // la ponctuation de fin de phrase n'est pas notée
+                }
+                if (raw === "'") {
+                    highlightedParts.push(`<span class="feedback-word feedback-word--punct">${raw}</span>`);
+                    continue; // l'apostrophe n'est pas notée et ne réinitialise pas le contexte
                 }
 
                 const isStart = (hist.length === 0);
@@ -892,7 +977,7 @@
             }
 
             feedbackContent.innerHTML = feedback;
-            feedbackDiv.classList.add("visible");
+            feedbackOverlay.classList.add("visible");
         }
 
         // --- Événements ---
@@ -900,6 +985,19 @@
         document.getElementById("restart-btn").onclick = restartResponse;
         document.getElementById("new-prompt-btn").onclick = init;
         document.getElementById("end-btn").onclick = showFeedback;
+
+        document.getElementById("feedback-close").onclick = () => {
+            document.getElementById("feedback-overlay").classList.remove("visible");
+        };
+        document.getElementById("feedback-restart-btn").onclick = () => {
+            document.getElementById("feedback-overlay").classList.remove("visible");
+            restartResponse();
+        };
+        document.getElementById("feedback-overlay").onclick = (e) => {
+            if (e.target.id === "feedback-overlay") {
+                document.getElementById("feedback-overlay").classList.remove("visible");
+            }
+        };
 
         document.getElementById("instructions-toggle").onclick = () => {
             const instructions = document.getElementById("instructions");
