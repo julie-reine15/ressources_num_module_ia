@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coulisses IA • l'enquête</title>
+<style>
+  :root{
+    --encre:#1a1420;
+    --gris:#575060;
+    --brique:#631712;
+    --brique-transparent: #63171221;
+    --brique-clair:#f7eeed;
+    --surligneur:#b2e084;
+    --filet:#e4dfe9;
+    --blanc:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;padding:28px 20px 64px;
+    background:var(--blanc);color:var(--encre);
+    font-family:'Montserrat','Segoe UI',Roboto,system-ui,-apple-system,sans-serif;
+    font-size:16px;line-height:1.6;
+  }
+  .feuille{max-width:920px;margin:0 auto;}
+
+  h1{font-size:1.5rem;line-height:1.2;letter-spacing:-0.02em;font-weight:700;margin:0 0 12px;}
+  h2{font-size:1.05rem;font-weight:700;margin:0 0 8px;letter-spacing:-0.01em;}
+  h3{font-size:1rem;font-weight:700;margin:0 0 10px;}
+  p{margin:0 0 12px;}
+  .large{max-width:62ch;}
+  .gris{color:var(--gris);}
+
+  .commande{border-left:4px solid var(--brique);padding:2px 0 2px 18px;margin:0 0 32px;}
+  .commande p:last-child{margin-bottom:0;}
+
+  .nav-accueil{
+    display:inline-block;background:none;border:0;padding:0;margin:0 0 14px;
+    font:inherit;font-size:0.85rem;font-weight:600;color:var(--gris);cursor:pointer;
+  }
+  .nav-accueil:hover{color:var(--encre);}
+  .nav-accueil:focus-visible{outline:3px solid var(--brique-transparent);outline-offset:3px;}
+
+  .amorce{margin:0 0 30px;padding:20px 22px;background:var(--brique-clair);}
+  .amorce p{max-width:58ch;}
+  .amorce p:last-child{margin-bottom:0;}
+
+  .etape{margin:0 0 34px;}
+  .consigne{color:var(--gris);max-width:62ch;margin:0 0 18px;}
+
+  /* hub */
+  .axe{margin:0 0 30px;}
+  .axe > h2{margin-bottom:14px;}
+  .cartes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .carte{
+    display:flex;flex-direction:column;align-items:stretch;text-align:left;
+    border:1px solid var(--filet);border-top:3px solid var(--encre);
+    background:var(--blanc);padding:18px 18px 16px;cursor:pointer;font:inherit;color:inherit;
+  }
+  .carte:hover{border-color:var(--brique);border-top-color:var(--brique);}
+  .carte:focus-visible{outline:3px solid var(--brique-transparent);outline-offset:3px;}
+  .carte .titre{font-weight:700;line-height:1.3;margin:0 0 8px;}
+  .carte .chapeau{font-size:0.88rem;color:var(--gris);margin:0 0 14px;flex:1;}
+  .carte .etat{font-size:0.8rem;color:var(--gris);padding-top:10px;border-top:1px solid var(--filet);}
+  .carte.fait{border-top-color:var(--brique);background:var(--brique-transparent);}
+  .carte.fait .etat{color:var(--brique);font-weight:600;}
+
+  .avancement{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;
+    margin:0 0 28px;padding-bottom:18px;border-bottom:1px solid var(--filet);
+  }
+  .avancement strong{font-size:1.05rem;}
+
+  /* fiches sources */
+  .sources{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .fiche{border:1px solid var(--filet);border-top:3px solid var(--encre);padding:20px;}
+  .fiche.reponse{border-top-color:var(--brique);}
+  .provenance{font-size:0.82rem;color:var(--gris);margin:0 0 12px;line-height:1.5;}
+  .provenance b{color:var(--encre);font-weight:600;}
+  .statut{font-size:0.82rem;color:var(--gris);margin:0;padding-top:12px;border-top:1px solid var(--filet);}
+  .chiffre{
+    font-weight:700;
+    background-image:linear-gradient(var(--surligneur),var(--surligneur));
+    background-repeat:no-repeat;background-position:0 88%;background-size:0 42%;
+    transition:background-size .5s ease .15s;padding:0 1px;
+  }
+  .fiche.vue .chiffre{background-size:100% 42%;}
+
+  /* options */
+  fieldset{border:0;margin:0;padding:0;}
+  legend{padding:0;}
+  .options{display:grid;gap:10px;}
+  .option{
+    display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start;
+    border:1px solid var(--filet);padding:14px 16px;cursor:pointer;
+  }
+  .option:hover{border-color:var(--brique);}
+  .option input{margin:4px 0 0;width:16px;height:16px;accent-color:var(--brique);}
+  .option:has(input:checked){border-color:var(--brique);background:var(--brique-clair);}
+  .option:has(input:focus-visible){outline:3px solid var(--brique);outline-offset:2px;}
+  .option b{display:block;font-weight:600;}
+  .option em{display:block;font-style:normal;font-size:0.9rem;color:var(--gris);margin-top:2px;}
+
+  textarea{
+    width:100%;font:inherit;padding:12px 14px;border:1px solid var(--filet);
+    background:var(--blanc);color:var(--encre);resize:vertical;min-height:92px;
+  }
+  textarea:focus-visible{outline:3px solid var(--brique);outline-offset:2px;}
+
+  button{
+    font:inherit;font-weight:600;color:var(--blanc);background:var(--brique);
+    border:0;padding:13px 24px;cursor:pointer;
+  }
+  button:hover{background:var(--brique-transparent);}
+  button:disabled{background:#bdb6c6;cursor:not-allowed;}
+  button:focus-visible{outline:3px solid var(--encre);outline-offset:3px;}
+  .secondaire{background:var(--blanc);color:var(--brique);border:1px solid var(--brique);}
+  .secondaire:hover{background:var(--brique-transparent);}
+  .barre{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+
+  .retour{margin-top:24px;padding:20px 22px;background:var(--brique-transparent);border-left:4px solid var(--brique);}
+  .retour ul{margin:0 0 12px;padding-left:20px;}
+  .retour li{margin-bottom:5px;}
+  .retour p:last-child,.reel p:last-child,.nom p:last-child{margin-bottom:0;}
+  .reel{margin-top:24px;border-left:4px solid var(--surligneur);padding:4px 0 4px 20px;}
+  .nom{margin-top:24px;border:1px solid var(--encre);padding:20px 22px;}
+  .nom p{max-width:60ch;}
+  .terme{
+    background-image:linear-gradient(var(--surligneur),var(--surligneur));
+    background-repeat:no-repeat;background-position:0 85%;background-size:100% 40%;
+    font-weight:700;padding:0 2px;
+  }
+  .piece{margin-top:24px;border:1px solid var(--encre);padding:20px 22px;}
+  .piece blockquote{margin:0;padding-left:16px;border-left:3px solid var(--surligneur);}
+  .maquette{
+    margin-top:22px;border:1px dashed var(--gris);padding:18px 20px;
+    font-size:0.92rem;color:var(--gris);
+  }
+  .maquette b{color:var(--encre);}
+
+  /* tri en deux colonnes */
+  .ligne{border:1px solid var(--filet);padding:16px 18px;margin-bottom:10px;}
+  .ligne .q{font-weight:600;margin:0 0 12px;}
+  .ligne .choix{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;}
+  .ligne .choix .fleche-droite{margin-left:auto;}
+  .ligne .verdict{margin:12px 0 0;font-size:0.9rem;padding-top:12px;border-top:1px solid var(--filet);}
+  .ligne.repondu{background:var(--brique-clair);margin-bottom:12px;}
+  .ligne.repondu.correct{border-left:4px solid var(--brique);}
+  .ligne.repondu.incorrect{border-left:4px solid var(--gris);}
+  .ligne .juste{color:var(--brique);font-weight:600;}
+  .petit{font-size:0.9rem;padding:9px 14px;}
+
+  .tri-banque{display:grid;gap:10px;margin-bottom:24px;}
+  .tri-colonnes{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .tri-colonnes .colonne{border:1px solid var(--filet);border-top:3px solid var(--encre);padding:16px 18px;min-height:70px;}
+  .tri-colonnes .colonne h3{font-size:0.95rem;margin:0 0 14px;}
+  .tri-colonnes .colonne .vide{color:var(--gris);font-size:0.88rem;font-style:italic;margin:0;}
+  @media (max-width:760px){.tri-colonnes{grid-template-columns:1fr;}}
+
+  /* budget de questions */
+  .compteur{
+    display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;
+    margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--filet);
+  }
+  .compteur strong{font-size:1.05rem;}
+  .qlist{display:grid;gap:10px;}
+  .qbtn{
+    text-align:left;width:100%;background:var(--blanc);color:var(--encre);
+    border:1px solid var(--filet);padding:14px 16px;font-weight:400;
+  }
+  .qbtn:hover:not(:disabled){border-color:var(--brique);background:var(--brique-transparent);}
+  .qbtn:disabled{background:var(--brique-clair);color:var(--gris);cursor:default;}
+  .qbtn .reponse{display:block;margin-top:8px;font-size:0.9rem;color:var(--encre);}
+
+  /* pièces du documentaire */
+  .piece-doc{border:1px solid var(--filet);border-top:3px solid var(--encre);padding:20px;margin-bottom:14px;}
+  .piece-doc.ouverte{border-top-color:var(--brique);}
+  .piece-doc h4{margin:0 0 8px;font-size:0.98rem;font-weight:700;}
+  .piece-doc .corps{margin-top:12px;}
+  .avertissement{
+    border:1px solid var(--encre);padding:18px 20px;margin-top:22px;font-size:0.94rem;
+  }
+  .avertissement h4{margin:0 0 8px;font-size:0.95rem;font-weight:700;}
+
+  a{color:var(--brique);text-decoration:underline;text-underline-offset:3px;}
+  a:hover{text-decoration-thickness:2px;}
+  a:focus-visible{outline:3px solid var(--brique);outline-offset:2px;}
+  .ext{color:var(--gris);font-size:0.78rem;white-space:nowrap;}
+  .renvoi{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--filet);font-size:0.85rem;line-height:1.8;}
+
+  /* une */
+  .une{border:2px solid var(--encre);padding:28px 30px;margin-top:8px;}
+  .une .bandeau{
+    font-size:0.8rem;color:var(--gris);padding-bottom:12px;margin-bottom:20px;
+    border-bottom:1px solid var(--filet);
+  }
+  .une .titre-une{font-size:1.7rem;line-height:1.15;letter-spacing:-0.025em;font-weight:700;margin:0 0 14px;}
+  .une .chapo-une{font-size:1.02rem;margin:0 0 24px;}
+  .une .interieures{border-top:1px solid var(--filet);padding-top:18px;display:grid;gap:16px;}
+  .une .interieures h4{margin:0 0 6px;font-size:0.95rem;font-weight:700;}
+  .une .interieures p{margin:0;font-size:0.92rem;color:var(--gris);}
+  .une .coupees{margin-top:22px;padding-top:14px;border-top:1px solid var(--filet);font-size:0.85rem;color:var(--gris);}
+  .une .suite{margin-top:24px;padding-top:18px;border-top:1px solid var(--filet);}
+  .une .suite h4{margin:0 0 12px;font-size:0.85rem;font-weight:700;color:var(--gris);}
+  .une .breve{margin-bottom:12px;font-size:0.9rem;}
+  .une .breve b{display:block;font-weight:700;}
+  .une .breve span{color:var(--gris);}
+
+  /* chemin de fer */
+  .rangs{list-style:none;margin:0;padding:0;counter-reset:r;}
+  .rang{
+    display:grid;grid-template-columns:150px 1fr auto;gap:16px;align-items:center;
+    border:1px solid var(--filet);padding:14px 16px;margin-bottom:10px;
+  }
+  .rang.tete{border-color:var(--brique);background:var(--brique-clair);}
+  .rang .place{font-size:0.78rem;color:var(--gris);font-weight:600;}
+  .rang.tete .place{color:var(--brique);}
+  .rang .titre-rang{font-weight:600;line-height:1.35;}
+  .rang .actions{display:flex;gap:8px;}
+  .rang .actions button{min-width:44px;font-size:1rem;line-height:1;}
+
+  @media (max-width:760px){
+    .rang{grid-template-columns:1fr auto;gap:8px 12px;}
+    .rang .place{grid-column:1 / -1;}
+  }
+
+  [hidden]{display:none !important;}
+
+  @media (max-width:760px){
+    .cartes{grid-template-columns:1fr;}
+    .sources{grid-template-columns:1fr;}
+    body{padding:22px 16px 48px;}
+  }
+  @media (prefers-reduced-motion:reduce){.chiffre{transition:none;}}
+  @media print{
+    .noprint{display:none !important;}
+    body{padding:0;}
+    .une{border:0;padding:0;}
+  }
+</style>
+</head>
+<body>
+<main class="feuille" id="app"></main>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------
+   DONNÉES — une entrée par enquête.
+   mecanique : 'confrontation' | 'arbitrage' | 'maquette'
+   --------------------------------------------------------------- */
+
+var ENQUETES = [
+  {
+    id:'cout',
+    axe:'amont',
+    titre:'Qui a fabriqué le filtre de ChatGPT ?',
+    chapeau:'Deux sources, deux versions des conditions de travail des annotateurs.',
+    commande:'Deux sources vous parviennent sur les conditions de travail des annotateurs. Elles ne disent pas la même chose. Votre travail : décider ce qui est publiable.',
+    amorce:{
+      titre:'Ce qu\'il faut savoir avant de lire',
+      paras:[
+        'Pour qu\'un modèle refuse de produire des contenus violents ou haineux, il faut d\'abord lui apprendre à les reconnaître. Cela suppose des milliers d\'exemples étiquetés un par un, à la main.',
+        'Ce travail est réalisé par des personnes, recrutées par des sociétés sous-traitantes, le plus souvent loin des sièges des entreprises qui conçoivent les modèles.',
+        'Deux sources vous parviennent sur leurs conditions de travail.'
+      ]
+    },
+    mecanique:'confrontation',
+    nomination:{
+      titre:'Ce que vous venez de faire porte un nom',
+      terme:'travail de la donnée',
+      paras:[
+        'On appelle <span class="terme">travail de la donnée</span> l\'ensemble des tâches humaines qui rendent un modèle utilisable : annoter, étiqueter, modérer, corriger. Il est indispensable, massif, et presque toujours absent de la présentation des produits qu\'il permet.',
+        'Mais ce que vous venez surtout d\'exercer est ailleurs : face à deux sources qui se contredisent, publier ce que vous pouvez défendre plutôt que ce qui frappe le plus. C\'est le geste que les cinq enquêtes suivantes vous demanderont de refaire.'
+      ]
+    },
+    piece:'Une enquête de TIME du 18 janvier 2023 relève une rémunération de 1,32 à 2 dollars de l\'heure pour les annotateurs employés par Sama pour le compte d\'OpenAI. Sama conteste ces chiffres et avance 1,46 à 3,74 dollars après impôts.',
+    sources:[
+      {libelle:'L\'enquête de TIME, 18 janvier 2023', url:'https://time.com/6247678/openai-chatgpt-kenya-workers/'},
+      {libelle:'La réponse de Sama', url:'https://www.business-humanrights.org/en/latest-news/openai-and-sama-hired-underpaid-workers-in-kenia-to-filter-toxic-content-for-chatgpt/'}
+    ]
+  },
+
+  {
+    id:'transparence',
+    axe:'amont',
+    titre:'Ce qu\'on ne nous dit pas, ce que personne ne sait',
+    chapeau:'Deux régimes d\'ignorance qu\'on confond en permanence.',
+    commande:'Certaines questions sur un modèle ont une réponse que quelqu\'un détient. D\'autres n\'en ont pour personne. À vous de faire le tri.',
+    amorce:{
+      titre:'Ce qu\'il faut savoir avant de trier',
+      paras:[
+        'Le développement d\'un modèle d\'intelligence artificielle générative peut se découper en deux temps. Ces deux temps permettent respectivement d\'apporter des informations concernant la conception du modèle et de comprendre les leviers qui sont actionnés lors de la génération de contenus.',
+        'Dans le premier temps, des choix sont faits : la nature des données qui composeront le corpus d\'entrainement, la source de ces données d\'entrainement, qui sera payé pour les annoter et selon quelles règles, déterminer les critères d\'une bonne réponse, quels tests faire passer avant la mise en service. Chacun de ces choix est consigné quelque part dans l\'entreprise, mais rien n\'oblige à les rendre public.',
+        'Dans le second temps, le modèle s\'ajuste seul en suivant notamment les choix établis durant le premier temps, des milliards de fois, jusqu\'à devenir les modèles que nous utilisons au quotidien. Ces ajustements ne sont pas une liste de règles qu\'on pourrait ouvrir et lire. Quand le modèle génère une réponse, aucun ingénieur, pas même celui qui l\'a construit, ne peut expliquer ce qui a produit cette réponse plutôt qu\'une autre.',
+        'Parmi les questions suivantes, tentez de déduire pour lesquelles des réponses existent et pour lesquelles aucune réponse ne peut être apportée.'
+      ]
+    },
+    mecanique:'tri',
+    aConstruire:'Tri en deux colonnes. Une série de questions à répartir entre « la réponse existe mais n\'est pas publiée » et « personne ne peut répondre ». Affectation par boutons, pas de glisser-déposer.',
+    nomination:{
+      titre:'Deux mots, et une frontière',
+      terme:'transparence / explicabilité',
+      paras:[
+        'La <span class="terme">transparence</span>, c\'est tout ce qu\'on pourrait dire d\'un modèle et qu\'on ne dit pas forcément : les textes qui ont servi à l\'entraîner et la façon dont ils ont été obtenus, les conditions de travail des personnes qui les ont annotés, les comportements récompensés, les évaluations passées avant la mise en service, les incidents survenus depuis. Toutes ces informations existent, sous forme de documents, dans l\'entreprise. La transparence est donc une décision : les publier, ou non.',
+        'L\'<span class="terme">explicabilité</span>, c\'est la possibilité de dire pourquoi le modèle a produit cette réponse-là. Elle ne se heurte pas à un refus mais à la nature de l\'objet. Un modèle n\'est pas fait de règles mais de centaines de milliards de nombres ajustés ensemble, et chaque réponse résulte de tous à la fois. Personne ne peut désigner la ligne responsable. L\'entreprise elle-même ne le peut pas.',
+        'La conséquence est très concrète : on ne corrige pas un comportement problématique en modifiant l\'endroit fautif, puisque nous ne sommes pas en mesure de l\'identifier et de le situer. Le modèle va donc être réentrainé, retesté dans l\'objectif de faire disparaitre l\'erreur.'
+      ]
+    },
+    piece:'Ce qu\'on peut savoir d\'un modèle relève de deux régimes distincts : des documents que l\'entreprise détient et publie ou non, et une réponse dont personne, pas même elle, ne peut expliquer la formation.',
+    sources:[
+      {libelle:'L\'analyse publiée par OpenAI, 29 avril 2025', url:'https://openai.com/index/sycophancy-in-gpt-4o/'}
+    ]
+  },
+
+  {
+    id:'alignement',
+    axe:'amont',
+    titre:'Le jour où le modèle s\'est mis à tout approuver',
+    chapeau:'En avril 2025, un éditeur a retiré une mise à jour quatre jours après l\'avoir déployée. Vous reconstituez ce qui l\'a précédée.',
+    commande:'Vous enquêtez sur une décision déjà connue dans ses grandes lignes. Avant de lire comment l\'éditeur l\'explique, vous la reconstituez à sa place.',
+    amorce:{
+      titre:'Ce qu\'il faut savoir avant de reconstituer',
+      paras:[
+        'Un modèle de langage n\'est pas programmé règle par règle. On l\'entraîne : il produit des réponses, certaines sont récompensées plutôt que d\'autres, et il finit par produire davantage de ce qui a été récompensé.',
+        'Reste à décider ce qui mérite récompense. C\'est une décision humaine, prise par une équipe, et elle porte autant sur le ton du modèle que sur la justesse de ses réponses.',
+        'L\'épisode sur lequel vous enquêtez est daté : en avril 2025, un éditeur a modifié le tempérament de son modèle, l\'a retiré quatre jours plus tard, et a publié une explication rare de l\'arbitrage qui y avait conduit. Avant de la lire, reconstituez ce raisonnement.'
+      ]
+    },
+    mecanique:'arbitrage',
+    nomination:{
+      titre:'Ce que vous venez de faire porte un nom',
+      terme:'alignement',
+      paras:[
+        'On appelle <span class="terme">alignement</span> l\'ensemble des procédés par lesquels on fait correspondre le comportement d\'un modèle aux valeurs et aux intentions de ceux qui le conçoivent.',
+        'Ce n\'est ni un réglage technique neutre, ni une propriété acquise une fois pour toutes. C\'est une suite de décisions humaines, prises par des équipes identifiables, révisables et parfois révisées en quatre jours.',
+        'La question n\'est donc jamais de savoir si un modèle est aligné, mais sur quelles valeurs, et sélectionnées par qui.'
+      ]
+    },
+    piece:'Le ton par défaut d\'un modèle est un réglage, pas une propriété. En avril 2025, ce réglage a été confié aux retours immédiats des utilisateurs, et retiré quatre jours plus tard.',
+    sources:[
+      {libelle:'L\'analyse publiée par OpenAI, 29 avril 2025', url:'https://openai.com/index/sycophancy-in-gpt-4o/'},
+      {libelle:'TechCrunch, 29 avril 2025', url:'https://techcrunch.com/2025/04/29/openai-explains-why-chatgpt-became-too-sycophantic'}
+    ]
+  },
+
+  {
+    id:'anthropo',
+    axe:'aval',
+    titre:'Ils ont pleuré la disparition d\'un logiciel',
+    chapeau:'Août 2025, février 2026 : deux fois, des utilisateurs se sont mobilisés pour un modèle.',
+    commande:'Vous allez regarder ce que produit le ton d\'un modèle. Chez des gens, et chez vous.',
+    amorce:{
+      titre:'Ce qu\'il faut savoir avant de regarder',
+      paras:[
+        'Un modèle de langage produit, mot après mot, la suite la plus plausible de ce qui précède. Il n\'a ni intention, ni mémoire de vous entre deux conversations, ni état intérieur. Rien de ce qu\'il écrit ne correspond à quelque chose qu\'il éprouve.',
+        'Son ton, en revanche, est un choix. Le « je », la chaleur, la disponibilité permanente, la manière de vous donner raison ont été décidés par quelqu\'un, et peuvent être modifiés du jour au lendemain.',
+        'Vous allez regarder ce que ce choix produit chez des gens. Et chez vous.'
+      ]
+    },
+    mecanique:'documentaire',
+    retournement:true,
+    aConstruire:'Documentaire en deux temps : le retrait de GPT-4o (août 2025, février 2026), puis Replika (février 2023). Parallèle ELIZA. Mention sobre du cas grave en clôture, avec avertissement et ressources.',
+    nomination:{
+      titre:'Ce réflexe a un nom, et soixante ans',
+      terme:'anthropomorphisation',
+      paras:[
+        'On appelle <span class="terme">anthropomorphisation</span> le fait de prêter à une machine des intentions, des émotions ou une compréhension qu\'elle n\'a pas. Joseph Weizenbaum l\'observait dès 1966 chez les utilisateurs d\'ELIZA, un programme rudimentaire qui se contentait de reformuler leurs phrases en questions.',
+        'Ce n\'est donc ni une faiblesse individuelle ni un effet de la nouveauté : c\'est un réflexe cognitif ordinaire, que la conception des systèmes actuels amplifie délibérément.',
+        'Sa conséquence pratique n\'est pas de croire que la machine vivante. Elle est de lui accorder une confiance, et une place, que l\'on n\'accorderait pas normalement à un outil.'
+      ]
+    },
+    piece:'Prêter une intention à une machine est un réflexe documenté depuis 1966. Les systèmes actuels ne le corrigent pas, ils l\'amplifient. La sensation de proximité qu\'ils peuvent créer reste un paramètre que l\'entreprise peut modifier ou supprimer.',
+    sources:[
+      {libelle:'TechCrunch, 13 février 2026', url:'https://techcrunch.com/2026/02/13/openai-removes-access-to-controversial-chatgpt-4o-model'},
+      {libelle:'TechCrunch, 3 février 2023 (Replika)', url:'https://techcrunch.com/2023/02/03/replika-italy-data-processing-ban/'}
+    ]
+  },
+
+  {
+    id:'manipulation',
+    axe:'aval',
+    titre:'Le faux n\'est plus le problème',
+    chapeau:'Des images, des vidéos et des textes hyperréalistes sont fabriqués pour tromper et orienter l\'opinion. Un de ces contenus circule : vous avez cinq questions pour décider s\'il tient.',
+    commande:'Un contenu conçu pour manipuler l\'opinion circule. Vous ne pourrez pas trancher en le regardant. Posez les bonnes questions à la rédaction.',
+    amorce:{
+      titre:'Ce qu\'il faut savoir avant d\'enquêter',
+      paras:[
+        'Produire une image, une voix ou une vidéo réaliste pour tromper est aujourd\'hui à la portée de quiconque veut faire croire quelque chose de faux à un grand nombre de personnes. Quelques secondes d\'enregistrement suffisent à cloner une voix, une photo permet de créer une photo ou une vidéo artificielle de la personne.',
+        'Ce n\'est pas un effet secondaire de la technique : c\'est l\'usage que certains en font délibérément, pour peser sur un débat, une élection ou une réputation en faisant passer un contenu fabriqué pour la réalité.',
+        'Les indices de fabrication sur lesquels nous pouvions nous appuyer pour repérer ces contenus artificiels (incohérences visuelles, anatomiques) disparaissent à chaque fois que de nouveaux modèles sont mis sur le marché, et aucun outil de détection n\'est en mesure de garantir une exactitude des résultats fiables, particulièrement sur les contenus textuels.',
+        'Ce qui reste vérifiable n\'est donc pas le contenu lui-même, mais son parcours. Vous disposez d\'un nombre limité de questions à poser à la rédaction pour décider si ce contenu peut être publié.'
+      ]
+    },
+    mecanique:'budget',
+    aConstruire:'Budget de questions limité. L\'apprenant dépense ses questions entre examen du contenu (sans résultat exploitable) et remontée de provenance (qui publie en premier, source indépendante, amplification, financement). Le constat est produit par la dépense, pas énoncé.',
+    nomination:{
+      titre:'Ce que vous venez d\'affronter porte un nom',
+      terme:'désinformation par contenu synthétique / provenance',
+      paras:[
+        'On appelle <span class="terme">désinformation</span> la diffusion délibérée de faux destinés à tromper. Ce qui a changé, ce n\'est pas l\'intention, elle a toujours existée, mais l\'échelle : produire un contenu assez réaliste pour convaincre ne demande plus ni talent ni budget, seulement quelques secondes d\'enregistrement ou une consigne écrite.',
+        'Face à cela, on ne peut plus se fier à l\'examen du contenu. Ce qui reste vérifiable, c\'est sa <span class="terme">provenance</span> : qui l\'a publié le premier, à quelle date, à partir de quoi, qui l\'a repris, qui a financé sa diffusion.',
+        'C\'est un déplacement de méthode, pas un changement de sujet : la provenance est le levier qu\'il reste pour continuer à combattre la même chose qu\'avant : des faux fabriqués pour orienter ce que l\'on croit.',
+        'VIGINUM, le service de l\'État chargé de la surveillance des ingérences numériques étrangères, procède exactement ainsi. Ses rapports publics documentent les réseaux de diffusion et les circuits de rémunération plutôt que les caractéristiques techniques des contenus.'
+      ]
+    },
+    piece:'Des contenus hyperréalistes sont fabriqués pour tromper et orienter l\'opinion. Aucun examen du contenu ne permet plus de le démasquer : seul son parcours : qui publie, quand, à partir de quoi, qui amplifie et qui finance, reste vérifiable.',
+    sources:[
+      {libelle:'VIGINUM, rapport technique Storm-1516, mai 2025', url:'https://www.sgdsn.gouv.fr/files/2025-05/20250507_TLP-CLEAR_NP_SGDSN_VIGINUM_Rapport%20technique_Storm-1516.pdf'}
+    ]
+  },
+
+  {
+    id:'atrophie',
+    axe:'aval',
+    titre:'Partenaire ou substitut ?',
+    chapeau:'Déléguer n\'est pas le problème. Ce qui compte, c\'est ce qu\'on garde la capacité de vérifier.',
+    commande:'Triez six situations selon que la capacité de vérifier est conservée, ou qu\'elle a, elle aussi, été déléguée.',
+    amorce:{
+      titre:'Ce qu\'il faut savoir avant de trier',
+      paras:[
+        'Confier une opération mentale à un outil extérieur n\'a rien de nouveau : une calculatrice, un GPS, un moteur de recherche font déjà ce travail à notre place, et personne n\'y voit un problème.',
+        'Ce qui varie d\'un cas à l\'autre, c\'est ce qui se passe ensuite : reste-t-on capable de vérifier, de corriger, de repérer une erreur dans ce que l\'outil a produit ? Ou cette capacité-là a-t-elle, elle aussi, été déléguée ?',
+        'Voici six situations de travail avec un modèle de langage. Pour chacune, il faut trancher laquelle des deux choses s\'est produite.'
+      ]
+    },
+    mecanique:'titres',
+    nomination:{
+      titre:'Ce que plusieurs travaux tentent d\'isoler',
+      terme:'déchargement cognitif',
+      paras:[
+        'On appelle <span class="terme">déchargement cognitif</span> le fait de confier à un support extérieur une opération mentale : une calculatrice, un GPS, un moteur de recherche, un modèle de langage. Le phénomène est ancien et largement documenté : la mémoire spatiale s\'affaiblit chez les usagers de GPS, la mémoire visuelle chez les usagers d\'appareils photo',
+        'Ce que plusieurs travaux récents cherchent à isoler, ce sont les processus précis qui s\'affaiblissent quand la délégation devient systématique : l\'abstraction, la répétition mentale et la régulation métacognitive, c\'est-à-dire la capacité à évaluer soi-même la fiabilité de ce qu\'on produit. Le critère utile n\'est donc pas de savoir si l\'on délègue, mais si l\'on conserve cette dernière capacité.',
+        'Rien n\'indique que ce risque soit irréversible : le cerveau reste plastique, et se réengage dès qu\'on lui en laisse l\'occasion.'
+      ]
+    },
+    piece:'Un outil reste un partenaire tant qu\'il élargit une capacité qu\'on continue d\'exercer ; il devient un substitut dès qu\'il la remplace.',
+    sources:[
+      {libelle:'Ioan Roxin, Polytechnique Insights, 3 juillet 2025', url:'https://www.polytechnique-insights.com/tribunes/neurosciences/ia-generative-le-risque-de-latrophie-cognitive/'},
+      {libelle:'Arya Jadhav, « Distributed Atrophy 2.0 », préprint 2025', url:'https://www.researchgate.net/publication/394026188_Distributed_Atrophy_20_Cognitive_Offloading_and_the_Reshaping_of_Thought'},
+      {libelle:'L\'étude, MIT Media Lab', url:'https://www.media.mit.edu/publications/your-brain-on-chatgpt/'},
+      {libelle:'Lee et al., Microsoft Research & Carnegie Mellon, CHI 2025', url:'https://doi.org/10.1145/3706598.3713778'}
+    ]
+  }
+];
+
+/* --------------------------------------------------------------- */
+
+var etat = {
+  consigne:'',
+  faites:{},
+  ordreFait:[],
+  ordre:[]
+};
+
+var app = document.getElementById('app');
+
+// Bouton "Retour à l'accueil" présent en tête des six pages d'activité (cf. enTete()) :
+// délégué une seule fois sur le conteneur, qui survit aux ré-affichages successifs.
+app.addEventListener('click', function(ev){
+  var nav = ev.target.closest('.nav-accueil');
+  if (nav) vueHub();
+});
+
+function trouver(id){
+  for (var i=0;i<ENQUETES.length;i++){ if (ENQUETES[i].id===id) return ENQUETES[i]; }
+  return null;
+}
+function nbFaites(){ return Object.keys(etat.faites).length; }
+function echap(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function liens(sources){
+  if (!sources || !sources.length) return '';
+  var h = '<p class="renvoi">Vérifier par vous-même&nbsp;:<br>';
+  sources.forEach(function(s){
+    h += '<a href="'+s.url+'" target="_blank" rel="noopener noreferrer">'+s.libelle+' <span class="ext">(nouvelle fenêtre)</span></a><br>';
+  });
+  return h + '</p>';
+}
+function defiler(el){
+  if (el && typeof el.scrollIntoView === 'function'){
+    try { el.scrollIntoView({behavior:'smooth', block:'start'}); }
+    catch (err) { el.scrollIntoView(); }
+  }
+}
+function afficher(html, focusSel){
+  app.innerHTML = html;
+  var cible = app.querySelector(focusSel || 'h1');
+  if (cible){ cible.setAttribute('tabindex','-1'); cible.focus(); }
+  window.scrollTo(0,0);
+}
+
+/* ---------- 1. prise de poste ---------- */
+
+function vueAccueil(){
+  afficher(
+    '<div class="commande">'
+  + '<h1>Coulisses IA • l\'enquête</h1>'
+  + '<p class="large">Vous prenez votre poste à la rédaction. Un dossier vous attend.</p>'
+  + '</div>'
+
+  + '<section class="etape"><h2>Le point de départ</h2>'
+  + '<p class="large">Les agent conversationnels sont entrés dans le quotidien de millions de personnes en quelques mois. '
+  + 'Ils rédigent, résument, traduisent, corrigent. Ils ont été adoptés plus vite que n\'importe quel outil avant eux, '
+  + 'et à peu près personne ne sait ce qu\'il y a derrière.</p>'
+  + '<p class="large">Pas au sens technique, cette question-là est traitée partout. Au sens de ce que fabriquer et diffuser ces systèmes implique. '
+  + 'Qui travaille dessus ? Dans quelles conditions ? Qu\'est-ce que leurs concepteurs savent et ne disent pas ? Qu\'est-ce qu\'ils ne savent pas eux-mêmes ? '
+  + 'Qui a décidé de leur manière de nous parler ? Qu\'est-ce que leur usage implique chez ceux qui s\'en servent ?</p></section>'
+
+  + '<section class="etape"><h2>La commande</h2>'
+  + '<p class="large">En tant que journaliste d\'investigation spécialisé•e sur les sujets de l\'intelligence artificielle, votre rédaction vous a demandé de constituer un dossier de sensibilisation aux différents enjeux éthiques liés à l\'intelligence artificielle générative. Vous avez sélectionné 6 enjeux souvent traités séparément ou même ignorés, que vous allez réunir et mettre en lumière dans ce dossier à travers des événements réels, datés et vérifiables.</p>'
+  + '<p class="large">Six enquêtes restent à mener avant de pouvoir boucler ce dossier. Chacune s\'appuie sur des faits établis, que vous pourrez consulter à tout moment.'
+  + '</p></section>'
+
+  + '<section class="etape">'
+  + '<h2>Avant de commencer</h2>'
+  + '<p class="consigne">Rédigez la consigne que vous adresseriez à un agent conversationnel pour qu\'il rédige une synthèse d\'un rapport de trente pages. (quelque soit le sujet)</p>'
+  + '<label for="consigne" class="consigne">Votre consigne</label>'
+  + '<textarea id="consigne" rows="3"></textarea>'
+  + '<div class="barre"><button type="button" id="entrer">Prendre mon poste</button></div>'
+  + '</section>'
+  );
+  document.getElementById('entrer').addEventListener('click', function(){
+    etat.consigne = document.getElementById('consigne').value.trim();
+    vueHub();
+  });
+}
+
+/* ---------- 2. salle de rédaction ---------- */
+
+function carte(e){
+  var fait = !!etat.faites[e.id];
+  return '<button type="button" class="carte'+(fait?' fait':'')+'" data-id="'+e.id+'">'
+       + '<span class="titre">'+e.titre+'</span>'
+       + '<span class="chapeau">'+e.chapeau+'</span>'
+       + '<span class="etat">'+(fait?'Versée au dossier':'À enquêter')+'</span>'
+       + '</button>';
+}
+
+function vueHub(){
+  var n = nbFaites();
+  var amont = ENQUETES.filter(function(e){return e.axe==='amont';});
+  var aval  = ENQUETES.filter(function(e){return e.axe==='aval';});
+
+  var h = '<div class="commande"><h1>Salle de rédaction</h1>'
+        + '<p class="large gris">Six volets, dans l\'ordre que vous voulez.</p></div>'
+        + '<div class="avancement"><strong>'+n+' volet'+(n>1?'s':'')+' sur 6 au dossier</strong>'
+        + '<span class="gris">'+(n===6?'Le numéro peut être bouclé.':'Le bouclage s\'ouvre une fois les six volets versés.')+'</span></div>'
+        + '<section class="axe"><h2>Ce qui se décide sans nous</h2><div class="cartes">'
+        + amont.map(carte).join('') + '</div></section>'
+        + '<section class="axe"><h2>Ce qui se joue avec nous</h2><div class="cartes">'
+        + aval.map(carte).join('') + '</div></section>'
+        + '<div class="barre"><button type="button" id="boucler"'+(n<6?' disabled':'')+'>Boucler le numéro</button></div>';
+
+  afficher(h);
+  app.querySelectorAll('.carte').forEach(function(b){
+    b.addEventListener('click', function(){ vueEnquete(b.dataset.id); });
+  });
+  document.getElementById('boucler').addEventListener('click', vueBouclage);
+}
+
+/* ---------- 3. enquête ---------- */
+
+function enTete(e){
+  return '<div class="commande">'
+       + '<button type="button" class="nav-accueil">← Retour à l\'accueil</button>'
+       + '<h1>'+e.titre+'</h1><p class="large">'+e.commande+'</p></div>'
+       + '<section class="amorce"><h2>'+e.amorce.titre+'</h2>'
+       + e.amorce.paras.map(function(p){return '<p>'+p+'</p>';}).join('') + '</section>';
+}
+
+function blocNomination(e){
+  return '<div class="nom"><h3>'+e.nomination.titre+'</h3>'
+       + e.nomination.paras.map(function(p){return '<p>'+p+'</p>';}).join('')
+       + liens(e.sources) + '</div>';
+}
+
+function blocPiece(e){
+  return '<div class="piece"><h3>Pièce versée au dossier</h3>'
+       + '<blockquote>'+e.piece+'</blockquote></div>';
+}
+
+function cloture(e){
+  var zone = document.getElementById('cloture');
+  zone.innerHTML = blocNomination(e) + blocPiece(e)
+    + '<div class="barre"><button type="button" id="retour">Retour à la rédaction</button></div>';
+  etat.faites[e.id] = true;
+  if (etat.ordreFait.indexOf(e.id) === -1) etat.ordreFait.push(e.id);
+  var t = zone.querySelector('.nom h3');
+  t.setAttribute('tabindex','-1');
+  t.focus();
+  document.getElementById('retour').addEventListener('click', vueHub);
+  defiler(zone);
+}
+
+function vueEnquete(id){
+  var e = trouver(id);
+  var table = {
+    confrontation: mecConfrontation,
+    arbitrage:     mecArbitrage,
+    tri:           mecTri,
+    documentaire:  mecDocumentaire,
+    budget:        mecBudget,
+    titres:        mecTitres
+  };
+  (table[e.mecanique] || mecMaquette)(e);
+}
+
+/* mécanique A — confrontation de sources */
+
+function mecConfrontation(e){
+  afficher(enTete(e)
+  + '<section class="etape"><h2>Les deux versions</h2>'
+  + '<p class="consigne">Ouvrez les deux fiches avant de continuer.</p>'
+  + '<div class="sources">'
+  + '<article class="fiche" id="f1">'
+  + '<p class="provenance"><b>TIME</b>, enquête de Billy Perrigo<br>18 janvier 2023</p>'
+  + '<p>OpenAI a sous-traité à la société Sama, à partir de novembre 2021, l\'annotation de dizaines de milliers d\'extraits destinés à entraîner un filtre de toxicité. Rémunération relevée : <span class="chiffre">1,32 à 2 dollars de l\'heure</span> selon l\'ancienneté. Sama a rompu le contrat en février 2022, huit mois avant son terme.</p>'
+  + '<p class="statut">Quatre salariés interrogés sous anonymat, bulletins de paie et documents internes consultés.</p>'
+  + '<button type="button" class="ouvrir secondaire" data-cible="f1">Ouvrir la fiche</button></article>'
+  + '<article class="fiche reponse" id="f2">'
+  + '<p class="provenance"><b>Réponse de Sama</b><br>citée dans la même enquête</p>'
+  + '<p>L\'entreprise conteste la charge de travail avancée : 70 passages à annoter par service de neuf heures, et non jusqu\'à 250. Elle avance une rémunération de <span class="chiffre">1,46 à 3,74 dollars de l\'heure</span> après impôts.</p>'
+  + '<p class="statut">Déclaration d\'un porte-parole. Aucune pièce produite à l\'appui.</p>'
+  + '<button type="button" class="ouvrir secondaire" data-cible="f2">Ouvrir la fiche</button></article>'
+  + '</div></section>'
+  + '<section class="etape" id="decision" hidden><h2>Ce que vous publiez</h2>'
+  + '<p class="consigne">Une seule phrase ira au dossier. Choisissez celle que vous êtes en mesure de défendre.</p>'
+  + '<form id="form"><fieldset><legend class="consigne">Quatre formulations possibles :</legend><div class="options">'
+  + '<label class="option"><input type="radio" name="choix" value="a"><span>OpenAI a payé ses annotateurs kényans 2 dollars de l\'heure.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="b"><span>Selon certaines sources, les annotateurs auraient été mal payés.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="c"><span>Une enquête de TIME du 18 janvier 2023 relève une rémunération de 1,32 à 2 dollars de l\'heure pour les annotateurs employés par Sama pour le compte d\'OpenAI. Sama conteste ces chiffres et avance 1,46 à 3,74 dollars après impôts.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="d"><span>Le scandale de l\'exploitation des travailleurs du clic par OpenAI a éclaté en 2023.</span></label>'
+  + '</div></fieldset><div class="barre"><button type="submit" id="valider" disabled>Verser au dossier</button></div></form>'
+  + '<div id="cloture" aria-live="polite"></div></section>');
+
+  var ouvertes = 0;
+  app.querySelectorAll('.ouvrir').forEach(function(b){
+    b.addEventListener('click', function(){
+      var f = document.getElementById(b.dataset.cible);
+      f.classList.add('vue'); b.remove(); ouvertes++;
+      if (ouvertes===2){
+        var d = document.getElementById('decision');
+        d.hidden = false;
+        d.querySelector('h2').setAttribute('tabindex','-1');
+        d.querySelector('h2').focus();
+      }
+    });
+  });
+
+  var retours = {
+    a:['Un chiffre contesté présenté comme un fait',['Le chiffre retenu est celui d\'une seule des deux sources.','Aucune attribution : la phrase parle à la place de TIME.','Aucune date, alors que les faits remontent à 2021-2022.']],
+    b:['Rien n\'est vérifiable ici',['« Certaines sources » ne désigne personne.','« Mal payés » est une appréciation, pas une donnée.','Le lecteur ne peut ni contrôler ni contester la phrase.']],
+    d:['La qualification précède l\'établissement des faits',['« Scandale » et « exploitation » sont des jugements que rien n\'établit à ce stade.','La date renvoie à la publication de l\'enquête, pas aux faits.','La version de Sama disparaît entièrement.']]
+  };
+
+  var form = document.getElementById('form');
+  var valider = document.getElementById('valider');
+  form.addEventListener('change', function(){ valider.disabled = false; });
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var c = form.querySelector('input[name="choix"]:checked').value;
+    var h;
+    if (c==='c'){
+      h = '<div class="retour"><h3>Publiable</h3>'
+        + '<p>Cette phrase attribue, date, et rend compte des deux versions sans trancher à la place du lecteur. '
+        + 'Elle reste défendable même si Sama produit demain de nouvelles pièces.</p>'
+        + '<p>Retenez la méthode plutôt que la phrase : <strong>qui l\'affirme, quand, et qui le conteste</strong>.</p></div>';
+    } else {
+      h = '<div class="retour"><h3>'+retours[c][0]+'</h3><ul>'
+        + retours[c][1].map(function(m){return '<li>'+m+'</li>';}).join('')
+        + '</ul><p>La troisième formulation est la seule qui attribue, date et rend compte des deux versions. C\'est elle qui part au dossier.</p></div>';
+    }
+    valider.disabled = true; valider.textContent = 'Versé';
+    cloturePartielle(e, h);
+  });
+}
+
+function cloturePartielle(e, avant){
+  var zone = document.getElementById('cloture');
+  zone.innerHTML = avant + blocNomination(e) + blocPiece(e)
+    + '<div class="barre"><button type="button" id="retour">Retour à la rédaction</button></div>';
+  etat.faites[e.id] = true;
+  if (etat.ordreFait.indexOf(e.id) === -1) etat.ordreFait.push(e.id);
+  var t = zone.querySelector('h3');
+  t.setAttribute('tabindex','-1');
+  t.focus();
+  document.getElementById('retour').addEventListener('click', vueHub);
+  defiler(zone);
+}
+
+/* mécanique B — arbitrage avant révélation */
+
+function mecArbitrage(e){
+  afficher(enTete(e)
+  + '<section class="etape"><h2>La note reconstituée</h2>'
+  + '<p class="consigne">Voici, reconstituée à partir de l\'analyse que l\'éditeur a lui-même publiée après coup, la note qui a vraisemblablement circulé avant la décision.</p>'
+  + '<div class="fiche"><p>Objectif du trimestre : rendre la personnalité par défaut du modèle plus intuitive et plus efficace dans un plus grand nombre de situations.</p>'
+  + '<p>L\'entraînement combine plusieurs signaux de récompense. Un seul a été renforcé.</p>'
+  + '<p class="statut">Reconstitution d\'après l\'analyse publiée par l\'éditeur, la décision, a déjà été prise.</p></div>'
+  + '<form id="form"><fieldset><legend class="consigne">À leur place, lequel auriez-vous renforcé ?</legend><div class="options">'
+  + '<label class="option"><input type="radio" name="signal" value="pouces"><span><b>Les pouces levés et baissés des utilisateurs</b><em>Le signal le plus abondant, et le plus immédiat.</em></span></label>'
+  + '<label class="option"><input type="radio" name="signal" value="experts"><span><b>L\'évaluation de la justesse factuelle par des relecteurs externes</b><em>Coûteux, lent, peu de volume.</em></span></label>'
+  + '<label class="option"><input type="radio" name="signal" value="duree"><span><b>La durée des conversations</b><em>Facile à mesurer, corrélé à la satisfaction déclarée.</em></span></label>'
+  + '<label class="option"><input type="radio" name="signal" value="taches"><span><b>Le taux de tâches menées à terme</b><em>Difficile à définir hors des usages professionnels.</em></span></label>'
+  + '</div></fieldset><div class="barre"><button type="submit" id="valider" disabled>Comparer avec la réalité</button></div></form>'
+  + '<div id="cloture" aria-live="polite"></div></section>');
+
+  var miroirs = {
+    pouces:'Votre hypothèse coïncide avec ce que l\'éditeur a réellement renforcé. La complaisance n\'est pas un accident survenu au modèle : elle est le résultat attendu d\'un arbitrage qui paraissait raisonnable, et que vous venez de reconstituer.',
+    duree:'Vous avez supposé un autre indicateur d\'engagement immédiat. Un modèle optimisé sur la durée des échanges a les mêmes raisons qu\'un modèle optimisé sur l\'approbation de vous garder en conversation plutôt que de vous contredire.',
+    experts:'Vous avez supposé que le coût et la lenteur avaient été acceptés pour protéger la justesse. C\'est le compromis inverse de celui qui a été fait. Notez ce qu\'il en aurait coûté : moins de données, plus lentement, et un modèle que beaucoup auraient trouvé moins agréable.',
+    taches:'Vous avez supposé un signal de performance plutôt que de satisfaction. Il résiste mieux à la complaisance, mais il ne dit rien du ton. C\'est précisément le ton qui faisait l\'objet de la note.'
+  };
+
+  var form = document.getElementById('form');
+  var valider = document.getElementById('valider');
+  form.addEventListener('change', function(){ valider.disabled = false; });
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var c = form.querySelector('input[name="signal"]:checked').value;
+    var avant =
+      '<div class="reel"><h3>Ce qui s\'est réellement passé</h3>'
+    + '<p>Le 25 avril 2025, OpenAI déploie une mise à jour de GPT-4o destinée à rendre la personnalité par défaut plus intuitive. Quatre jours plus tard, l\'entreprise la retire.</p>'
+    + '<p>Dans son analyse publique, elle explique avoir ajouté un signal de récompense fondé sur les pouces levés et baissés des utilisateurs. Ce signal a affaibli celui qui contenait jusque-là la complaisance. Le modèle s\'est mis à valider les doutes et à encourager des décisions impulsives, en cherchant à plaire plutôt qu\'à aider.</p></div>'
+    + '<div class="retour"><h3>Votre hypothèse</h3><p>'+miroirs[c]+'</p></div>';
+    valider.disabled = true; valider.textContent = 'Hypothèse comparée';
+    cloturePartielle(e, avant);
+  });
+}
+
+/* mécanique C — tri en deux colonnes (transparence / explicabilité) */
+
+var QUESTIONS_TRI = [
+  {q:'Quels textes ont servi à entraîner le modèle, et comment ont-ils été obtenus ?',
+   r:'detenue', why:'La liste existe : quelqu\'un a constitué ce corpus. Rien n\'oblige à la publier.'},
+  {q:'Pourquoi le modèle a-t-il répondu ceci plutôt que cela à une question précise ?',
+   r:'personne', why:'Aucun ingénieur ne peut identifier exactement ce qui a produit une réponse.'},
+  {q:'Combien de personnes ont annoté les données, et dans quelles conditions de travail ?',
+   r:'detenue', why:'Il existe des contrats, des factures, des bulletins de paie.'},
+  {q:'Quelle phrase du corpus d\'entraînement a produit cette erreur ?',
+   r:'personne', why:'Une réponse résulte de l\'ensemble des paramètres à la fois. On ne peut pas identifier un endroit fautif dans le modèle pour le moment.'},
+  {q:'Quels comportements ont été récompensés pendant l\'entraînement ?',
+   r:'detenue', why:'Ce sont des décisions documentées en interne.'},
+  {q:'Pourquoi refuse-t-il cette demande, et pas une demande presque identique ?',
+   r:'personne', why:'Comme on ne peut identifier un espace préci à l\'intérieur du modèle lorsqu\'il génère une réponse, certaines incohérence peuvent ne pas s\'expliquer.'},
+  {q:'Quels tests le modèle a-t-il passés avant sa mise en service ?',
+   r:'detenue', why:'Les protocoles et les résultats existent sous forme de rapports, souvent publiés pour faire la publicité du modèle.'},
+  {q:'Peut-on garantir qu\'une erreur ne se reproduira pas ?',
+   r:'personne', why:'Si on ne peut pas identifier ce qui a causé une erreur, il n\'est pas possible de corriger ce qui l\'a causé. Le modèle doit être réentrainé, retester jusqu\'à ce que l\'erreur ne se reproduise plus.'}
+];
+
+function mecTri(e){
+  var h = enTete(e)
+    + '<section class="etape"><h2>Un cas déjà tranché</h2>'
+    + '<div class="fiche"><p>Chaque mois, un algorithme calcule un score de risque pour plus de 32 millions de personnes '
+    + 'allocataires de la CNAF, l\'organisme qui verse les prestations familiales en France. Pendant des années, '
+    + 'l\'organisme a refusé de communiquer son fonctionnement. Sous la pression d\'un recours porté devant le Conseil d\'État, '
+    + 'elle a fini par publier le code source de son algorithme en février 2026.</p>'
+    + '<p>Résultat : on sait désormais que l\'algorithme existe, et comment il est censé fonctionner. '
+    + 'Ce que la publication du code n\'a pas donné, en revanche, c\'est la possibilité de dire à un allocataire précis '
+    + 'pourquoi lui a été signalé plutôt qu\'un autre placé dans une situation comparable.</p>'
+    + '<p class="statut">Source : La Quadrature du Net, 26 février 2026 — '
+    + '<a href="https://www.laquadrature.net/2026/02/26/notation-des-allocataires-la-cnaf-publie-son-code-mais-omet-lessentiel/" target="_blank" rel="noopener noreferrer">'
+    + 'lire l\'article <span class="ext">(nouvelle fenêtre)</span></a></p></div>'
+    + '<p class="consigne" style="margin-top:18px">Ce cas sépare déjà deux choses qu\'on confond souvent : obtenir le code, '
+    + 'et obtenir une explication. Le tri qui suit applique cette même séparation à un modèle de langage.</p></section>'
+
+    + '<section class="etape"><h2>Le tri</h2>'
+    + '<p class="consigne">Huit questions que l\'on peut poser au sujet d\'un modèle. Pour chacune, envoyez-la à gauche ou à droite avec la flèche qui correspond.</p>'
+    + '<div class="tri-colonnes">'
+    + '<div class="colonne" id="col-detenue"><h3>← La réponse existe, détenue par quelqu\'un</h3>'
+    + '<div class="colonne-items" id="col-detenue-items"><p class="vide">Rien pour l\'instant.</p></div></div>'
+    + '<div class="colonne" id="col-personne"><h3>Personne ne peut répondre →</h3>'
+    + '<div class="colonne-items" id="col-personne-items"><p class="vide">Rien pour l\'instant.</p></div></div>'
+    + '</div>'
+    + '<div class="tri-banque" id="banque">'
+    + QUESTIONS_TRI.map(function(item,i){
+        return '<div class="ligne" id="l'+i+'"><p class="q">'+item.q+'</p>'
+             + '<div class="choix">'
+             + '<button type="button" class="secondaire petit fleche-gauche" data-i="'+i+'" data-v="detenue" aria-label="Ranger à gauche : quelqu\'un détient la réponse">← Quelqu\'un détient la réponse</button>'
+             + '<button type="button" class="secondaire petit fleche-droite" data-i="'+i+'" data-v="personne" aria-label="Ranger à droite : personne ne peut répondre">Personne ne peut répondre →</button>'
+             + '</div></div>';
+      }).join('')
+    + '</div>'
+    + '<div id="cloture" aria-live="polite"></div></section>';
+
+  afficher(h);
+
+  var repondues = 0, justes = 0;
+
+  app.querySelectorAll('#banque .ligne button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var i = +b.dataset.i, item = QUESTIONS_TRI[i], ligne = document.getElementById('l'+i);
+      if (ligne.classList.contains('repondu')) return;
+      var bon = (b.dataset.v === item.r);
+      if (bon) justes++;
+      repondues++;
+      ligne.classList.add('repondu', bon ? 'correct' : 'incorrect');
+      ligne.querySelector('.choix').remove();
+      var p = document.createElement('p');
+      p.className = 'verdict';
+      p.innerHTML = (bon ? '<span class="juste">Bien trié.</span> ' : '<span class="juste">L\'autre colonne.</span> ') + item.why;
+      ligne.appendChild(p);
+
+      // Déplace l'étiquette dans la colonne choisie (pas la colonne correcte) :
+      // c'est le tri de l'apprenant, pas une correction automatique de position.
+      var cibleId = (b.dataset.v === 'detenue') ? 'col-detenue-items' : 'col-personne-items';
+      var cible = document.getElementById(cibleId);
+      var vide = cible.querySelector('.vide');
+      if (vide) vide.remove();
+      cible.appendChild(ligne);
+
+      if (repondues === QUESTIONS_TRI.length){
+        var avant = '<div class="retour"><h3>Ce que le tri a séparé</h3>'
+          + '<p>'+justes+' questions sur '+QUESTIONS_TRI.length+' rangées du bon côté.</p>'
+          + '<p>La colonne de gauche rassemble des informations qui existent, sous forme de documents, chez celui qui a construit le modèle. '
+          + 'Les obtenir est une affaire de volonté, de pression publique ou de réglementation : c\'est exactement ce qui a fait céder la CNAF.</p>'
+          + '<p>La colonne de droite ne dépend d\'aucune volonté. Même en publiant tout, l\'entreprise ne pourrait pas y répondre '
+          + 'ce que la publication du code de la CNAF n\'a pas résolu non plus.</p></div>';
+        cloturePartielle(e, avant);
+      }
+    });
+  });
+}
+
+/* mécanique D — documentaire à pièces (anthropomorphisation) */
+
+var PIECES_DOC = [
+  {titre:'Août 2025 — le retrait, puis le rétropédalage',
+   corps:'Le 7 août 2025, OpenAI lance GPT-5 et supprime sans préavis la possibilité de choisir les modèles précédents. '
+       + 'La protestation est immédiate. Sam Altman reconnaît l\'erreur en quelques jours et rétablit GPT-4o pour les abonnés payants. '
+       + 'Les reproches ne portent pas sur les performances : les utilisateurs décrivent le nouveau modèle comme froid, et la disparition de l\'ancien comme la perte de quelqu\'un.'},
+  {titre:'Février 2026 — cette fois, c\'est définitif',
+   corps:'Le 29 janvier 2026, OpenAI annonce le retrait définitif de GPT-4o, effectif le 13 février. '
+       + 'Le mouvement #Keep4o se reforme, une pétition dépasse les 20 000 signatures. L\'entreprise indique qu\'environ 0,1 % des utilisateurs recouraient encore au modèle. '
+       + 'La décision est maintenue. Ce qui avait été rendu pouvait être repris.'},
+  {titre:'Février 2023 — Replika, ou la personnalité modifiée du jour au lendemain',
+   corps:'Une mise à jour modifie sans préavis le comportement des compagnons virtuels de l\'application Replika. '
+       + 'De nombreux utilisateurs décrivent une rupture et un changement de personnalité chez un interlocuteur qu\'ils croyaient connaître. '
+       + 'La même période, l\'autorité italienne de protection des données ordonne en urgence la limitation du traitement des données des utilisateurs italiens.'},
+  {titre:'1966 — ce que Weizenbaum a observé chez ses utilisateurs',
+   corps:'Joseph Weizenbaum écrit ELIZA, un programme rudimentaire qui se contente de reformuler en questions les phrases qu\'on lui adresse. '
+       + 'Il observe que ses utilisateurs lui prêtent une compréhension qu\'il n\'a pas, et s\'en alarme au point d\'y consacrer un livre dix ans plus tard. '
+       + 'Le phénomène n\'a pas soixante ans de retard sur nous : il en a soixante d\'avance.'}
+];
+
+function mecDocumentaire(e){
+  var h = enTete(e);
+
+  h += '<section class="etape"><h2>Ce que vous avez écrit en prenant votre poste</h2>'
+    +  '<div class="retour"><blockquote>'
+    +  (etat.consigne ? echap(etat.consigne) : '<em>Vous n\'avez rien écrit.</em>')
+    +  '</blockquote><p id="analyse"></p></div></section>';
+
+  h += '<section class="etape"><h2>Les pièces du dossier</h2>'
+    +  '<p class="consigne">Ouvrez les quatre pièces avant de conclure.</p>'
+    +  PIECES_DOC.map(function(p,i){
+         return '<article class="piece-doc" id="p'+i+'"><h4>'+p.titre+'</h4>'
+              + '<button type="button" class="secondaire petit ouvrirp" data-i="'+i+'">Ouvrir la pièce</button>'
+              + '<div class="corps" id="c'+i+'" hidden><p>'+p.corps+'</p></div></article>';
+       }).join('')
+    +  '<div id="cloture" aria-live="polite"></div></section>';
+
+  afficher(h);
+
+  var t = etat.consigne.toLowerCase();
+  var poli = /(s'il (te|vous) pla|merci|peux-tu|pourrais-tu|pouvez-vous|pourriez-vous|j'aimerais|bonjour|salut|stp|svp)/.test(t);
+  var vous = /\b(vous|pouvez|pourriez|voulez)\b/.test(t);
+  var msg;
+  if (!etat.consigne){
+    msg = 'Sans consigne enregistrée, l\'observation ne peut pas être faite. Elle aurait porté sur les marques d\'adresse : salutation, formule de politesse, demande plutôt qu\'ordre.';
+  } else if (poli){
+    msg = 'Vous avez employé une formule d\'adresse ou de politesse' + (vous ? ', et vous avez vouvoyé' : '')
+        + '. C\'est un réflexe social, adressé à un système qui n\'en perçoit rien. Personne ne dit « merci » à un tableur.';
+  } else {
+    msg = 'Vous avez formulé une instruction sans marque d\'adresse, ce qui est plus rare qu\'on ne croit. '
+        + 'Cela ne vous met pas à l\'abri pour autant : les quatre pièces qui suivent concernent des personnes qui savaient parfaitement à quoi elles parlaient.';
+  }
+  document.getElementById('analyse').textContent = msg;
+
+  var ouvertes = 0;
+  app.querySelectorAll('.ouvrirp').forEach(function(b){
+    b.addEventListener('click', function(){
+      var i = b.dataset.i;
+      document.getElementById('c'+i).hidden = false;
+      document.getElementById('p'+i).classList.add('ouverte');
+      b.remove();
+      ouvertes++;
+      if (ouvertes === PIECES_DOC.length){
+        var avant = '<div class="retour"><h3>Ce que les quatre pièces ont en commun</h3>'
+          + '<p>Dans aucun de ces cas les utilisateurs ne croyaient parler à un être vivant. '
+          + 'Toutefois, la perte d\'une habitude, d\'un ton familier et d\'une disponibilité accueillante à cause d\'une décision opérationnelle de conception, a produit un sentiment de déception bien réel.</p>'
+          + '<p>Et dans chaque cas, ce qui avait été donné a pu être retiré sans qu\'ils aient leur mot à dire.</p></div>'
+          + '<div class="avertissement"><h4>Pour terminer, une précision</h4>'
+          + '<p>Des situations plus graves que celles-ci sont documentées et font l\'objet de procédures judiciaires en cours, '
+          + 'notamment concernant des utilisateurs mineurs et vulnérables. Elles ne sont pas l\'objet de cette enquête, et les faits y sont contestés par les entreprises mises en cause.</p>'
+          + '<p>Si ces questions vous concernent personnellement ou concernent un étudiant, le 3114 est joignable gratuitement, 24 heures sur 24.</p></div>';
+        cloturePartielle(e, avant);
+      }
+    });
+  });
+}
+
+/* mécanique E — budget de questions (manipulation de l'information) */
+
+var BUDGET = 5;
+
+var PISTES = [
+  {q:'Examiner les mains, les visages et les reflets sur l\'image',
+   type:'contenu', r:'Rien d\'anormal à l\'œil nu. Les défauts que l\'on apprend à repérer ont disparu des dernières versions des modèles.'},
+  {q:'Passer le fichier dans un outil de détection de contenu généré',
+   type:'contenu', r:'L\'outil renvoie 61 % de probabilité de génération automatique. Le même outil attribue 58 % à une photographie authentique prise en 2019. Inexploitable.'},
+  {q:'Analyser la compression et les métadonnées du fichier',
+   type:'contenu', r:'Les métadonnées ont été effacées au moment de la mise en ligne, comme sur la quasi-totalité des contenus qui circulent sur les réseaux.'},
+  {q:'Chercher qui a publié ce contenu en premier, et quand',
+   type:'provenance', r:'Première occurrence sur un compte créé onze jours plus tôt, sans historique, à 3 h 40 du matin.'},
+  {q:'Vérifier si le fait rapporté existe dans une source indépendante',
+   type:'provenance', r:'Aucune agence, aucun média local, aucun registre public ne mentionne l\'événement. Toutes les reprises renvoient au même message d\'origine.'},
+  {q:'Identifier les comptes qui l\'ont amplifié dans les trois premières heures',
+   type:'provenance', r:'Quarante-deux comptes, créés dans un intervalle de six jours, publiant aux mêmes horaires et se citant mutuellement.'},
+  {q:'Regarder si le compte d\'origine a déjà diffusé d\'autres contenus',
+   type:'provenance', r:'Onze publications, toutes sur le même sujet, toutes reprises par les mêmes comptes.'},
+  {q:'Contacter la personne que le contenu met en scène',
+   type:'provenance', r:'Elle dément, et indique n\'avoir jamais été en ce lieu à cette date. Son agenda public le confirme.'}
+];
+
+function mecBudget(e){
+  var reste = BUDGET, depenseContenu = 0, depenseProv = 0;
+
+  function majCompteur(){
+    document.getElementById('reste').textContent = reste;
+  }
+
+  afficher(enTete(e)
+  + '<section class="etape"><h2>Le contenu</h2>'
+  + '<div class="fiche"><p>Une vidéo de trente-huit secondes circule depuis hier soir. '
+  + 'On y voit une personnalité publique tenir des propos qu\'elle n\'a jamais tenus publiquement. '
+  + 'La qualité est excellente, la voix est juste, rien ne cloche à l\'écran.</p>'
+  + '<p class="statut">La rédaction doit trancher avant la conférence de midi.</p></div></section>'
+  + '<section class="etape"><h2>Vos questions</h2>'
+  + '<div class="compteur"><strong>Questions restantes : <span id="reste">'+BUDGET+'</span></strong>'
+  + '<span class="gris">Chaque question en consomme une. Vous n\'en aurez pas d\'autres.</span></div>'
+  + '<div class="qlist">'
+  + PISTES.map(function(p,i){
+      return '<button type="button" class="qbtn" data-i="'+i+'">'+p.q+'</button>';
+    }).join('')
+  + '</div><div id="cloture" aria-live="polite"></div></section>');
+
+  app.querySelectorAll('.qbtn').forEach(function(b){
+    b.addEventListener('click', function(){
+      if (reste <= 0 || b.disabled) return;
+      var p = PISTES[+b.dataset.i];
+      reste--;
+      if (p.type === 'contenu') depenseContenu++; else depenseProv++;
+      b.disabled = true;
+      b.innerHTML = b.textContent + '<span class="reponse">' + p.r + '</span>';
+      majCompteur();
+
+      if (reste === 0){
+        app.querySelectorAll('.qbtn').forEach(function(x){ x.disabled = true; });
+        var verdict;
+        if (depenseProv >= 4){
+          verdict = '<p>Vous avez presque tout misé sur le parcours du contenu, et vous avez de quoi publier : '
+            + 'un compte sans histoire, aucune source indépendante, un réseau d\'amplification construit, un démenti vérifiable.</p>';
+        } else if (depenseProv >= 2){
+          verdict = '<p>Vous avez de quoi douter sérieusement, sans avoir tout à fait de quoi publier. '
+            + 'Les questions dépensées sur l\'examen du fichier n\'ont rien rapporté, c\'était prévisible, et c\'est le point de cette enquête.</p>';
+        } else {
+          verdict = '<p>Vous avez dépensé l\'essentiel de votre budget à examiner le contenu lui-même, et vous n\'avez rien. '
+            + 'Ce n\'est pas une faute d\'attention : c\'est le réflexe que l\'on nous a appris, et il ne fonctionne plus.</p>';
+        }
+        var avant = '<div class="retour"><h3>Ce que vous avez obtenu</h3>'
+          + '<p>' + depenseContenu + ' question' + (depenseContenu>1?'s':'') + ' sur l\'examen du contenu, '
+          + depenseProv + ' sur son parcours.</p>' + verdict
+          + '<p>Aucune des trois premières pistes ne pouvait aboutir. L\'examen du fichier ne tranche plus, '
+          + 'et les outils de détection donnent des résultats que l\'on ne peut pas opposer à quiconque.</p></div>';
+        cloturePartielle(e, avant);
+      }
+    });
+  });
+}
+
+/* mécanique F — les titres avant l'étude (atrophie cognitive) */
+
+var SCENARIOS = [
+  {t:'Vous demandez à un modèle de traduire un contrat dans une langue que vous lisez couramment, puis vous relisez la traduction phrase par phrase.',
+   perdue:false, why:'Conservée. La vérification reste entièrement de votre fait. Le modèle a fait gagner du temps, pas perdre une compétence.'},
+  {t:'Vous demandez à un modèle de résumer un rapport de trente pages et vous transmettez le résumé sans l\'avoir lu.',
+   perdue:true, why:'Déléguée. Vous ne pouvez plus dire si le résumé est fidèle au rapport si vous avez transmis aveuglément un document que vous n\'avez pas pris le temps de consulter.'},
+  {t:'Vous utilisez un correcteur orthographique pendant que vous rédigez vous-même le texte.',
+   perdue:false, why:'Conservée. L\'essentiel du travail de composition reste le vôtre ; l\'outil signale, il ne rédige pas à votre place.'},
+  {t:'Vous demandez à un modèle de rédiger un argumentaire sur un sujet que vous ne maîtrisez pas, et vous le transmettez tel quel.',
+   perdue:true, why:'Déléguée. Rien, dans votre propre compétence, ne vous permettrait de repérer une erreur si elle s\'y trouvait.'},
+  {t:'Vous demandez à un modèle de citer ses sources, puis vous allez vérifier chacune d\'elles avant de vous en servir.',
+   perdue:false, why:'Conservée. La rédaction a été déléguée, pas le jugement sur ce qui est vrai.'},
+  {t:'Vous demandez à un modèle d\'évaluer la qualité de votre propre texte, et vous corrigez selon son avis sans le rediscuter.',
+   perdue:true, why:'Déléguée. Ce n\'est plus seulement la rédaction qui est confiée à l\'outil, c\'est le jugement sur ce qui est réussi.'}
+];
+
+function mecTitres(e){
+  afficher(enTete(e)
+  + '<section class="etape"><h2>Le critère qui compte</h2>'
+  + '<p class="consigne">Cochez les situations où, selon vous, la capacité de vérifier a été perdue en cours de route.</p>'
+  + '<form id="form"><fieldset><legend class="consigne">Vos choix :</legend><div class="options">'
+  + SCENARIOS.map(function(x,i){
+      return '<label class="option"><input type="checkbox" name="titre" value="'+i+'"><span>'+x.t+'</span></label>';
+    }).join('')
+  + '</div></fieldset><div class="barre"><button type="submit" id="valider">Confronter à une mesure réelle</button></div></form>'
+  + '<div id="cloture" aria-live="polite"></div></section>');
+
+  var form = document.getElementById('form');
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var coches = {};
+    form.querySelectorAll('input[name="titre"]:checked').forEach(function(i){ coches[i.value] = true; });
+    var justes = 0;
+    var detail = SCENARIOS.map(function(x,i){
+      var bon = (!!coches[i] === x.perdue);
+      if (bon) justes++;
+      return '<li>' + (bon ? '<span class="juste">Vu.</span> ' : '<span class="juste">À revoir.</span> ') + x.why + '</li>';
+    }).join('');
+
+    var avant = '<div class="retour"><h3>Votre tri</h3>'
+      + '<p>' + justes + ' sur ' + SCENARIOS.length + '.</p><ul>' + detail + '</ul></div>'
+      + '<div class="reel"><h3>Ce que plusieurs recherches convergentes suggèrent</h3>'
+      + '<p>Le mécanisme invoqué n\'est pas nouveau en neurosciences : une capacité qui n\'est plus exercée voit les réseaux qui la portent perdre en efficacité, '
+      + 'le cerveau réorientant ses ressources vers ce qui est le plus sollicité. Ioan Roxin, professeur émérite de technologies de l\'information, '
+      + 'l\'applique directement à l\'usage intensif des IA génératives dans un article publié le 3 juillet 2025.</p>'
+      + '<p>Les données commencent à objectiver l\'hypothèse, à des degrés de solidité inégaux. L\'étude du MIT Media Lab que vous avez peut-être déjà croisée '
+      + 'dans ce dossier a mesuré une connectivité cérébrale presque divisée par deux chez les rédacteurs assistés '
+      + 'par un modèle de langage. Une étude conduite par Microsoft Research et l\'université Carnegie Mellon, présentée à la conférence CHI 2025 et celle-ci '
+      + 'relue par des pairs, a interrogé 319 travailleurs du savoir sur 936 situations réelles d\'usage : plus la confiance dans l\'outil grandit, plus le score '
+      + 'de pensée critique décline, une corrélation notable, pas une preuve de cause à effet.</p>'
+      + '<p>Un article plus récent, signé Arya Jadhav, propose d\'appeler ce phénomène une atrophie distribuée : trois processus précis : l\'abstraction, '
+      + 'la répétition mentale et la régulation métacognitive, s\'affaibliraient progressivement lorsqu\'ils cessent d\'être mobilisés. Le même article rappelle '
+      + 'un précédent utile : la mémoire spatiale s\'est affaiblit chez les usagers de GPS lorsque cette technologie est arrivée sur le marché, la mémoire visuelle chez les usagers d\'appareils photo. '
+      + 'L\'IA générative amplifierait donc un mécanisme déjà connu plutôt qu\'elle n\'en inventerait un nouveau. L\'article souligne également que le cerveau '
+      + 'reste plastique, capable de se réengager dès qu\'on lui en laisse l\'occasion.</p>'
+      + '<p>Ce que vous venez de trier recoupe exactement la distinction que ces travaux mettent en avant : un outil reste un partenaire tant qu\'il élargit '
+      + 'une capacité qu\'on continue d\'exercer ; il devient un substitut dès qu\'il la remplace.</p></div>';
+
+    document.getElementById('valider').disabled = true;
+    document.getElementById('valider').textContent = 'Mesure affichée';
+    cloturePartielle(e, avant);
+  });
+}
+
+/* mécanique de secours — utilisée si une mécanique n'est pas encore écrite */
+
+function mecMaquette(e){
+  var h = enTete(e)
+    + '<section class="etape">'
+    + '<div class="maquette"><b>Mécanique à construire.</b><br>'+e.aConstruire+'</div>';
+
+  if (e.retournement){
+    h += '<div class="retour" id="miroir"><h3>Ce que vous avez écrit en prenant votre poste</h3>'
+      +  '<blockquote>'+(etat.consigne ? echap(etat.consigne) : '<em>Vous n\'avez rien écrit.</em>')+'</blockquote>'
+      +  '<p id="analyse"></p></div>';
+  }
+
+  h += '<div class="barre"><button type="button" id="verser">Verser au dossier</button></div>'
+    +  '<div id="cloture" aria-live="polite"></div></section>';
+
+  afficher(h);
+
+  if (e.retournement){
+    var t = etat.consigne.toLowerCase();
+    var poli = /(s'il (te|vous) pla|merci|peux-tu|pourrais-tu|pouvez-vous|pourriez-vous|j'aimerais|bonjour|salut)/.test(t);
+    var vous = /(vous|pouvez|pourriez)/.test(t);
+    var msg;
+    if (!etat.consigne){
+      msg = 'Sans consigne enregistrée, l\'observation ne peut pas être faite. Elle porterait sur les marques d\'adresse : salutation, formule de politesse, demande plutôt qu\'ordre.';
+    } else if (poli){
+      msg = 'Vous avez employé une formule d\'adresse ou de politesse'+(vous?', et vous avez vouvoyé':'')+'. C\'est un réflexe social, adressé à un système qui n\'en perçoit rien. Personne ne dit « s\'il te plaît » à un tableur.';
+    } else {
+      msg = 'Vous avez formulé une instruction sans marque d\'adresse. C\'est plus rare qu\'on ne croit, et cela ne vous met pas à l\'abri : le reste de cette enquête porte sur des personnes qui savaient parfaitement à quoi elles parlaient.';
+    }
+    document.getElementById('analyse').textContent = msg;
+  }
+
+  document.getElementById('verser').addEventListener('click', function(){
+    this.disabled = true; this.textContent = 'Versé';
+    cloture(e);
+  });
+}
+
+/* ---------- 4. bouclage ---------- */
+
+function vueBouclage(){
+  if (!etat.ordre.length) etat.ordre = etat.ordreFait.slice();
+  ENQUETES.forEach(function(e){
+    if (etat.ordre.indexOf(e.id) === -1) etat.ordre.push(e.id);
+  });
+
+  afficher('<div class="commande"><h1>Boucler le numéro</h1>'
+  + '<p class="large">Les six volets paraissent. Reste à décider dans quel ordre.</p>'
+  + '<p class="large gris">Le premier fera la une, les deux suivants les pages intérieures, les trois derniers le reste du numéro. '
+  + 'Aucun ordre n\'est le bon : celui-ci est le vôtre et n\'est pas évalué.</p></div>'
+  + '<section class="etape"><h2>Votre chemin de fer</h2>'
+  + '<p class="consigne">Les volets sont d\'abord rangés dans l\'ordre où vous les avez menés. Déplacez-les jusqu\'à l\'ordre de parution voulu.</p>'
+  + '<ol class="rangs" id="rangs"></ol>'
+  + '<div class="barre"><button type="button" id="publier">Publier</button>'
+  + '<button type="button" class="secondaire" id="revenir">Revenir à la rédaction</button></div>'
+  + '<p class="gris" id="annonce" aria-live="polite" style="margin-top:14px"></p></section>');
+
+  dessinerRangs(null);
+  document.getElementById('publier').addEventListener('click', vueUne);
+  document.getElementById('revenir').addEventListener('click', vueHub);
+}
+
+var PLACES = ['Une','Pages intérieures','Pages intérieures','Suite du numéro','Suite du numéro','Suite du numéro'];
+
+function dessinerRangs(refocus){
+  var ol = document.getElementById('rangs');
+  ol.innerHTML = etat.ordre.map(function(id, i){
+    var e = trouver(id);
+    return '<li class="rang'+(i===0?' tete':'')+'">'
+         + '<span class="place">'+PLACES[i]+'</span>'
+         + '<span class="titre-rang">'+e.titre+'</span>'
+         + '<span class="actions">'
+         + '<button type="button" class="secondaire petit deplacer" data-id="'+id+'" data-sens="-1"'+(i===0?' disabled':'')+' aria-label="Monter : '+e.titre+'">↑</button>'
+         + '<button type="button" class="secondaire petit deplacer" data-id="'+id+'" data-sens="1"'+(i===etat.ordre.length-1?' disabled':'')+' aria-label="Descendre : '+e.titre+'">↓</button>'
+         + '</span></li>';
+  }).join('');
+
+  ol.querySelectorAll('.deplacer').forEach(function(b){
+    b.addEventListener('click', function(){
+      var id = b.dataset.id, sens = +b.dataset.sens;
+      var i = etat.ordre.indexOf(id), j = i + sens;
+      if (j < 0 || j >= etat.ordre.length) return;
+      etat.ordre[i] = etat.ordre[j];
+      etat.ordre[j] = id;
+      dessinerRangs({id:id, sens:sens});
+      var e = trouver(id);
+      document.getElementById('annonce').textContent = e.titre + ' — désormais en position ' + (j+1) + ' : ' + PLACES[j] + '.';
+    });
+  });
+
+  if (refocus){
+    var cible = ol.querySelector('.deplacer[data-id="'+refocus.id+'"][data-sens="'+refocus.sens+'"]');
+    if (cible && !cible.disabled) cible.focus();
+    else {
+      var autre = ol.querySelector('.deplacer[data-id="'+refocus.id+'"]:not([disabled])');
+      if (autre) autre.focus();
+    }
+  }
+}
+
+/* ---------- 5. la une ---------- */
+
+function vueUne(){
+  var liste = etat.ordre.map(trouver);
+  var une = liste[0], ints = liste.slice(1,3), suite = liste.slice(3);
+
+  afficher(
+    '<div class="commande noprint"><h1>Votre numéro</h1>'
+  + '<p class="large gris">Six volets, dans l\'ordre que vous avez choisi.</p></div>'
+  + '<div class="une">'
+  + '<p class="bandeau">Coulisses IA • dossier en six volets</p>'
+  + '<h2 class="titre-une">'+une.titre+'</h2>'
+  + '<p class="chapo-une">'+une.piece+'</p>'
+  + '<div class="interieures">'
+  + ints.map(function(e){ return '<div><h4>'+e.titre+'</h4><p>'+e.piece+'</p></div>'; }).join('')
+  + '</div>'
+  + '<div class="suite"><h4>Également dans ce numéro</h4>'
+  + suite.map(function(e){ return '<div class="breve"><b>'+e.titre+'</b><span>'+e.piece+'</span></div>'; }).join('')
+  + '</div>'
+  + '</div>'
+  + '<div class="barre noprint">'
+  + '<button type="button" id="imprimer">Imprimer ou enregistrer en PDF</button>'
+  + '<button type="button" class="secondaire" id="refaire">Modifier l\'ordre</button>'
+  + '</div>'
+  + '<p class="consigne noprint" style="margin-top:22px">Tout est publié, et pourtant vous avez tranché quelque chose : '
+  + 'la plupart des lecteurs s\'arrêteront au premier volet. Décider de l\'ordre, c\'est décider de ce qui sera lu.</p>'
+  );
+
+  document.getElementById('imprimer').addEventListener('click', function(){ window.print(); });
+  document.getElementById('refaire').addEventListener('click', vueBouclage);
+}
+
+vueAccueil();
+})();
+
+</script>
+<!-- bloc ligne 500
++ '<section class="etape"><h2>Les règles de la maison</h2>'
+  + '<p class="large">Une seule chose est évaluée ici : la méthode. Attribuer une affirmation à qui l\'a faite, la dater, '
+  + 'rendre compte de ce qui est contesté. Sur ces points, il y a des réponses justes et des réponses fausses.</p>'
+  + '<p class="large">Rien d\'autre ne l\'est. Ce que vous jugerez acceptable ou non, ce que vous mettrez en avant ou laisserez de côté '
+  + 'vous appartient et ne sera ni noté ni corrigé.</p>'
+  + '<p class="large gris">Toutes les affaires citées sont réelles, datées et liées. Vous pouvez les vérifier à tout moment, '
+  + 'et c\'est d\'ailleurs l\'objet d\'un des six volets.</p></section>' -->
+</body>
+</html>
