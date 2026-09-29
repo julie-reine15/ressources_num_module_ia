@@ -281,10 +281,10 @@ var ENQUETES = [
       paras:[
         'On appelle <span class="terme">anthropomorphisation</span> le fait de prêter à une machine des intentions, des émotions ou une compréhension qu\'elle n\'a pas. Joseph Weizenbaum l\'observait dès 1966 chez les utilisateurs d\'ELIZA, un programme rudimentaire qui se contentait de reformuler leurs phrases en questions.',
         'Ce n\'est donc ni une faiblesse individuelle ni un effet de la nouveauté : c\'est un réflexe cognitif ordinaire, que la conception des systèmes actuels amplifie délibérément.',
-        'Sa conséquence pratique n\'est pas de croire la machine vivante — presque personne ne le croit. Elle est de lui accorder une confiance, et une place, que l\'on n\'accorderait pas à un outil.'
+        'Sa conséquence pratique n\'est pas de croire la machine vivante car presque personne ne le croit. Elle est de lui accorder une confiance, et une place, que l\'on n\'accorderait pas à un outil.'
       ]
     },
-    piece:'Prêter une intention à une machine est un réflexe documenté depuis 1966. Les systèmes actuels ne le corrigent pas, ils l\'amplifient — et la relation qu\'ils créent reste un paramètre que l\'entreprise peut modifier ou supprimer.',
+    piece:'Prêter une intention à une machine est un réflexe documenté depuis 1966. Les systèmes actuels ne le corrigent pas, ils l\'amplifient et la relation qu\'ils créent reste un paramètre que l\'entreprise peut modifier ou supprimer.',
     sources:[
       {libelle:'TechCrunch, 13 février 2026', url:'https://techcrunch.com/2026/02/13/openai-removes-access-to-controversial-chatgpt-4o-model'},
       {libelle:'TechCrunch, 3 février 2023 (Replika)', url:'https://techcrunch.com/2023/02/03/replika-italy-data-processing-ban/'}
@@ -301,7 +301,7 @@ var ENQUETES = [
       titre:'Ce qu\'il faut savoir avant d\'enquêter',
       paras:[
         'Produire un texte, une image, une voix ou une vidéo relève aujourd\'hui du même geste et des mêmes outils. Quelques secondes d\'enregistrement suffisent à cloner une voix.',
-        'Les indices de fabrication que l\'on apprend à repérer — mains déformées, regards fixes, artefacts — disparaissent à chaque nouvelle version des modèles, et aucun outil de détection ne donne de réponse fiable.',
+        'Les indices de fabrication que l\'on apprend à repérer (mains déformées, regards fixes, artefacts) disparaissent à chaque nouvelle version des modèles, et aucun outil de détection ne donne de réponse fiable.',
         'Ce qui reste vérifiable n\'est pas le contenu, mais son parcours. Vous disposez d\'un nombre limité de questions à poser à la rédaction.'
       ]
     },
@@ -316,7 +316,7 @@ var ENQUETES = [
         'VIGINUM, le service de l\'État chargé de la surveillance des ingérences numériques étrangères, procède exactement ainsi. Ses rapports publics documentent les réseaux de diffusion et les circuits de rémunération plutôt que les caractéristiques techniques des contenus.'
       ]
     },
-    piece:'Aucun examen du contenu ne permet de trancher. Seul son parcours — qui publie, quand, à partir de quoi, qui amplifie et qui finance — reste vérifiable.',
+    piece:'Aucun examen du contenu ne permet de trancher. Seul son parcours : qui publie, quand, à partir de quoi, qui amplifie et qui finance, reste vérifiable.',
     sources:[
       {libelle:'VIGINUM, rapport technique Storm-1516, mai 2025', url:'https://www.sgdsn.gouv.fr/files/2025-05/20250507_TLP-CLEAR_NP_SGDSN_VIGINUM_Rapport%20technique_Storm-1516.pdf'}
     ]
@@ -341,9 +341,9 @@ var ENQUETES = [
       titre:'Ce que plusieurs travaux tentent d\'isoler',
       terme:'déchargement cognitif',
       paras:[
-        'On appelle <span class="terme">déchargement cognitif</span> le fait de confier à un support extérieur une opération mentale : une liste de courses, une calculatrice, un moteur de recherche, un modèle de langage. Le phénomène est ancien, largement documenté — la mémoire spatiale s\'affaiblit chez les usagers de GPS, la mémoire visuelle chez les usagers d\'appareils photo — et le plus souvent bénéfique.',
-        'Ce que plusieurs travaux récents cherchent à isoler, ce sont les processus précis qui s\'affaiblissent quand la délégation devient systématique : l\'abstraction, la répétition mentale, la régulation métacognitive — c\'est-à-dire la capacité à évaluer soi-même la fiabilité de ce qu\'on produit. Le critère utile n\'est donc pas de savoir si l\'on délègue, mais si l\'on conserve cette dernière capacité.',
-        'Rien n\'indique que ce risque soit irréversible : le cerveau reste plastique, et se réengage dès qu\'on lui en laisse l\'occasion. Le champ est jeune et ses méthodes inégales — un préprint n\'est pas un article relu par des pairs — et les prochaines années trancheront davantage que les six situations que vous venez de trier.'
+        'On appelle <span class="terme">déchargement cognitif</span> le fait de confier à un support extérieur une opération mentale : une liste de courses, une calculatrice, un moteur de recherche, un modèle de langage. Le phénomène est ancien et largement documenté, par exemple, un affaiblissement de la mémoire spatiale a été constaté chez les usagers de GPS lorsque cette technologie est arrivée sur le marché.',
+        'Ce que plusieurs travaux récents cherchent à isoler, ce sont les processus précis qui s\'affaiblissent quand la délégation devient systématique : l\'abstraction, la répétition mentale, la régulation métacognitive, c\'est-à-dire la capacité à évaluer soi-même la fiabilité de ce qu\'on produit. Le critère utile n\'est donc pas de savoir si l\'on délègue, mais si l\'on conserve cette dernière capacité.',
+        'Rien n\'indique que ce risque soit irréversible : le cerveau reste plastique, et se réengage dès qu\'on lui en laisse l\'occasion. Ce domaine de recherche est encore jeune et ses méthodes inégales et les prochaines années trancheront davantage que les six situations que vous venez de trier.'
       ]
     },
     piece:'Un outil reste un partenaire tant qu\'il élargit une capacité qu\'on continue d\'exercer ; il devient un substitut dès qu\'il la remplace.',
@@ -408,7 +408,7 @@ function afficher(html, focusSel){
 function vueAccueil(){
   afficher(
     '<div class="commande">'
-  + '<h1>Coulisses IA — l\'enquête</h1>'
+  + '<h1>Coulisses IA • l\'enquête</h1>'
   + '<p class="large">Vous êtes journaliste d\'investigation. Ce second dossier s\'intéresse à ce qui se joue une fois qu\'un modèle d\'IA générative existe : la confiance qu\'on lui accorde, ce qu\'il laisse circuler, ce qu\'il déplace chez ceux qui s\'en servent.</p>'
   + '<p class="large gris">Trois enquêtes, dans l\'ordre de votre choix. Chacune s\'appuie sur des faits réels, datés et vérifiables, que vous pouvez consulter à tout moment. Une seule chose est évaluée : votre méthode, jamais votre jugement.</p>'
   + '</div>'
@@ -585,7 +585,7 @@ function mecDocumentaireSuite(e){
       if (ouvertes === PIECES_DOC.length){
         var avant = '<div class="retour"><h3>Ce que les quatre pièces ont en commun</h3>'
           + '<p>Dans aucun de ces cas les utilisateurs ne croyaient parler à un être vivant. '
-          + 'Ce qu\'ils ont perdu n\'est pas une illusion, c\'est une habitude, un ton, une disponibilité — des choses réelles, produites par une décision de conception.</p>'
+          + 'Ce qu\'ils ont perdu n\'est pas une illusion, c\'est une habitude, un ton, une disponibilité, produites par une décision de conception.</p>'
           + '<p>Et dans chaque cas, ce qui avait été donné a pu être retiré sans qu\'ils aient leur mot à dire.</p></div>'
           + '<div class="avertissement"><h4>Pour terminer, une précision</h4>'
           + '<p>Des situations plus graves que celles-ci sont documentées et font l\'objet de procédures judiciaires en cours, '
@@ -674,7 +674,7 @@ function mecBudget(e){
             + 'un compte sans histoire, aucune source indépendante, un réseau d\'amplification construit, un démenti vérifiable.</p>';
         } else if (depenseProv >= 2){
           verdict = '<p>Vous avez de quoi douter sérieusement, sans avoir tout à fait de quoi publier. '
-            + 'Les questions dépensées sur l\'examen du fichier n\'ont rien rapporté — c\'était prévisible, et c\'est le point de cette enquête.</p>';
+            + 'Les questions dépensées sur l\'examen du fichier n\'ont rien rapporté, c\'était prévisible, et c\'est le point de cette enquête.</p>';
         } else {
           verdict = '<p>Vous avez dépensé l\'essentiel de votre budget à examiner le contenu lui-même, et vous n\'avez rien. '
             + 'Ce n\'est pas une faute d\'attention : c\'est le réflexe que l\'on nous a appris, et il ne fonctionne plus.</p>';
@@ -692,15 +692,15 @@ function mecBudget(e){
 
 var SCENARIOS = [
   {t:'Vous demandez à un modèle de traduire un contrat dans une langue que vous lisez couramment, puis vous relisez la traduction phrase par phrase.',
-   perdue:false, why:'Conservée. La vérification reste entièrement de votre fait — le modèle a fait gagner du temps, pas perdu une compétence.'},
-  {t:'Vous demandez à un modèle de résumer un rapport de trente pages et vous transmettez le résumé sans l\'avoir lu.',
-   perdue:true, why:'Déléguée. Vous ne pouvez plus dire si le résumé est fidèle au rapport — vous avez transmis une confiance, pas une lecture.'},
+   perdue:false, why:'Conservée. La vérification reste entièrement de votre fait. Le modèle a fait gagner du temps, pas perdu une compétence.'},
+  {t:'Vous demandez à un modèle de résumer un rapport que vous n\'avez pas lu et vous transmettez le résumé sans aucune vérification.',
+   perdue:true, why:'Déléguée. Vous ne pouvez plus dire si le résumé est fidèle au rapport. Vous avez transmis une confiance aveugle, pas une lecture.'},
   {t:'Vous utilisez un correcteur orthographique pendant que vous rédigez vous-même le texte.',
    perdue:false, why:'Conservée. L\'essentiel du travail de composition reste le vôtre ; l\'outil signale, il ne rédige pas à votre place.'},
   {t:'Vous demandez à un modèle de rédiger un argumentaire sur un sujet que vous ne maîtrisez pas, et vous le transmettez tel quel.',
    perdue:true, why:'Déléguée. Rien, dans votre propre compétence, ne vous permettrait de repérer une erreur si elle s\'y trouvait.'},
-  {t:'Vous demandez à un modèle de citer ses sources, puis vous allez vérifier chacune d\'elles avant de vous en servir.',
-   perdue:false, why:'Conservée. La rédaction a été déléguée, pas le jugement sur ce qui est vrai.'},
+  {t:'Vous demandez à un modèle de constituer une bibliographie, puis vous allez vérifier chacune des sources citées avant de vous en servir.',
+   perdue:false, why:'Conservée. La recherche a été déléguée, pas le jugement sur ce qui est fiable.'},
   {t:'Vous demandez à un modèle d\'évaluer la qualité de votre propre texte, et vous corrigez selon son avis sans le rediscuter.',
    perdue:true, why:'Déléguée. Ce n\'est plus seulement la rédaction qui est confiée à l\'outil, c\'est le jugement sur ce qui est réussi.'}
 ];
@@ -735,15 +735,15 @@ function mecTitres(e){
       + 'le cerveau réorientant ses ressources vers ce qui est le plus sollicité. Ioan Roxin, professeur émérite de technologies de l\'information, '
       + 'l\'applique directement à l\'usage intensif des IA génératives dans un article publié le 3 juillet 2025.</p>'
       + '<p>Les données commencent à objectiver l\'hypothèse, à des degrés de solidité inégaux. L\'étude du MIT Media Lab que vous avez peut-être déjà croisée '
-      + 'dans ce dossier — un préprint, non relu par des pairs — a mesuré une connectivité cérébrale presque divisée par deux chez les rédacteurs assistés '
+      + 'dans ce dossier (un préprint, non relu par des pairs) a mesuré une connectivité cérébrale presque divisée par deux chez les rédacteurs assistés '
       + 'par un modèle de langage. Une étude conduite par Microsoft Research et l\'université Carnegie Mellon, présentée à la conférence CHI 2025 et celle-ci '
       + 'relue par des pairs, a interrogé 319 travailleurs du savoir sur 936 situations réelles d\'usage : plus la confiance dans l\'outil grandit, plus le score '
-      + 'de pensée critique décline — une corrélation notable, pas une preuve de cause à effet.</p>'
-      + '<p>Un préprint plus récent, signé Arya Jadhav, propose d\'appeler ce phénomène une atrophie distribuée : trois processus précis — l\'abstraction, '
-      + 'la répétition mentale, la régulation métacognitive — s\'affaibliraient progressivement lorsqu\'ils cessent d\'être mobilisés. Le même travail rappelle '
-      + 'un précédent utile : la mémoire spatiale s\'affaiblit chez les usagers de GPS, la mémoire visuelle chez les usagers d\'appareils photo. '
-      + 'L\'IA générative amplifierait un mécanisme déjà connu plutôt qu\'elle n\'en inventerait un nouveau — et le même travail souligne que le cerveau '
-      + 'reste plastique, capable de se réengager dès qu\'on lui en laisse l\'occasion.</p>'
+      + 'de pensée critique décline. Cette observation ne peut cependant pas être considérée comme une preuve de cause à effet.</p>'
+      + '<p>Un préprint plus récent, signé Arya Jadhav, propose d\'appeler ce phénomène une atrophie distribuée : trois processus précis : l\'abstraction, '
+      + 'la répétition mentale et la régulation métacognitive. Ces processus s\'affaibliraient progressivement lorsqu\'ils cessent d\'être mobilisés. Cette étude rappelle également'
+      + 'un précédent utile : la mémoire spatiale s\'est affaiblit avec l\'arrivée des GPS, de même que la mémoire visuelle chez les usagers d\'appareils photo. '
+      + 'L\'IA générative amplifierait donc un mécanisme déjà connu plutôt qu\'elle n\'en inventerait un nouveau. La même étude souligne d\'ailleurs que le cerveau '
+      + 'reste plastique et est donc capable de se réengager dès qu\'on lui en laisse l\'occasion.</p>'
       + '<p>Ce que vous venez de trier recoupe exactement la distinction que ces travaux mettent en avant : un outil reste un partenaire tant qu\'il élargit '
       + 'une capacité qu\'on continue d\'exercer ; il devient un substitut dès qu\'il la remplace.</p></div>';
 
@@ -842,7 +842,7 @@ function dessinerRangs(refocus){
       etat.ordre[j] = id;
       dessinerRangs({id:id, sens:sens});
       var e = trouver(id);
-      document.getElementById('annonce').textContent = e.titre + ' — désormais en position ' + (j+1) + ' : ' + placeDe(j) + '.';
+      document.getElementById('annonce').textContent = e.titre + ' désormais en position ' + (j+1) + ' : ' + placeDe(j) + '.';
     });
   });
 
@@ -866,7 +866,7 @@ function vueUne(){
     '<div class="commande noprint"><h1>Votre numéro</h1>'
   + '<p class="large gris">'+liste.length+' volet'+(liste.length>1?'s':'')+', dans l\'ordre que vous avez choisi.</p></div>'
   + '<div class="une">'
-  + '<p class="bandeau">Coulisses IA — dossier</p>'
+  + '<p class="bandeau">Les coulisses de l\'IA</p>'
   + '<h2 class="titre-une">'+une.titre+'</h2>'
   + '<p class="chapo-une">'+une.piece+'</p>'
   + (ints.length ? '<div class="interieures">'
