@@ -268,16 +268,18 @@ var ENQUETES = [
       titre:'Ce qu\'il faut savoir avant de lire',
       paras:[
         'Pour qu\'un modèle refuse de produire des contenus violents ou haineux, il faut d\'abord lui apprendre à les reconnaître. Cela suppose des milliers d\'exemples étiquetés un par un, à la main.',
-        'Ce travail est réalisé par des personnes, recrutées par des sociétés sous-traitantes, le plus souvent loin des sièges des entreprises qui conçoivent les modèles.',
+        'Ce travail est réalisé par des personnes, recrutées par des sociétés sous-traitantes, le plus souvent loin des bureaux rutilants des entreprises qui conçoivent ces modèles.',
         'Deux sources vous parviennent sur leurs conditions de travail.'
       ]
     },
     mecanique:'confrontation',
     nomination:{
       titre:'Ce que vous venez de faire porte un nom',
-      terme:'travail de la donnée',
+      terme:'coût humain caché',
       paras:[
-        'On appelle <span class="terme">travail de la donnée</span> l\'ensemble des tâches humaines qui rendent un modèle utilisable : annoter, étiqueter, modérer, corriger. Il est indispensable, massif, et presque toujours absent de la présentation des produits qu\'il permet.',
+        'Vous venez de mettre en lumière le <span class="terme">coût humain caché du développement de l\'IA</span>.',
+        'Le développement d\'un modèle d\'IA générative ne peut pas être intégralement automatisé. L\'intervention humaine reste nécessaire et indispensable à plusieurs étapes du développement, notamment pour les tâches d\'annotation de données, c\'est le travail de la donnée.',
+        'On appelle travail de la donnée l\'ensemble des tâches humaines qui rendent un modèle utilisable : annoter, étiqueter, modérer, corriger. Il est indispensable, massif, et presque toujours absent de la présentation des produits qu\'il permet.',
         'Mais ce que vous venez surtout d\'exercer est ailleurs : face à deux sources qui se contredisent, publier ce que vous pouvez défendre plutôt que ce qui frappe le plus. C\'est le geste que les cinq enquêtes suivantes vous demanderont de refaire.'
       ]
     },
@@ -299,7 +301,7 @@ var ENQUETES = [
       paras:[
         'Le développement d\'un modèle d\'intelligence artificielle générative peut se découper en deux temps. Ces deux temps permettent respectivement d\'apporter des informations concernant la conception du modèle et de comprendre les leviers qui sont actionnés lors de la génération de contenus.',
         'Dans le premier temps, des choix sont faits : la nature des données qui composeront le corpus d\'entrainement, la source de ces données d\'entrainement, qui sera payé pour les annoter et selon quelles règles, déterminer les critères d\'une bonne réponse, quels tests faire passer avant la mise en service. Chacun de ces choix est consigné quelque part dans l\'entreprise, mais rien n\'oblige à les rendre public.',
-        'Dans le second temps, le modèle s\'ajuste seul en suivant notamment les choix établis durant le premier temps, des milliards de fois, jusqu\'à devenir les modèles que nous utilisons au quotidien. Ces ajustements ne sont pas une liste de règles qu\'on pourrait ouvrir et lire. Quand le modèle génère une réponse, aucun ingénieur, pas même celui qui l\'a construit, ne peut expliquer ce qui a produit cette réponse plutôt qu\'une autre.',
+        'Dans le second temps, le modèle s\'ajuste seul en suivant notamment les choix établis durant le premier temps, des milliards de fois, jusqu\'à devenir les modèles que nous utilisons au quotidien. Ces ajustements ne sont pas une liste de règles qu\'on pourrait ouvrir et lire. Quand le modèle génère une réponse, aucun ingénieur, pas même celui qui l\'a développé, ne peut expliquer ce qui a produit cette réponse plutôt qu\'une autre.',
         'Parmi les questions suivantes, tentez de déduire pour lesquelles des réponses existent et pour lesquelles aucune réponse ne peut être apportée.'
       ]
     },
@@ -311,7 +313,7 @@ var ENQUETES = [
       paras:[
         'La <span class="terme">transparence</span>, c\'est tout ce qu\'on pourrait dire d\'un modèle et qu\'on ne dit pas forcément : les textes qui ont servi à l\'entraîner et la façon dont ils ont été obtenus, les conditions de travail des personnes qui les ont annotés, les comportements récompensés, les évaluations passées avant la mise en service, les incidents survenus depuis. Toutes ces informations existent, sous forme de documents, dans l\'entreprise. La transparence est donc une décision : les publier, ou non.',
         'L\'<span class="terme">explicabilité</span>, c\'est la possibilité de dire pourquoi le modèle a produit cette réponse-là. Elle ne se heurte pas à un refus mais à la nature de l\'objet. Un modèle n\'est pas fait de règles mais de centaines de milliards de nombres ajustés ensemble, et chaque réponse résulte de tous à la fois. Personne ne peut désigner la ligne responsable. L\'entreprise elle-même ne le peut pas.',
-        'La conséquence est très concrète : on ne corrige pas un comportement problématique en modifiant l\'endroit fautif, puisqu\'il n\'y en a pas. On réentraîne, on teste, on observe. C\'est exactement ce qui s\'est passé en avril 2025 — vous le verrez, ou vous l\'avez vu, dans l\'enquête sur l\'alignement.'
+        'La conséquence est très concrète : on ne corrige pas un comportement problématique en modifiant l\'endroit fautif, puisqu\'il n\'y en a pas. On réentraîne, on teste, on observe. C\'est exactement ce qui s\'est passé en avril 2025, vous le verrez, ou vous l\'avez vu, dans l\'enquête sur l\'alignement.'
       ]
     },
     piece:'Ce qu\'on peut savoir d\'un modèle relève de deux régimes distincts : des documents que l\'entreprise détient et publie ou non, et une réponse dont personne, pas même elle, ne peut expliquer la formation.',
@@ -340,7 +342,7 @@ var ENQUETES = [
       terme:'alignement',
       paras:[
         'On appelle <span class="terme">alignement</span> l\'ensemble des procédés par lesquels on fait correspondre le comportement d\'un modèle aux valeurs et aux intentions de ceux qui le conçoivent.',
-        'Ce n\'est ni un réglage technique neutre, ni une propriété acquise une fois pour toutes. C\'est une suite de décisions humaines, prises par des équipes identifiables, révisables — et parfois révisées en quatre jours.',
+        'Ce n\'est ni un réglage technique neutre, ni une propriété acquise une fois pour toutes. C\'est une suite de décisions humaines, prises par des équipes identifiables, révisables, et parfois révisées en quatre jours.',
         'La question n\'est donc jamais de savoir si un modèle est aligné, mais sur quoi, et décidé par qui.'
       ]
     },
@@ -404,7 +406,7 @@ function afficher(html, focusSel){
 function vueAccueil(){
   afficher(
     '<div class="commande">'
-  + '<h1>Coulisses IA — l\'enquête</h1>'
+  + '<h1>Les coulisses de l\'IA, l\'enquête 1/2</h1>'
   + '<p class="large">Vous êtes journaliste d\'investigation. Votre rédaction vous confie un dossier sur ce qui se décide, dans la fabrication d\'un modèle d\'IA générative, sans que personne n\'en soit informé.</p>'
   + '<p class="large gris">Trois enquêtes, dans l\'ordre de votre choix. Chacune s\'appuie sur des faits réels, datés et vérifiables, que vous pouvez consulter à tout moment. Une seule chose est évaluée : votre méthode, jamais votre jugement.</p>'
   + '</div>'
@@ -514,17 +516,17 @@ function mecConfrontation(e){
   + '<button type="button" class="ouvrir secondaire" data-cible="f1">Ouvrir la fiche</button></article>'
   + '<article class="fiche reponse" id="f2">'
   + '<p class="provenance"><b>Réponse de Sama</b><br>citée dans la même enquête</p>'
-  + '<p>L\'entreprise conteste la charge de travail avancée : 70 passages à annoter par service de neuf heures, et non jusqu\'à 250. Elle avance une rémunération de <span class="chiffre">1,46 à 3,74 dollars de l\'heure</span> après impôts.</p>'
+  + '<p>L\'entreprise conteste la charge de travail avancée : 70 passages à annoter par service de neuf heures, et non pas 250. Elle avance une rémunération de <span class="chiffre">1,46 à 3,74 dollars de l\'heure</span> après impôts.</p>'
   + '<p class="statut">Déclaration d\'un porte-parole. Aucune pièce produite à l\'appui.</p>'
   + '<button type="button" class="ouvrir secondaire" data-cible="f2">Ouvrir la fiche</button></article>'
   + '</div></section>'
   + '<section class="etape" id="decision" hidden><h2>Ce que vous publiez</h2>'
   + '<p class="consigne">Une seule phrase ira au dossier. Choisissez celle que vous êtes en mesure de défendre.</p>'
   + '<form id="form"><fieldset><legend class="consigne">Quatre formulations possibles :</legend><div class="options">'
-  + '<label class="option"><input type="radio" name="choix" value="a"><span>OpenAI a payé ses annotateurs kényans 2 dollars de l\'heure.</span></label>'
-  + '<label class="option"><input type="radio" name="choix" value="b"><span>Selon certaines sources, les annotateurs auraient été mal payés.</span></label>'
-  + '<label class="option"><input type="radio" name="choix" value="c"><span>Une enquête de TIME du 18 janvier 2023 relève une rémunération de 1,32 à 2 dollars de l\'heure pour les annotateurs employés par Sama pour le compte d\'OpenAI. Sama conteste ces chiffres et avance 1,46 à 3,74 dollars après impôts.</span></label>'
-  + '<label class="option"><input type="radio" name="choix" value="d"><span>Le scandale de l\'exploitation des travailleurs du clic par OpenAI a éclaté en 2023.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="a"><span>OpenAI a payé ses annotateurs kényans 2 dollars de l\'heure pour trier des contenus violents et haineux destinés à rendre ses modèles plus sûrs.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="b"><span>Selon certaines sources proches du dossier, les annotateurs auraient été mal payés pendant plusieurs mois, sans que l\'on sache dans quelles proportions.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="c"><span>TIME (18 janvier 2023) : 1,32 à 2 dollars de l\'heure pour les annotateurs de Sama, sous contrat avec OpenAI ; Sama conteste et avance 1,46 à 3,74 dollars après impôts.</span></label>'
+  + '<label class="option"><input type="radio" name="choix" value="d"><span>Le scandale de l\'exploitation des travailleurs du clic par OpenAI, révélé en 2023, a relancé le débat sur les conditions de travail dans toute l\'industrie de l\'IA.</span></label>'
   + '</div></fieldset><div class="barre"><button type="submit" id="valider" disabled>Verser au dossier</button></div></form>'
   + '<div id="cloture" aria-live="polite"></div></section>');
 
@@ -591,7 +593,7 @@ function mecArbitrage(e){
   + '<p class="consigne">Voici, reconstituée à partir de l\'analyse que l\'éditeur a lui-même publiée après coup, la note qui a vraisemblablement circulé avant la décision.</p>'
   + '<div class="fiche"><p>Objectif du trimestre : rendre la personnalité par défaut du modèle plus intuitive et plus efficace dans un plus grand nombre de situations.</p>'
   + '<p>L\'entraînement combine plusieurs signaux de récompense. Un seul a été renforcé.</p>'
-  + '<p class="statut">Reconstitution d\'après l\'analyse publiée par l\'éditeur — la décision, elle, a déjà été prise.</p></div>'
+  + '<p class="statut">Reconstitution d\'après l\'analyse publiée par l\'éditeur. La décision, elle, a déjà été prise.</p></div>'
   + '<form id="form"><fieldset><legend class="consigne">À leur place, lequel auriez-vous renforcé ?</legend><div class="options">'
   + '<label class="option"><input type="radio" name="signal" value="pouces"><span><b>Les pouces levés et baissés des utilisateurs</b><em>Le signal le plus abondant, et le plus immédiat.</em></span></label>'
   + '<label class="option"><input type="radio" name="signal" value="experts"><span><b>L\'évaluation de la justesse factuelle par des relecteurs externes</b><em>Coûteux, lent, peu de volume.</em></span></label>'
@@ -601,10 +603,10 @@ function mecArbitrage(e){
   + '<div id="cloture" aria-live="polite"></div></section>');
 
   var miroirs = {
-    pouces:'Votre hypothèse coïncide avec ce que l\'éditeur a réellement renforcé. La complaisance n\'est pas un accident survenu au modèle : elle est le résultat attendu d\'un arbitrage qui paraissait raisonnable, et que vous venez de reconstituer.',
+    pouces:'Votre hypothèse coïncide avec ce que l\'éditeur a réellement renforcé. La complaisance n\'est pas un accident : elle est le résultat attendu d\'un arbitrage qui paraissait raisonnable, et que vous venez de reconstituer.',
     duree:'Vous avez supposé un autre indicateur d\'engagement immédiat. Un modèle optimisé sur la durée des échanges a les mêmes raisons qu\'un modèle optimisé sur l\'approbation de vous garder en conversation plutôt que de vous contredire.',
     experts:'Vous avez supposé que le coût et la lenteur avaient été acceptés pour protéger la justesse. C\'est le compromis inverse de celui qui a été fait. Notez ce qu\'il en aurait coûté : moins de données, plus lentement, et un modèle que beaucoup auraient trouvé moins agréable.',
-    taches:'Vous avez supposé un signal de performance plutôt que de satisfaction. Il résiste mieux à la complaisance, mais il ne dit rien du ton — et c\'est précisément le ton qui faisait l\'objet de la note.'
+    taches:'Vous avez supposé un signal de performance plutôt que de satisfaction. Il résiste mieux à la complaisance, mais il ne dit rien du ton et c\'est précisément le ton qui faisait l\'objet de la note.'
   };
 
   var form = document.getElementById('form');
@@ -627,7 +629,7 @@ function mecArbitrage(e){
 
 var QUESTIONS_TRI = [
   {q:'Quels textes ont servi à entraîner le modèle, et comment ont-ils été obtenus ?',
-   r:'detenue', why:'La liste existe : quelqu\'un a constitué ce corpus. Rien n\'oblige à la publier.'},
+   r:'detenue', why:'La liste existe : quelqu\'un a constitué ce corpus mais rien n\'oblige à le publier.'},
   {q:'Pourquoi le modèle a-t-il répondu ceci plutôt que cela à une question précise ?',
    r:'personne', why:'Aucun ingénieur ne peut identifier exactement ce qui a produit une réponse.'},
   {q:'Combien de personnes ont annoté les données, et dans quelles conditions de travail ?',
@@ -663,7 +665,7 @@ function mecTri(e){
     + '<section class="etape"><h2>Le tri</h2>'
     + '<p class="consigne">Huit questions que l\'on peut poser au sujet d\'un modèle. Pour chacune, envoyez-la à gauche ou à droite avec la flèche qui correspond.</p>'
     + '<div class="tri-colonnes">'
-    + '<div class="colonne" id="col-detenue"><h3>← La réponse existe, détenue par quelqu\'un</h3>'
+    + '<div class="colonne" id="col-detenue"><h3>← La réponse existe et est détenue par quelqu\'un</h3>'
     + '<div class="colonne-items" id="col-detenue-items"><p class="vide">Rien pour l\'instant.</p></div></div>'
     + '<div class="colonne" id="col-personne"><h3>Personne ne peut répondre →</h3>'
     + '<div class="colonne-items" id="col-personne-items"><p class="vide">Rien pour l\'instant.</p></div></div>'
@@ -708,9 +710,9 @@ function mecTri(e){
       if (repondues === QUESTIONS_TRI.length){
         var avant = '<div class="retour"><h3>Ce que le tri a séparé</h3>'
           + '<p>'+justes+' questions sur '+QUESTIONS_TRI.length+' rangées du bon côté.</p>'
-          + '<p>La colonne de gauche rassemble des informations qui existent, sous forme de documents, chez celui qui a construit le modèle. '
-          + 'Les obtenir est une affaire de volonté, de pression publique ou de réglementation — c\'est exactement ce qui a fait céder la CNAF.</p>'
-          + '<p>La colonne de droite ne dépend d\'aucune volonté. Même en publiant tout, l\'entreprise ne pourrait pas y répondre — '
+          + '<p>La colonne de gauche rassemble des informations qui existent chez celui qui a construit le modèle. '
+          + 'Les obtenir est une affaire de volonté, de pression publique ou de réglementation. C\'est exactement ce qui a fait céder la CNAF.</p>'
+          + '<p>La colonne de droite ne dépend d\'aucune volonté. Même en publiant tout, l\'entreprise ne pourrait pas y répondre, '
           + 'ce que la publication du code de la CNAF n\'a pas résolu non plus.</p></div>';
         cloturePartielle(e, avant);
       }
@@ -768,7 +770,7 @@ function dessinerRangs(refocus){
       etat.ordre[j] = id;
       dessinerRangs({id:id, sens:sens});
       var e = trouver(id);
-      document.getElementById('annonce').textContent = e.titre + ' — désormais en position ' + (j+1) + ' : ' + placeDe(j) + '.';
+      document.getElementById('annonce').textContent = '"'+e.titre +'"'+ ' désormais en position ' + (j+1) + ' : ' + placeDe(j) + '.';
     });
   });
 
@@ -792,7 +794,7 @@ function vueUne(){
     '<div class="commande noprint"><h1>Votre numéro</h1>'
   + '<p class="large gris">'+liste.length+' volet'+(liste.length>1?'s':'')+', dans l\'ordre que vous avez choisi.</p></div>'
   + '<div class="une">'
-  + '<p class="bandeau">Coulisses IA — dossier</p>'
+  + '<p class="bandeau">Coulisses IA • dossier</p>'
   + '<h2 class="titre-une">'+une.titre+'</h2>'
   + '<p class="chapo-une">'+une.piece+'</p>'
   + (ints.length ? '<div class="interieures">'
